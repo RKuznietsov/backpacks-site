@@ -1,0 +1,24 @@
+{
+  "file": "Steal60_v59.rbxmx",
+  "bytes": 843410,
+  "sha256": "cea4855e805aceecee051e9a50f807fafa38c3f64bdd60b11bde3dfa6c58f777",
+  "scripts_compiled": 81,
+  "changed_modules": [
+    "Installer",
+    "MusicDirector",
+    "RouteHUD"
+  ],
+  "other_78_modules_identical_to_v58": true,
+  "music_toggle_always_visible": true,
+  "music_toggle_touch_height_pixels": 44,
+  "background_music_enabled_by_default": true,
+  "police_effects_independent_of_music_mute": true,
+  "tests": [
+    "PASS: persistent top-right button works during onboarding, shops, driving and hacking; 44px touch target fits tablet widths; button clicks mute/resume background and heist music immediately while keeping police effects audible.",
+    "PASS: actual MusicDirector loads its bundled sample, changes background/heist themes at lock and delivery, stays energetic while carrying, respects mute, plays a separate car alarm and increases the police siren as it approaches, and stops/cleans up without background note bursts.",
+    "PASS: the garage heading is separate; the complete Unicode name is fitted without truncation, pauses for five seconds, scrolls across the clipped strip and returns to a complete readable name."
+  ],
+  "regression_basis": "Steal60_v58_validation.json",
+  "actual_audio_playback_tested": false,
+  "actual_roblox_engine_tested": false
+}
