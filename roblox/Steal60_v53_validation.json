@@ -1,0 +1,20 @@
+{
+  "file": "Steal60_v53.rbxmx",
+  "bytes": 760971,
+  "sha256": "225c88268247851b6dbd8390c3a9c09c76cf76c86b4cde6c0cdedd137804440b",
+  "scripts_compiled": 59,
+  "catalog_storefront_looks": 6,
+  "legacy_prices_and_ids_preserved": true,
+  "procedural_hero_renderer_used": false,
+  "aura_static_geometry": false,
+  "tests": [
+    "PASS: six storefront looks; every legacy hero ID resolves to a catalog look; legacy ownership retained.",
+    "PASS: ten pet assemblies; one fox tail; 14 overlapping cat-tail segments on one pivot; four recovered drone rotors; rebuilt low turtle shell.",
+    "PASS: all four auras use trails, not geometry; movement enables emission, stopping leaves fading history, teleport clears long streaks; attachment cleanup passes.",
+    "PASS: real WardrobeService code: serialized async equips; reset during a pending equip; newest request wins; exact original-description restoration; idempotence; recovery from a partial API failure.",
+    "PASS: failed catalog loader disables only its own card; later outfits still load; unavailable looks are not ready for purchase.",
+    "PASS: unavailable catalog looks and retired duplicate purchases cannot spend currency; loaded look purchase works; default-avatar unequip retains ownership; failed save restores the selected look."
+  ],
+  "roblox_engine_validation": "not performed",
+  "external_catalog_assets": "validated only when Roblox loads the actual NPC-derived outfits"
+}
