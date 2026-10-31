@@ -1,0 +1,19 @@
+{
+  "file": "Steal60_v52.rbxmx",
+  "bytes": 753544,
+  "sha256": "b50a64af2836d0d86b1500df8c0a9840f83abade6b4a3171c76b594ae623cda5",
+  "scripts_compiled": 58,
+  "existing_prices_and_ids_unchanged": true,
+  "gameplay_and_payment_modules_unchanged": true,
+  "tests": [
+    "PASS: 55 costumes, 10 pets; 32 whole-assembly animation pivots; maxima 118 / 94 parts.",
+    "PASS: 150 car models; 135 body/skin combinations, repeated application and removal.",
+    "PASS: four aura assemblies, particle budgets and cleanup.",
+    "PASS: four vendor signatures, preserving the underlying catalog rig.",
+    "PASS: closed suit -> open-face suit -> own Roblox avatar restores head, face, hair and accessories; ownership retained.",
+    "PASS: all four drone rotors change pose; late Part1 and late Motor6D recover from a three-rotor cache.",
+    "PASS: blinking both eyes recovers transparency even when the cache refreshes during a blink.",
+    "PASS: id-less restore-avatar action saves unequip without spending; failed save restores the equipped state and keeps its visuals."
+  ],
+  "roblox_engine_validation": "not performed"
+}
