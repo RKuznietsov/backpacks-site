@@ -1,0 +1,15 @@
+{
+  "bytes": 745219,
+  "sha256": "fe83ab3509970ed0117b00db8e56355da00217ea429c94719a63ce671ff400f7",
+  "script_count": 57,
+  "original_item_ids_preserved": 78,
+  "gameplay_and_payment_modules_unchanged": true,
+  "geometry_contract_checks": [
+    "PASS: 55 costumes, 10 pets; 28 whole-assembly animation pivots; maxima 130 / 84 parts.",
+    "PASS: 150 car models; 135 body/skin combinations, repeated application and removal.",
+    "PASS: four aura assemblies, particle budgets and cleanup.",
+    "PASS: four vendor signatures, preserving the underlying catalog rig.",
+    "PASS: premium equip/unequip restores original body, accessory and decal transparency."
+  ],
+  "roblox_studio_validation": "not performed"
+}
