@@ -61,9 +61,9 @@
   },
   {
     "script": "CarFactory",
-    "sha256": "9491f8d66583f3e019e4b3539feaf6d6b91f303e061fd58556d17d5d8338161d",
-    "v65_status": "unchanged",
-    "initial_v66_status": "unchanged"
+    "sha256": "f5e574984b38e2c3744d3b7be4b76bfada3170bef29b8572bec2de8e2b1ef386",
+    "v65_status": "modified",
+    "initial_v66_status": "modified"
   },
   {
     "script": "CarGrounding",
@@ -109,7 +109,7 @@
   },
   {
     "script": "ClientMain",
-    "sha256": "46f682b43f546e3a9ac8c086f1c20315762dfe177c03b0e8f9942ce18662111d",
+    "sha256": "f007f369b0c3551bdcf4f23c44257c9e07c21268f863462032f82c62d4bf0d2a",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -205,19 +205,19 @@
   },
   {
     "script": "DrivePresentation",
-    "sha256": "2151356016b317b1f13e2352a45bf5ee0930962f10e716c521a00a300ec354a0",
+    "sha256": "f9a0ce2ea13d99ae622a993d2db9759b44b8577c6fd9d8d6da6573bffa5e0318",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
   {
     "script": "DriveService",
-    "sha256": "2a8e2ac5ce6843931deef657f4b77b072ecaebe0fe11ab8c846a0cdd0bf9158e",
+    "sha256": "b4b24c59734f7539537c6893c0a978a6d5a6cfe5a61936e040ac7e339e56446e",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
   {
     "script": "DriveState",
-    "sha256": "e89163499d3b62e2119d59f39061f742765a1a2172f073312eebebd6b71bf4fe",
+    "sha256": "4ff49ce0981f85f4e51b2b7a277bcfcd8c37a4f881130025708a745273645c5e",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -325,7 +325,7 @@
   },
   {
     "script": "LanguageCatalog",
-    "sha256": "9accd0c3db32983c4c93a4273ba8bca49b31fd0d0f0d6c4ecbcf50c3da398d85",
+    "sha256": "664c208a01e2b552f40b62aabf934919d9f26a259f7dd06ab129193fe4cc8f24",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -700,6 +700,12 @@
     "sha256": "fe64ee1d1948dd41a2bc1f86e01200c378817b8eb149473b4a5695a88bf9f9eb",
     "v65_status": "unchanged",
     "initial_v66_status": "unchanged"
+  },
+  {
+    "script": "VehicleLabels",
+    "sha256": "548ddc2517d5126953277bf298706b64c4b82ad3c92f62352d9d25008e024f8b",
+    "v65_status": "added",
+    "initial_v66_status": "added"
   },
   {
     "script": "WardrobeService",

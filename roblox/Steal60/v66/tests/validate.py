@@ -39,7 +39,7 @@ assert 'local TARGET_PROTECTION = 2 * 60' in sources['SalonService']
 assert 'local THEFT_COOLDOWN = 5 * 60' in sources['SalonService']
 assert 'Net.notifyKey(player' in sources['DriveService']
 # All new sources are installed at their expected paths.
-for name in ['DeliveryBonus','EndlessParking','PetMount','ShelfTypography','Grammar','Messages','ProgressionConfig','InterfaceAccess']+([]if a.integration_only else ['LeaderboardView','RoadEventSchedule','RoadsideFacing','EngineAudio','UpgradePolicy','BreezeAura','UpgradeView','PoliceAudio']):
+for name in ['DeliveryBonus','EndlessParking','PetMount','ShelfTypography','Grammar','Messages','ProgressionConfig','InterfaceAccess']+([]if a.integration_only else ['LeaderboardView','RoadEventSchedule','RoadsideFacing','EngineAudio','UpgradePolicy','BreezeAura','UpgradeView','PoliceAudio','VehicleLabels']):
  assert parents[name]=='Shared'
 assert parents['RoadsideArt']=='Services'
 if not a.integration_only:
@@ -156,6 +156,7 @@ with tempfile.TemporaryDirectory(prefix='steal60-v66-')as temp:
   parts.append(';\n(function()\n'+(HERE/'upgrade_choices.luau').read_text()+'\nend)()')
   parts.append(';\n(function()\n'+(HERE/'runtime_regressions.luau').read_text()+'\nend)()')
   parts.append(';\n(function()\n'+(HERE/'mobile_driving.luau').read_text()+'\nend)()')
+  parts.append(';\n(function()\n'+(HERE/'vehicle_labels.luau').read_text()+'\nend)()')
   parts.append(';\n(function()\n'+(HERE/'menu_regressions.luau').read_text()+'\nend)()')
   parts.append(';\n(function()\n'+(HERE/'atelier_regressions.luau').read_text()+'\nend)()')
   parts.append(';\n(function()\n'+(HERE/'avatar_preview.luau').read_text()+'\nend)()')

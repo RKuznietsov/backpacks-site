@@ -101,6 +101,16 @@ function methods:SetAttribute(k,v)local old=self.attrs[k];self.attrs[k]=v;if old
 function methods:GetAttribute(k)return self.attrs[k]end
 function methods:Destroy()self.Destroying:Fire();for _,c in ipairs(self:GetChildren())do c:Destroy()end;self.Parent=nil end
 function methods:GetPivot()return self.props.WorldPivot or CF.new()end
+function methods:GetBoundingBox()
+ local lo=V.new(math.huge,math.huge,math.huge);local hi=-lo
+ for _,part in ipairs(self:GetDescendants())do if part:IsA('BasePart')then
+  for _,x in ipairs({-1,1})do for _,y in ipairs({-1,1})do for _,z in ipairs({-1,1})do
+   local p=part.CFrame*V.new(part.Size.X*x/2,part.Size.Y*y/2,part.Size.Z*z/2)
+   lo=V.new(math.min(lo.X,p.X),math.min(lo.Y,p.Y),math.min(lo.Z,p.Z));hi=V.new(math.max(hi.X,p.X),math.max(hi.Y,p.Y),math.max(hi.Z,p.Z))
+  end end end
+ end end
+ return CF.new((lo+hi)/2),hi-lo
+end
 function methods:PivotTo(cf)local delta=cf*self:GetPivot():Inverse();for _,p in ipairs(self:GetDescendants())do if p:IsA('BasePart')then p.CFrame=delta*p.CFrame end end;self.WorldPivot=cf end
 function methods:FindFirstChildOfClass(c)return self:FindFirstChildWhichIsA(c,false)end
 function methods:FindFirstChildWhichIsA(c,recurse)for _,p in ipairs(recurse and self:GetDescendants()or self.children)do if p:IsA(c)then return p end end end

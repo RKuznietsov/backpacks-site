@@ -1,10 +1,10 @@
-Final XML SHA-256: 536e0529b61a7096b25b72356bc456704854689bf2962a024257b9484444caf3
-XML instances: 130 script sources: 119
+Final XML SHA-256: dadd525fb2d320e4c205813ab4f73cea5a07e08939786280792e6418313a5a13
+XML instances: 131 script sources: 120
 Baseline SHA-256: c9f96485fd61b68ae4d576ed57f9fb9287015692969f7c8a9878c8c81c65102f
 PASS: v65 durable storage, payment processing, skill predicate and catalog sources byte-identical
 PASS: installer paths, infinite bounds, audio ingress and reset configuration
-PASS: 1331 unique translations, format tokens, American English and no numeric require/loadstring
-Compiled 19 KLOC into 1165 KB bytecode (read 0.00s, parse 0.02s, compile 0.03s)
+PASS: 1332 unique translations, format tokens, American English and no numeric require/loadstring
+Compiled 19 KLOC into 1174 KB bytecode (read 0.00s, parse 0.02s, compile 0.03s)
 PASS: purchase compatibility, delivery effects, skill policy, personal reset
 PASS: 10,000 district indices and five-theme selection
 PASS: RU/EN immediate + deferred events, dynamic text, streamed prompts/signs
@@ -33,15 +33,17 @@ PASS: coin cosmetics, quadratic mastery pacing, modest aura and all walking pet 
 PASS: real CosmeticService purchases/save snapshots, coin-only rejection, worker skill, paint/aura equip, license, mastery costs and duplicate/insufficient-funds guards
 PASS: +1 speed, five-diamond prices, own-avatar mastery, distinct benefits with both currencies, one-card UI and mixed/shared upgrade saves
 [mock warn]	[Steal60 hack] Helper return failed; active puzzle remains available
-[mock warn]	[Steal60 hack] Vehicle handoff failed: /tmp/steal60-v66-0j32d6lw/run.luau:23103: injected rig construction failure
+[mock warn]	[Steal60 hack] Vehicle handoff failed: /tmp/steal60-v66-w9g13r_9/run.luau:23247: injected rig construction failure
 PASS: real client/server pins, memory, wires and dial; lost commands and terminal outcomes, deduplication, rig/helper failures, timeout/lease/GUI cleanup; NPC cleanup contracts and bounded siren
 [Steal60/Drive v66] Native joystick, verified first seating and server validation
-PASS: 150-car exhibit grounding, actual showroom wiring, first-seat native joystick/server handoff, no duplicate direction UI, longitudinal drive commands, wheel rolling and server rollback (no native physics integration)
+[Steal60/Drive v66] Native joystick, verified first seating and server validation
+PASS: 150-car grounding, both PlayerModule API shapes, first-seat joystick with zero seat floats, partial-rig server fallback/recovery, nearby plane anchor, top-left recovery placement, longitudinal commands and rollback (API doubles; no native physics)
+PASS: actual factory atomic/tag setup and pool reuse, two client contexts, late label attributes/body/anchor repair, camera-independent range, special banner retention, RU/EN and label cleanup (API doubles; no native streaming/rendering)
 PASS: full upgrade/shop and read-only tabs render under native color contracts; five modal types stay inside the actual GUI canvas under DPI/insets/resizing, without scale feedback
 PASS: actual atelier categories, first coin worker, responsive one-to-four-column grid, card/button bounds and mastery shortcut; 3D previews/async loops explicitly doubled
 PASS: actual preview posing for R6, modern AnimationConstraint, attachment-only and streamed rigs; missing/embedded/tiny heads, accessory repositioning, idempotency and full-head portrait frustum (synthetic rigs)
 [Steal60] Main запущен
 [Steal60/Delivery] Сдача автомобиля без водителя: рамка парковки, остановка 0.65 сек
 PASS: actual Main + DeliveryService + HeistService + TutorialService + loot/catalog logic: four deliveries (seated and exited), rewards, XP/level, shelves, helper, lesson, replay and invalid-delivery rejection
-FINAL COMBINED ASSERTIONS: 336372
+FINAL COMBINED ASSERTIONS: 336569
 NOT RUN: Roblox Engine/Studio rendering, physics, live DataStore and Marketplace integration.

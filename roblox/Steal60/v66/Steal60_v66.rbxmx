@@ -3906,10 +3906,12 @@ function M.start(corrections)
  end)
  local function updateDriver(dt)
   local car=State.current(player)
-  if not car or car:GetAttribute('ClientDriveOwner')~=player.UserId then table.clear(states);return end
-  local body=car:FindFirstChild('Body',true)or car.PrimaryPart;local rig=car:FindFirstChild('DriveRig')
-  local heading=rig and rig:FindFirstChild('DriveHeading')
-  if not body or not heading or body.Anchored then return end
+  local body,rig,heading=State.rig(car)
+  if not car or not body then State.setReady(nil);table.clear(states);return end
+  -- Advertise readiness only for this complete rig and seating epoch. Until then
+  -- the server remains the single writer, using the same native joystick input.
+  State.setReady(car,car:GetAttribute('DriveEpoch'))
+  if car:GetAttribute('ClientDriveOwner')~=player.UserId then table.clear(states);return end
   local state=states[car]
   if not state or state.epoch~=car:GetAttribute('DriveEpoch')then
    state=Dynamics.new(body,car:GetAttribute('MaxSpeed'));state.epoch=car:GetAttribute('DriveEpoch');states[car]=state
@@ -3930,30 +3932,62 @@ function M.start(corrections)
    end
   end end
  end)
- player:SetAttribute('Steal60DriveControllerReady',true)
 end
 return M
 ]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_STEAL60_V58_DriveState"><Properties><string name="Name">DriveState</string><ProtectedString name="Source"><![CDATA[-- Resolve seating continuously, including the brief SeatPart replication race on touch devices.
 local M={};local inputCar;local throttle,steer=0,0
-local controls;local loading=false
+local controls;local loading=false;local nextControlsCheck=0
+local readyCar,readyEpoch
 function M.startControls(player)
- if loading then return end;loading=true
+ if controls or loading or os.clock()<nextControlsCheck then return end;loading=true;nextControlsCheck=os.clock()+5
  task.spawn(function()
   local scripts=player:WaitForChild('PlayerScripts',15)
   local module=scripts and scripts:WaitForChild('PlayerModule',15)
   if module then
-   local ok,result=pcall(function()return require(module):GetControls()end)
+   local ok,result=pcall(function()
+    local api=require(module)
+    if type(api)=='table'and type(api.GetControls)=='function'then return api:GetControls()end
+   end)
    if ok then controls=result end
   end
   loading=false
  end)
 end
-function M.touchInput(seat)
+function M.touchInput(seat,player)
+ if player then M.startControls(player)end
  if controls then
   local ok,move=pcall(function()return controls:GetMoveVector()end)
   if ok and typeof(move)=='Vector3'then return math.clamp(-move.Z,-1,1),math.clamp(move.X,-1,1)end
  end
- return math.clamp(seat.ThrottleFloat or 0,-1,1),math.clamp(seat.SteerFloat or 0,-1,1)
+ local t,s=seat.ThrottleFloat or 0,seat.SteerFloat or 0
+ if math.abs(t)+math.abs(s)>.001 then return math.clamp(t,-1,1),math.clamp(s,-1,1)end
+ -- Current PlayerModule exposes only ControlModule.Enabled. It still calls Player:Move
+ -- while seated: recover the native stick's camera-relative axes from MoveDirection.
+ local char=player and player.Character
+ local hum=(char and char:FindFirstChildOfClass('Humanoid'))or seat.Occupant
+ local move=hum and hum.MoveDirection;local camera=workspace.CurrentCamera
+ if typeof(move)=='Vector3'and camera then
+  local right=Vector3.new(camera.CFrame.RightVector.X,0,camera.CFrame.RightVector.Z)
+  if right.Magnitude>.001 then
+   right=right.Unit;local forward=Vector3.yAxis:Cross(right)
+   return math.clamp(move:Dot(forward),-1,1),math.clamp(move:Dot(right),-1,1)
+  end
+ end
+ return 0,0
+end
+function M.rig(car)
+ local body=car and(car:FindFirstChild('Body',true)or car.PrimaryPart)
+ local rig=car and car:FindFirstChild('DriveRig')
+ local seat=rig and rig:FindFirstChild('DriverSeat')
+ local heading=rig and rig:FindFirstChild('DriveHeading');local height=rig and rig:FindFirstChild('DriveHeight')
+ if not body or not body:IsDescendantOf(car)or not seat or not heading or not height or body.Anchored or heading.Enabled==false or height.Enabled==false then return end
+ local a,b,c=heading.Attachment0,height.Attachment0,height.Attachment1
+ if not a or a.Parent~=body or not b or not b.Parent or not b:IsDescendantOf(car)or not c or c.Parent~=body then return end
+ return body,rig,heading
+end
+function M.setReady(car,epoch)readyCar,readyEpoch=car,epoch end
+function M.ready(car)
+ return car~=nil and readyCar==car and readyEpoch~=nil and car:GetAttribute('DriveEpoch')==readyEpoch and M.rig(car)~=nil
 end
 function M.setInput(car,t,s)inputCar=car;throttle=t or 0;steer=s or 0 end
 function M.input(car)if car==inputCar then return throttle,steer end;return 0,0 end
@@ -5623,6 +5657,7 @@ return {
  ["Забрать деньги"]="Collect earnings",
  ["Заводской цвет"]="Factory paint",
  ["Загружаем образ Roblox…"]="Loading Roblox look…",
+ ["Загрузка..."]="Loading...",
  ["Загрузка контракта..."]="Loading contract...",
  ["Загрузка прогресса..."]="Loading progress...",
  ["Загрузка рейтинга..."]="Loading leaderboard...",
@@ -7326,6 +7361,88 @@ function M.start(gui)
  gui.Destroying:Connect(function()live=false;for _,c in ipairs(links)do c:Disconnect()end;sound:Stop();sound:Destroy()end)
 end
 return M
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_v66_VehicleLabels"><Properties><string name="Name">VehicleLabels</string><ProtectedString name="Source"><![CDATA[-- Client-owned nameplates survive streamed/recreated roof attachments. Their
+-- range follows the character, so camera zoom never hides a nearby steal target.
+local M={}
+function M.start(gui)
+ local Players=game:GetService('Players');local Run=game:GetService('RunService');local Collection=game:GetService('CollectionService')
+ local player=Players.LocalPlayer;local Cars=require(script.Parent.Config.Cars);local Rarity=require(script.Parent.Rarity)
+ local variants={};for _,v in ipairs(Cars.Variants)do variants[v.id]=v end
+ local entries={};local connections={};local elapsed=0;local alive=true
+ local function remove(car)
+  local entry=entries[car];if not entry then return end
+  if entry.gui then entry.gui:Destroy()end;entries[car]=nil
+ end
+ local function register(car)
+  if car:IsA('Model')and not entries[car]then entries[car]={source={}}end
+ end
+ local function create(entry)
+  local bb=Instance.new('BillboardGui');bb.Name='Steal60VehicleLabel';bb.AutoLocalize=false
+  bb.AlwaysOnTop=true;bb.MaxDistance=1000000;bb.Enabled=false
+  for i=1,3 do
+   local line=Instance.new('TextLabel');line.Name='Line'..i;line.AutoLocalize=false
+   line.Size=UDim2.new(1,0,1/3,0);line.Position=UDim2.fromScale(0,(i-1)/3)
+   line.BackgroundTransparency=1;line.Font=Enum.Font.GothamBold;line.TextScaled=true
+   line.TextStrokeTransparency=.3;line.TextColor3=Color3.new(1,1,1);line.Parent=bb
+  end
+  entry.gui=bb;bb.Parent=player:WaitForChild('PlayerGui')
+ end
+ local function text(entry,index,value,color)
+  local line=entry.gui:FindFirstChild('Line'..index)
+  -- LanguageController owns translated Text; only rewrite when source data changes.
+  if entry.source[index]~=value then entry.source[index]=value;line.Text=value end
+  line.TextColor3=color
+ end
+ local function refresh()
+  if not alive then return end
+  local char=player.Character;local root=char and char:FindFirstChild('HumanoidRootPart')
+  for car,entry in pairs(entries)do
+   if not car:IsDescendantOf(workspace)then remove(car);continue end
+   local body=car:FindFirstChild('Body',true)or car.PrimaryPart
+   if not body or not body:IsDescendantOf(car)then if entry.gui then entry.gui.Enabled=false end;continue end
+   local native=body:FindFirstChild('CarLabel');if native and native.Enabled~=false then native.Enabled=false end
+   local state=car:GetAttribute('State');local display=state=='display'
+   local visible=root and(root.Position-body.Position).Magnitude<=(display and 26 or 85)and state~='cosmetic_preview'
+   if not visible then if entry.gui then entry.gui.Enabled=false end;continue end
+   if not entry.gui then create(entry)end
+   local bb=entry.gui;bb.Adornee=body
+   local offset=car:GetAttribute('CarLabelOffset')
+   if typeof(offset)~='Vector3'then
+    local anchor=body:FindFirstChild('CarLabelRoofAnchor');offset=anchor and anchor.Position or Vector3.new(0,body.Size.Y*.5+4,0)
+   end
+   bb.StudsOffsetWorldSpace=body.CFrame:VectorToWorldSpace(offset)+Vector3.new(0,display and .35 or .55,0)
+   bb.Size=UDim2.fromOffset(display and 135 or 195,display and 43 or 62)
+   local def=Cars.ById[car:GetAttribute('CarId')];local rarity=Rarity.Info[car:GetAttribute('Rarity')]
+   local variant=variants[car:GetAttribute('Variant')]
+   text(entry,1,def and def.name or 'Загрузка...',display and Color3.fromRGB(236,242,245)or(rarity and rarity.color or Color3.new(1,1,1)))
+   local second=rarity and rarity.name or 'Загрузка...'
+   if variant and variant.id~='default'then second..=' · '..variant.name end
+   text(entry,2,second,Color3.new(1,1,1))
+   local requirement=car:GetAttribute('RequiredHack');local third=typeof(requirement)=='number'and('Взлом %d+'):format(requirement)or 'Загрузка...'
+   local color=Color3.fromRGB(190,190,190)
+   if state=='busy'then third='ЗАНЯТО';color=Color3.fromRGB(255,90,90)
+   elseif state=='ride'then third='ТВОЯ МАШИНА';color=Color3.fromRGB(120,220,255)end
+   text(entry,3,third,color);bb.Line3.Visible=not display;bb.Enabled=true
+  end
+ end
+ for _,car in ipairs(Collection:GetTagged('S60VehicleLabel'))do register(car)end
+ connections[#connections+1]=Collection:GetInstanceAddedSignal('S60VehicleLabel'):Connect(register)
+ connections[#connections+1]=Collection:GetInstanceRemovedSignal('S60VehicleLabel'):Connect(remove)
+ -- A pooled model can re-enter Workspace with its existing tag. Streaming can
+ -- also deliver the model/tag before Body or attributes; refresh retries them.
+ connections[#connections+1]=workspace.DescendantAdded:Connect(function(obj)
+  if obj:IsA('Model')and Collection:HasTag(obj,'S60VehicleLabel')then register(obj)end
+ end)
+ connections[#connections+1]=Run.Heartbeat:Connect(function(dt)
+  elapsed+=dt;if elapsed<.2 then return end;elapsed=0;refresh()
+ end)
+ connections[#connections+1]=gui.Destroying:Connect(function()
+  alive=false;for _,c in ipairs(connections)do c:Disconnect()end
+  for car in pairs(entries)do remove(car)end
+ end)
+ refresh()
+end
+return M
 ]]></ProtectedString></Properties></Item></Item>
     </Item>
     <Item class="Folder" referent="RBX33">
@@ -7371,6 +7488,7 @@ startOptional('PoliceAudio',gui)
 startOptional('LeaderboardView',gui)
 startOptional('MusicDirector',gui)
 startOptional('LanguageController',gui)
+startOptional('VehicleLabels',gui)
 startOptional('ClientPerformance')
 startOptional('MarqueeController')
 local DriveState=require(Shared:WaitForChild('DriveState'))
@@ -7924,8 +8042,8 @@ local lastCar, lastSent, driveIndicator = nil, 0, nil
 DriveState.startControls(player)
 local driveUI = Instance.new("Frame")
 driveUI.Name = "DriveTouchControls"
-driveUI.AnchorPoint = Vector2.new(1, 1)
-driveUI.Position = UDim2.new(1, -14, 1, -150)
+driveUI.AnchorPoint = Vector2.new(0, 0)
+driveUI.Position = UDim2.fromOffset(12, 56)
 driveUI.Size = UDim2.fromOffset(150, 40)
 driveUI.BackgroundTransparency = 1
 driveUI.Visible = false
@@ -7964,7 +8082,6 @@ driveHint.Parent = gui
 corner(driveHint, 9)
 
 local hiddenBillboardNames = {
-    CarLabel = true,
     RoadLabel = true,
     EventLabel = true,
     RoadVIPLabel = true,
@@ -8029,14 +8146,14 @@ RunService.Heartbeat:Connect(function(dt)
         lastSent = 0
     end
     local menuActive=player:GetAttribute('Steal60MenuOpen')==true or player:GetAttribute('HackActive')==true
-    driveUI.Visible = UserInputService.TouchEnabled and not menuActive
+    driveUI.Visible = UserInputService.TouchEnabled and not menuActive and not player:GetAttribute('Steal60DevelopmentNotice')
     driveHint.Text=UserInputService.TouchEnabled and'Левый стик — газ и руль · ↻ — выровнять'or'W/S — газ · A/D — руль · R — выровнять'
     if UserInputService:GetLastInputType()==Enum.UserInputType.Gamepad1 then driveHint.Text='Геймпад: RT/LT — газ/назад · стик — руль · X — выровнять'end
     driveHint.Visible = not player:GetAttribute('HackActive') and
         (player:GetAttribute('TutorialComplete')~=true or player:GetAttribute('Steal60ActiveModal')=='Steal60Handbook') and
         (not menuActive or player:GetAttribute('Steal60ActiveModal')=='Steal60Handbook')
     local throttle,steer=seat.ThrottleFloat or 0,seat.SteerFloat or 0
-    if UserInputService.TouchEnabled then throttle,steer=DriveState.touchInput(seat)end
+    if UserInputService.TouchEnabled then throttle,steer=DriveState.touchInput(seat,player)end
     if not UserInputService.TouchEnabled then
         local keyThrottle = (UserInputService:IsKeyDown(Enum.KeyCode.W) or UserInputService:IsKeyDown(Enum.KeyCode.Up)) and 1 or
             ((UserInputService:IsKeyDown(Enum.KeyCode.S) or UserInputService:IsKeyDown(Enum.KeyCode.Down)) and -1 or 0)
@@ -8050,7 +8167,7 @@ RunService.Heartbeat:Connect(function(dt)
     DriveState.setInput(car,throttle,steer)
     if os.clock() - lastSent >= .08 then
         lastSent = os.clock()
-        DriveInput:FireServer(car,throttle,steer,player:GetAttribute('Steal60DriveControllerReady')and 60 or 0,car:GetAttribute('DriveEpoch'))
+        DriveInput:FireServer(car,throttle,steer,DriveState.ready(car)and 60 or 0,car:GetAttribute('DriveEpoch'))
     end
 end)
 
@@ -11698,6 +11815,11 @@ local CarArt=require(Shared.CarCosmeticArt)
 local CarVisuals = require(script.Parent.CarVisuals)
 
 local CarFactory = {}
+local CollectionService=game:GetService('CollectionService')
+local function streamTogether(model)
+ model.ModelStreamingMode=Enum.ModelStreamingMode.Atomic
+ CollectionService:AddTag(model,'S60VehicleLabel')
+end
 
 local MAX_POOL_PER_CAR = 6
 
@@ -11768,6 +11890,7 @@ local function setupExtras(model)
     anchor.Name="CarLabelRoofAnchor"
     local worldPos=bounds.Position+Vector3.new(0,boundsSize.Y*.5+2.75,0)
     anchor.Position=adornee.CFrame:PointToObjectSpace(worldPos)
+    model:SetAttribute('CarLabelOffset',anchor.Position)
     anchor.Parent=adornee
     local bb=Instance.new("BillboardGui");bb.AutoLocalize=false
     bb.Name="CarLabel"
@@ -11829,7 +11952,7 @@ end
 function CarFactory.acquire(carDef, classId)
 	local list = pool[carDef.id]
 	if list and #list > 0 then
-		local model=table.remove(list);live[model]=true;return model,false
+		local model=table.remove(list);streamTogether(model);live[model]=true;return model,false
 	end
 
 	local model
@@ -11856,6 +11979,7 @@ function CarFactory.acquire(carDef, classId)
 	end
 
 	setupExtras(model)
+	streamTogether(model)
 	CollisionService.applyVehicle(model)
 	model:SetAttribute("PoolId", carDef.id)
 	live[model]=true
@@ -12765,7 +12889,7 @@ function DriveService.enable(car,maxSpeed)
     -- Its normal is world Y; horizontal motion and yaw remain free.
     local planeAnchor=Instance.new('Part');planeAnchor.Name='DrivePlaneAnchor';planeAnchor.Size=Vector3.new(.1,.1,.1)
     planeAnchor.Transparency=1;planeAnchor.Anchored=true;planeAnchor.CanCollide=false;planeAnchor.CanTouch=false;planeAnchor.CanQuery=false
-    planeAnchor.CFrame=CFrame.new(0,groundedY,0);planeAnchor.Parent=rig
+    planeAnchor.CFrame=CFrame.new(body.Position.X,groundedY,body.Position.Z);planeAnchor.Parent=rig
     local fixed=Instance.new('Attachment');fixed.Name='HeightPlane';fixed.CFrame=CFrame.Angles(0,0,math.pi/2);fixed.Parent=planeAnchor
     local vertical=Instance.new('Attachment');vertical.Name='DriveHeightAtt';vertical.CFrame=CFrame.Angles(0,0,math.pi/2);vertical.Parent=body
     local height=Instance.new('PlaneConstraint');height.Name='DriveHeight';height.Attachment0=fixed;height.Attachment1=vertical;height.Parent=rig
@@ -12890,7 +13014,11 @@ function DriveService.init()
         s.throttle=math.clamp(throttle,-1,1)
         s.steer=math.clamp(steer,-1,1)
         s.lastInput=os.clock()
-        if protocol==60 and not s.clientReady and os.clock()>=(s.ownershipUntil or 0)then
+        if protocol~=60 and s.clientReady then
+            s.clientReady=false;car:SetAttribute('ClientDriveOwner',nil)
+            pcall(function()s.body:SetNetworkOwner(nil)end)
+            s.dynamics=Dynamics.new(s.body,s.maxSpeed)
+        elseif protocol==60 and not s.clientReady and os.clock()>=(s.ownershipUntil or 0)then
             local ok=pcall(function()s.body:SetNetworkOwner(player)end)
             if ok then s.clientReady=true;car:SetAttribute('ClientDriveOwner',player.UserId)end
         end

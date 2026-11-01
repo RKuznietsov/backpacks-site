@@ -1,6 +1,6 @@
 # Steal60 v66 · RU / EN
 
-Последнее обновление: управление телефоном/планшетом через штатный левый джойстик, без дополнительных стрелок. Усилены подтверждение первой посадки и восстановление взлома; машины опираются колёсами на выставочные площадки. В предпросмотре героя исправлены современные суставы R15, положение головы и высота портрета. [Подробности](MOBILE-FIX.md).
+Последнее обновление: восстановление подписей автомобилей у каждого игрока, поддержка обоих вариантов PlayerModule и серверное движение до полной загрузки машины. Кнопка «Выровнять» перенесена слева под счётчик денег. Предыдущие исправления выставки, взлома и головы героя сохранены. [Подробности](MOBILE-FIX.md).
 
 Предыдущие исправления памяти, ошибок Output и двухвалютного магазина сохранены. [Подробности](UPDATE.md).
 
@@ -47,7 +47,7 @@
 
 ## Проверки и границы результата
 
-См. [сверку замечаний и новые цены](AUDIT-v64.md), [RESULTS.md](RESULTS.md) и [исходный журнал](tests/validation-output.txt). Компилировались **все 119 скриптов из конечного XML**, а сценарии выполнялись заново для этой сборки.
+См. [сверку замечаний и новые цены](AUDIT-v64.md), [RESULTS.md](RESULTS.md) и [исходный журнал](tests/validation-output.txt). Компилировались **все 120 скриптов из конечного XML**, а сценарии выполнялись заново для этой сборки.
 
 **Roblox Engine/Studio в облачной среде отсутствует.** Автоматические сценарии используют Luau и явно обозначенные тестовые двойники Roblox API. Они не подтверждают качество изображения, живую физику/репликацию, доступность аудио и внешних NPC-ассетов, настоящий DataStore или Marketplace. Перед публикацией игры выполните Studio-проверки из RESULTS.md. Ветка GitHub публикует установщик, но не публикует Roblox Experience.
 
@@ -63,4 +63,4 @@ RU/EN is an in-game toggle. The music-note button opens separately saved music v
 
 The latest screenshot update and coin progression prices are described in [VISUAL-UPDATE.md](VISUAL-UPDATE.md) and [ECONOMY.md](ECONOMY.md). A worker outfit costs 4M coins, plain paint 750K, a modest aura 1.5M and the pet license 5M. Walking pets sit at the rear of the car, behind the driver.
 
-The updated build adds immediate upgrade saves, separate currency cooldowns, a soft cap on base income before bonuses, lower ladder costs, American English, number inflection, adaptive modal scaling and native gamepad input. All 119 final XML scripts compile; current-run Luau tests cover the new logic with explicit Roblox API test doubles. **No actual Roblox Engine was available.** Studio visuals, physics, live DataStore and Marketplace integration remain unverified. [RESULTS.md](RESULTS.md) provides the evidence and Studio acceptance checklist.
+The updated build adds immediate upgrade saves, separate currency cooldowns, a soft cap on base income before bonuses, lower ladder costs, American English, number inflection, adaptive modal scaling and native gamepad input. All 120 final XML scripts compile; current-run Luau tests cover the new logic with explicit Roblox API test doubles. **No actual Roblox Engine was available.** Studio visuals, physics, live DataStore and Marketplace integration remain unverified. [RESULTS.md](RESULTS.md) provides the evidence and Studio acceptance checklist.
