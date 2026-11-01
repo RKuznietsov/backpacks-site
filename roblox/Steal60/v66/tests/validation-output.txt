@@ -1,0 +1,20 @@
+Final XML SHA-256: b25ff05f62b23aa968573693106d0819b06b83c6be50616cf79dc99591b60038
+XML instances: 116 script sources: 105
+Baseline SHA-256: c9f96485fd61b68ae4d576ed57f9fb9287015692969f7c8a9878c8c81c65102f
+PASS: v65 durable storage, payment processing, skill predicate and catalog sources byte-identical
+PASS: installer paths, infinite bounds, audio ingress and reset configuration
+Compiled 18 KLOC into 1075 KB bytecode (read 0.00s, parse 0.02s, compile 0.03s)
+PASS: purchase compatibility, delivery effects, skill policy, personal reset
+PASS: 10,000 district indices and five-theme selection
+PASS: RU/EN immediate + deferred events, dynamic text, streamed prompts/signs
+PASS: 150 catalog car models, tuning, roof pet mounting
+PASS: 14 constructed districts; reserved parcels + independent large-object AABBs
+PASS: separate police and roadworks native model constructors
+PASS: profile recovery, payment replay idempotency, outage and lease-loss rejection (mock store)
+PASS: actual server bumper sweep at four headings, both sides, stopped/out-of-range rejection
+PASS: real security wrapper accepts bounded audio and rejects malformed/flooded requests
+PASS: audio preference restore/change/reload through real language service + profile store (mocks)
+PASS: actual server upgrade preview functions, combined effects, nonlinear hourly income and x2
+PASS: actual district manager needed/load/unload lifecycle for 1,000 crossings (zero-delay test config)
+FINAL ASSERTIONS: 313115
+NOT RUN: Roblox Engine/Studio rendering, physics, live DataStore and Marketplace integration.

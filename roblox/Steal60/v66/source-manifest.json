@@ -1,0 +1,527 @@
+[
+  {
+    "script": "AccessoryConfig",
+    "sha256": "10deadc25b9f0bacedf2bd0f37d2be35c869a657c59e5a35fc2db9265e3496d1",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "AuraSpecial",
+    "sha256": "ac7783388921f4ba81ab0862488f09c4e7163491ec3fe11df7e5a01fc074be6f",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "AuraVisualLibrary",
+    "sha256": "8bfb7b1f08557267ebda55da481a54f411ca0422a48e8bc079bf00afd2010596",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "AvatarOutfit",
+    "sha256": "bf6cc06fe03930b2096b6298719b2e888b4327aaa1007363b99c03497e9d1284",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "AvatarPreview",
+    "sha256": "3639165e1ef7369a9bc6fe5e128d7398b276c534584683aea62f0af6e93923ce",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "AvatarStyleLibrary",
+    "sha256": "b2e55bb8befbe8b35163fdb69865611167484abfe0dc35d78ebdda2b21da6688",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "BotService",
+    "sha256": "1bcbe664163fb23a2c59e39d00e996eb5d5c4fe70a92151e68e6802770ca3897",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "CarClasses",
+    "sha256": "4b1d00eb0cc4edd890ae9899a17ad5413011ab82f2c0a07d6e813f2189b837cb",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "CarCosmeticArt",
+    "sha256": "0344ad3883d77bccabac76e559d56ffd78b8ae9b5cd53c1eab00f1e767a693db",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "CarFactory",
+    "sha256": "9491f8d66583f3e019e4b3539feaf6d6b91f303e061fd58556d17d5d8338161d",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "CarGrounding",
+    "sha256": "c479d7abdb62eb7e34a5bf8a005b0e88f7cca8fa2ff844cc5f0f97b21b1e459a",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "CarPreviewService",
+    "sha256": "3a27994d27d0d79721da6bce3162c7a8299dd7a11a061f7ff4c75120036c9847",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "CarTuning",
+    "sha256": "57e7fd31ea59cef4729bf81cfc831774cdcf66166533ceeb44f96492cf35658d",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "CarVisualLibrary",
+    "sha256": "b20fb268da573850f61e82695c64dc9e4ca42fce429f767c49e3cb7ef22777f6",
+    "v65_status": "modified"
+  },
+  {
+    "script": "CarVisuals",
+    "sha256": "3e25d2492220cbab786c1ea0dc5d25757ef0a8cbf83f91abce2b929a8b5afe76",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "Cars",
+    "sha256": "74a754cdddaddf384d4ac9ece47b7f6f1c187fe850fbc9fd0c402fbc9be4d733",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "CatalogOutfits",
+    "sha256": "23f1ec2f1e4a020db324ba28c0b95688521783cf5747ddbcbaaf298eb1a28d75",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "ClientMain",
+    "sha256": "1ccf381e37909b46814acb6812d72d319896ef8d07ad1f668efa10abd208ed91",
+    "v65_status": "modified"
+  },
+  {
+    "script": "ClientPerformance",
+    "sha256": "84724503ae8288f7a0eecc835aae9092895cb4a5aebe0ceff8501d1c66b4c176",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "CoinUpgradeConfig",
+    "sha256": "21c715a1791bc3f71d5f9cf4b85cc5b5e7ab5a5becbf1e5a10a55b305325c7b7",
+    "v65_status": "modified"
+  },
+  {
+    "script": "CollectibleArt",
+    "sha256": "7f75627eecdcee1dfdfa37e03c506a7e1abae19ba8aa9d5f90611c6a88b46a4e",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "CollisionService",
+    "sha256": "c4c6795abf2f9bb78313e11911f13741890670368eb56d1dbf9d2bbacaac84a8",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "CosmeticConfig",
+    "sha256": "8751c72c1cc4e502cb170e6e593bd5643eecec9c43e81ccace74ab06b4c194b9",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "CosmeticHUD",
+    "sha256": "ba654a79689486be9d8b1a027b20c1fb22c1f3055e2004676b679cd28599905c",
+    "v65_status": "modified"
+  },
+  {
+    "script": "CosmeticPreview",
+    "sha256": "639328845ffdf5c682bf423a74d5cefef79774a879503fe89bb2db67a5d2e67d",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "CosmeticService",
+    "sha256": "8035aa6d072e45ab7b19fec4df7868df1ba8ada7be0e3506a825211fe41638db",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "DataService",
+    "sha256": "792fb7b26004d33214d79a90c4baa1608f3fa31a04b137159c4db801ef962ceb",
+    "v65_status": "modified"
+  },
+  {
+    "script": "DeliveryBonus",
+    "sha256": "a2410fb2c4c6f54610711112dfafcff740633085dfb480804da9128307efa14a",
+    "v65_status": "added"
+  },
+  {
+    "script": "DeliveryService",
+    "sha256": "26e0419781eb0eb78dd3b8551a5ea12c43195f0a177f53814dbe0ac8d306f583",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "DistrictBuilder",
+    "sha256": "8fe286f347d71ca94ef45d27382374f3c2a381bb5c46887e022e7ab1b027bac3",
+    "v65_status": "modified"
+  },
+  {
+    "script": "DistrictManager",
+    "sha256": "6f085c9eaba0ac4c8d923f5b2295366b42b627588b90d21df3bb2bfe89333562",
+    "v65_status": "modified"
+  },
+  {
+    "script": "Districts",
+    "sha256": "8496bf2097611ca4c7c1804c5cd54b4f0e19aa82bf1d0c9ea32fdd6c02c3c3b3",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "DriveDynamics",
+    "sha256": "dd8ecde3e3b244ecb968877490eaee87708ae4bb5bf8620914c8f4f2ae513cfe",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "DrivePresentation",
+    "sha256": "5ebfbab9551d691694ac4f1bf6af96f05069373bf4cdd83f24a8ca820de23424",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "DriveService",
+    "sha256": "74969e30a0cf9c655885f04a26a8813a0a2f91a1f5ecf34e05dce84ebcb2b8e5",
+    "v65_status": "modified"
+  },
+  {
+    "script": "DriveState",
+    "sha256": "f0fd4234c907cfa262b1acb47df6a0acc277c12782d2391d407f3212bca9c6c6",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "EarningsLedger",
+    "sha256": "48e82c4063565e7ac6bf977a90476afb7b7e4f11ff4253a4bcf84109884f3f6e",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "EconomyBalance",
+    "sha256": "1b16cd4ba40f0c05675167bb71dde32959a163ef29ad531a983a93e47d1b39a4",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "EconomyHUD",
+    "sha256": "8143bef69f38dbc51fcef0e59298685b9e5d1d82402cf92f3d4e9d97b7af02db",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "EndlessParking",
+    "sha256": "6fdc10c0106190df28bc31463561420193d2baf07d00fb7c0d6706673f74de45",
+    "v65_status": "added"
+  },
+  {
+    "script": "GuardService",
+    "sha256": "2719da923ff9e2aa815a12bed111b061e0513bf82d4f74c0fc4f928a5cf762d1",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "HUDLayout",
+    "sha256": "f0a0cb210de42d430a65c5ef5d7657786906722ea6c7dbb99e20aa9c18c9769e",
+    "v65_status": "modified"
+  },
+  {
+    "script": "HackMath",
+    "sha256": "67ae9005e51a1d4228e1df2779114bf373bd8028821404a09bdd5e318d7c8951",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "HackModes",
+    "sha256": "8ed8e688081e3ec4ef9588df9fb1aca3814a643a0d3acbff171ff8c7d80a8054",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "HackRequirements",
+    "sha256": "799e6e1dd33b94c9e416f6a6d05ffdc27f4020cf971a8b0cfa0a5cfa65913de4",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "HackService",
+    "sha256": "fe2c2676d18f9cf1a7ca45c5bbd448ce90ff210eb2f109e98418d50a2bd7cb9a",
+    "v65_status": "modified"
+  },
+  {
+    "script": "HeistHUD",
+    "sha256": "bbf5ec9081ff10afcb1af76381f9a8ab819d572c1641c8998faa68c8cd18a189",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "HeistService",
+    "sha256": "ad70a7d18f06fecde8882d1e33f40269a03972dec3a9b130935b6b9a6847fbcd",
+    "v65_status": "modified"
+  },
+  {
+    "script": "Installer",
+    "sha256": "1e845781649cdfc62c570b4a5693d2fa8d1c54116a74bbc8186c97329a232cae",
+    "v65_status": "modified"
+  },
+  {
+    "script": "LanguageCatalog",
+    "sha256": "294385458d97ac6ffe42e5b9fb35d6e16fb2e74e1055133d851af9c08e7e06fa",
+    "v65_status": "modified"
+  },
+  {
+    "script": "LanguageController",
+    "sha256": "fe49371d319b3d6c7b373874e0fb7a38034e3fd6981de48b81f3a35a175d04b4",
+    "v65_status": "modified"
+  },
+  {
+    "script": "LanguageService",
+    "sha256": "b37e905a82e70f4343dc27ef9aacfc85e6fff76e86e49ab6c9075a7b84c480d2",
+    "v65_status": "modified"
+  },
+  {
+    "script": "Loot",
+    "sha256": "a0c110ee95caadc019d5dbec65c9f34b2b87b4d9f82e7c117ce0bb551e07ee6d",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "Main",
+    "sha256": "7e788d539fbc491ac328dcdc881bf83dde61afc02791f6502ec4db1f06bcc3cc",
+    "v65_status": "modified"
+  },
+  {
+    "script": "MarqueeController",
+    "sha256": "df193c35353c29df06d09ccfeef5e92ea725f7c7d061b2550c8ca2e54d275064",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "MenuViews",
+    "sha256": "06fdbf9f887701e82943de34a2a9dfaa6ea18ca420a21b92eea91bc793fdda67",
+    "v65_status": "modified"
+  },
+  {
+    "script": "MenuWidgets",
+    "sha256": "cac9c0e9f17749026b1f9f541680901e1c1dec233e99e05d45ed11eeb381b8d0",
+    "v65_status": "modified"
+  },
+  {
+    "script": "MonetizationConfig",
+    "sha256": "cc2572e1a71054061aa5fd4b1e754705c6161072f65997797f7c98973cd4870b",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "MonetizationService",
+    "sha256": "bf1c3c40419edb107dd985e41832a3e7c4981d08bb8743410de405a065746d90",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "MusicDirector",
+    "sha256": "48037bea9000ef68c1d8af2a8585b7087dc11bb5bc11fbc7724b48509e8af6b9",
+    "v65_status": "modified"
+  },
+  {
+    "script": "MusicScore",
+    "sha256": "e0d3b3f7157c42f343d0a61f89a08d62a38a04558d37efb2292de7ac3b036d45",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "NPCBody",
+    "sha256": "c63b687b1ff932445535c4cfb9b3b572571a16c20d786ef973dd545eb5610a7e",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "NPCNavigator",
+    "sha256": "0c257d816a62c1d46db21e6e683429d784fbd318c7673e03d829968fcb02376d",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "Net",
+    "sha256": "73009e19993af1f265b8e30990e554adecb6ee12c2eb2e32d372a1c48579be25",
+    "v65_status": "modified"
+  },
+  {
+    "script": "OwnerService",
+    "sha256": "235be9b89cbaca11941c056f0da932aaa728a3d1fa501bf2969ddbba70e33f36",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "ParkingService",
+    "sha256": "8bfbbc604942cba5e7af52f65099c4dfcfc712fe649c1c7f83e231937589f616",
+    "v65_status": "modified"
+  },
+  {
+    "script": "PetAnimationLibrary",
+    "sha256": "38ab1a9892f1be291f17f1963ddac3d9f1300da629cb8ab680ee4e4900f7fdf5",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "PetMount",
+    "sha256": "1440a5aa6b81609d41c24262b796e0de64672f46cf19d5e4302ed444e72f0a92",
+    "v65_status": "added"
+  },
+  {
+    "script": "PetVisualLibrary",
+    "sha256": "e17e656f85818f8a34067b14ed572734f1f4bdd3559864cb77e3037374774283",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "PoliceService",
+    "sha256": "0edc3928337239acbee7a1eca4ab009f26375ba197f7cb21ca9e781499c0ef1c",
+    "v65_status": "modified"
+  },
+  {
+    "script": "ProfileStore",
+    "sha256": "5013ca38ca1187a597ab6817ce94d0cdd75cedeb41c406bdff8beb96a585a092",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "Rarity",
+    "sha256": "a87ccb4aa2ad7011e1ba6ba03ab9aea77326aa2e57df14424b99796e7dec91a5",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "RoadChallengeHUD",
+    "sha256": "51df435998419bbe36ac2a01f597aaa4e0b86f5c9c029856f33b6c5191c9acee",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "RoadChallengeService",
+    "sha256": "98857613ea74552b6e1377a7c32eca98fdbd2bdec38a4e221bf8a0610985bc23",
+    "v65_status": "modified"
+  },
+  {
+    "script": "RoadEventService",
+    "sha256": "ef67cde97051f775428c05ea3f559a840be38d1d0e2e36953a0d619aac1c1821",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "RoadSteering",
+    "sha256": "ef67d19be57c2ec33a2903cd34a9484e734e8a02b182098acc5aab5271b01ac9",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "RoadsideArt",
+    "sha256": "0dd7b6e4013143be44f6f3490cbe2614c8bd450c98760661926ba0c000c7afcd",
+    "v65_status": "added"
+  },
+  {
+    "script": "RouteHUD",
+    "sha256": "6454c3b5a0e5e302132a0525158891e6a1b85204dd1bceaeb312d6bd2f346a95",
+    "v65_status": "modified"
+  },
+  {
+    "script": "SalonArtDirector",
+    "sha256": "abe71d104524a465a0c982654f74624f0da23e956ae0f2a8fffe8a8a6e1a9df1",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "SalonLayout",
+    "sha256": "09cbed314004f54dbf8de5d216f6e4b258a50fb3992a01620b1e0f019d90ece7",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "SalonService",
+    "sha256": "dce7aea713fc8ffa00c9b93f40a8f8ea1c34b65fd2825af0cd93cc23aca95c4a",
+    "v65_status": "modified"
+  },
+  {
+    "script": "SeasonLeaderboardService",
+    "sha256": "970c968308128f3905b868d1fd60151ca3062e4b4fc822603bd23fc3acd4043e",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "SecurityService",
+    "sha256": "da794259a2e1f1404f3ba5e2101898b890fcacbd985592b2deeb4a683a9a951d",
+    "v65_status": "modified"
+  },
+  {
+    "script": "Settings",
+    "sha256": "4db7c9caef5f095ff4c0f6acc68d3cdfa48f442c3bb4b258b7f316a5ba2f5c9b",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "ShelfPlacement",
+    "sha256": "99a7e41c53ad3716fb1ad0288130940e74c92cb8ba515b70bf9bc80262738057",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "ShelfTypography",
+    "sha256": "173b3dcd41bcc20f9778d43e66d93176fc23bd8af21cb9d056f32ac4e76e7063",
+    "v65_status": "added"
+  },
+  {
+    "script": "ShowcaseSelection",
+    "sha256": "c8cd38ca36ba357f90be370644a5120825927043e51717e1569fc6f174d02243",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "StreetLifeService",
+    "sha256": "0d1c681745149201a0f0ec071ad7b607cec21512c68e3cf6a0da019d8959c7f1",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "StudioTestProfile",
+    "sha256": "d0c1b6cb6c39babc394c47aa6fa0d336e369f284d450ef75606de4360a1cdbeb",
+    "v65_status": "modified"
+  },
+  {
+    "script": "TextTranslator",
+    "sha256": "93c220d7cf6036ae2f1a5c6b1da291d947c06e2fdb5f6521d6072c0a840e315a",
+    "v65_status": "modified"
+  },
+  {
+    "script": "TheftHUD",
+    "sha256": "2c9efcf8c461ad9960ff6890cfba2e23e31cbd81d69214526fb8690ce5ddd502",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "ThiefService",
+    "sha256": "8463ce842ed2559f32f53ec29c8cc6c5fd9f23b7e901e7b2b450dbdc9ea749a0",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "TrackBuilder",
+    "sha256": "a024c66d223d4a97296a7ab9e708504a89d6124f3965838d67a720505bb4d35a",
+    "v65_status": "modified"
+  },
+  {
+    "script": "TrackLayout",
+    "sha256": "b60268f5a59e7eb27dc7d2e0acc197a67515c0bcf481884cd526588d6b8b8d0d",
+    "v65_status": "modified"
+  },
+  {
+    "script": "TrackParts",
+    "sha256": "58bcb11873d9b2bc3ce3ff534169e23ac985ff4908cfc155f1f3d8273ca3e5ed",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "TutorialConfig",
+    "sha256": "5d8e0d03335e6620007653bfa9d2d8a1e9af27b541a56371f7d02ef6a4d2e080",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "TutorialHUD",
+    "sha256": "c851e1209c340b87e89f12a2a597a6afd6f31c264e13eb5be028c4c845753087",
+    "v65_status": "modified"
+  },
+  {
+    "script": "TutorialProgress",
+    "sha256": "a10fae033c6c3605bc8448d1bb2c810ab2e7950d0d16d3071d0eeee342b25418",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "TutorialService",
+    "sha256": "16291df6689e5fd86aa50024978856d7f9a58a6cc701cba56f58e73633c0fae0",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "UIIcons",
+    "sha256": "be9d6eaac56669a786a1c7381fab742ec0cb7742ecabec596e654134e7196027",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "UpgradeConfig",
+    "sha256": "969a9752915e3f851a189346ce1c2b8c0c542785c42d6abe6080ca19f3e98ca6",
+    "v65_status": "modified"
+  },
+  {
+    "script": "UpgradeService",
+    "sha256": "9fed7db4348ed76ac58531322074bfad9bcf6ec80f38831d53da6a4635631245",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "VIPConfig",
+    "sha256": "fe64ee1d1948dd41a2bc1f86e01200c378817b8eb149473b4a5695a88bf9f9eb",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "WardrobeService",
+    "sha256": "9974f23fe83c6c80d65a38d100ddb693a037f96f162ecaae38011d90677c62ed",
+    "v65_status": "unchanged"
+  },
+  {
+    "script": "WorldArtDirector",
+    "sha256": "eb8ca23ea5ae9884a3d9d84189050b669515d9e92bbed0b62ec23fb9e59a1192",
+    "v65_status": "modified"
+  }
+]
