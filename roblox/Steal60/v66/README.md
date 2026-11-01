@@ -1,5 +1,7 @@
 # Steal60 v66 · RU / EN
 
+Обновлено после [проверки замечаний v64](AUDIT-v64.md). Экономика, немедленное сохранение улучшений, US English, числовые формы и управление геймпадом доработаны; имя установщика и ветка сохранены.
+
 Один двуязычный установщик, восстановленный **из приложенного v65**, без использования недоступной сборки v66. RU/EN переключается внутри игры. Каталог из 150 автомобилей и идентификаторы сохранений сохранены.
 
 **Скачать:** откройте [Steal60_v66.rbxmx](Steal60_v66.rbxmx), затем нажмите **Download raw file** в правом верхнем углу просмотра файла GitHub. Не сохраняйте HTML-страницу GitHub вместо XML.
@@ -29,11 +31,11 @@
 - Конечные стены/ограничения пяти районов убраны. После 5 идут 6, 7 и далее со стабильным случайным выбором одной из пяти тем. Загрузчик держит соседние районы игроков, удалённые выгружает через прежнюю задержку 8 секунд. Защита от телепортации и проверка навыка сохранены.
 - В общих парковках районов 6+ обычные машины берутся из максимального класса, доступного ближайшему к месту игроку; допустимость модели и редкости проверяется по его навыку. Место №8 — сложная машина: требование не ниже `max(31, навык+1)`, с учётом находящихся рядом игроков. При взаимодействии сервер повторно повышает требование для конкретного игрока; исходная полицейская механика недостаточного навыка не обходится. Парковки общие, а не отдельные клиентские копии.
 - Золотое «В разработке» / «In development» появляется на секунду при въезде в 6+ и каждые 25 секунд. При активном модальном окне/взломе показ откладывается; управление надпись не перехватывает. На узких экранах маршрутная панель сдвигается ниже надписи.
-- `HarDvRaiN` получает однократный сброс прогресса **только в Studio** с новым флагом `studioFreshStartV66`. Очищаются монеты/касса, покупки, улучшения, коллекции, косметика, питомцы, полки и обучение. Алмазы, взлом/опыт, журнал платежей и настройки остаются. Старый тестовый подарок алмазов отключён. Live-хранилище остаётся `Steal60_PlayerData_v1`, Studio-хранилище — прежнее `Steal60_PlayerData_Studio_v62`.
+- `HarDvRaiN` получает однократный сброс прогресса **только в Studio** с новым флагом `studioFreshStartV66`. Очищаются монеты/касса, покупки, улучшения, коллекции, косметика, питомцы, полки и обучение. Алмазы, взлом/опыт, журнал платежей и настройки остаются. Код старого тестового подарка алмазов удалён. Live-хранилище остаётся `Steal60_PlayerData_v1`, Studio-хранилище — прежнее `Steal60_PlayerData_Studio_v62`.
 
 ## Проверки и границы результата
 
-См. [RESULTS.md](RESULTS.md) и [исходный журнал](tests/validation-output.txt). Компилировались **все 105 скриптов из конечного XML**, а сценарии выполнялись заново для этой сборки.
+См. [сверку замечаний и новые цены](AUDIT-v64.md), [RESULTS.md](RESULTS.md) и [исходный журнал](tests/validation-output.txt). Компилировались **все 109 скриптов из конечного XML**, а сценарии выполнялись заново для этой сборки.
 
 **Roblox Engine/Studio в облачной среде отсутствует.** Автоматические сценарии используют Luau и явно обозначенные тестовые двойники Roblox API. Они не подтверждают качество изображения, живую физику/репликацию, доступность аудио и внешних NPC-ассетов, настоящий DataStore или Marketplace. Перед публикацией игры выполните Studio-проверки из RESULTS.md. Ветка GitHub публикует установщик, но не публикует Roblox Experience.
 
@@ -41,6 +43,6 @@
 
 This is one bilingual installer rebuilt from the attached v65. Open [Steal60_v66.rbxmx](Steal60_v66.rbxmx) on GitHub and click **Download raw file**. Stop Studio, keep only one Steal60 installer container in Workspace, disable an already-installed old `ServerScriptService/Main`, and insert the downloaded file into Workspace using **Insert from File…**. Play to install; the new Main is enabled last. Keep the installer in the edit-time Place when saving/publishing because Play-time changes are reverted by Studio.
 
-RU/EN is an in-game toggle. The music-note button opens separately saved music volume/mute controls. Existing vehicle IDs, prices, save-store names and v65 payment/recovery mechanisms are retained. Helper speed purchase keys become additive delivery payout bonuses (+3 pp coin level, +4 pp diamond level; secondBot +15 pp for rare+). Districts continue beyond five with streamed cleanup, highest-unlocked-class ordinary cars and an intentionally harder police-trigger target. See the Russian change list above for all twelve requested changes.
+RU/EN is an in-game toggle. The music-note button opens separately saved music volume/mute controls. Existing vehicle IDs, save-store names, purchased levels and v65 payment/recovery mechanisms are retained. Approved economic adjustments are listed in [AUDIT-v64.md](AUDIT-v64.md). Helper speed purchase keys become additive delivery payout bonuses (+3 pp coin level, +4 pp diamond level; secondBot +15 pp for rare+). Districts continue beyond five with streamed cleanup, highest-unlocked-class ordinary cars and an intentionally harder police-trigger target. See the Russian change list above for all twelve requested changes.
 
-All final XML scripts compile; current-run Luau tests cover the new logic with explicit Roblox API test doubles. **No actual Roblox Engine was available.** Studio visuals, physics, live DataStore and Marketplace integration remain unverified. [RESULTS.md](RESULTS.md) provides the evidence and Studio acceptance checklist.
+The updated build adds immediate upgrade saves, separate currency cooldowns, a soft cap on base income before bonuses, lower ladder costs, American English, number inflection, adaptive modal scaling and native gamepad input. All 109 final XML scripts compile; current-run Luau tests cover the new logic with explicit Roblox API test doubles. **No actual Roblox Engine was available.** Studio visuals, physics, live DataStore and Marketplace integration remain unverified. [RESULTS.md](RESULTS.md) provides the evidence and Studio acceptance checklist.

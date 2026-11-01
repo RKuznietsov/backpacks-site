@@ -583,12 +583,12 @@ return Loot
 -- Цены задаются здесь, валидируются и списываются только на сервере.
 local U = {
     { id="speed", name="Скорость", description="+2,5 к скорости машины", base=12, growth=1.45, max=12 },
-    { id="income", name="Доход", description="+3% дохода полок", base=15, growth=1.52, max=15 },
+    { id="income", name="Доход", description="+3 п.п. к бонусу базового дохода после лимита", base=15, growth=1.20, max=15 },
     { id="botSpeed", name="Соучастник", description="+4 п.п. к выплате за доставку", base=14, growth=1.55, max=8 },
     { id="security", name="Охрана", description="Замедляет кражи игроков и ловит НПС", base=18, growth=1.65, max=5 },
     { id="shelves", name="Полки", description="+3 места для добычи", base=24, growth=1.75, max=2 },
     { id="till48h", name="Касса на 48 часов", description="Постоянная вместимость кассы вместо 12 ч", base=95, growth=1, max=1 },
-    { id="doubleIncome", name="Двойной доход", description="x2 дохода салона навсегда", base=150, growth=1, max=1 },
+    { id="doubleIncome", name="Двойной доход", description="x2 дохода салона навсегда", base=300, growth=1, max=1 },
     { id="fastRide", name="Спорт-двигатель", description="+25% скорость собственных машин", base=95, growth=1, max=1 },
     { id="masterThief", name="Мастер взлома", description="+8 п.п. к зоне успеха; уровень обязателен", base=130, growth=1, max=1 },
     { id="secondBot", name="Редкие доставки", description="+15 п.п. за редкую, эпическую или легендарную доставку", base=100, growth=1, max=1 },
@@ -627,10 +627,10 @@ C.Passes={
     {id="till48h",name="Касса 48 ч (старый пропуск)",assetId=0},
 }
 C.Products={
-    {id="gems50",name="250 алмазов",description="Первый образ или несколько усилений",diamonds=250,recommendedRobux=99,assetId=0},
-    {id="gems150",name="700 алмазов",description="Образ, ВИП или набор тюнинга",diamonds=700,recommendedRobux=249,assetId=0},
-    {id="gems400",name="1 500 алмазов",description="Основной набор для коллекции и усилений",diamonds=1500,recommendedRobux=500,featured=true,assetId=0},
-    {id="gems1000",name="3 300 алмазов",description="Большой набор с выгодой за объём",diamonds=3300,recommendedRobux=999,assetId=0},
+    {id="gems50",name="225 алмазов",description="Первый образ или несколько усилений",diamonds=225,recommendedRobux=99,assetId=0},
+    {id="gems150",name="630 алмазов",description="Образ, ВИП или набор тюнинга",diamonds=630,recommendedRobux=249,assetId=0},
+    {id="gems400",name="1 350 алмазов",description="Основной набор для коллекции и усилений",diamonds=1350,recommendedRobux=500,featured=true,assetId=0},
+    {id="gems1000",name="2 970 алмазов",description="Большой набор с выгодой за объём",diamonds=2970,recommendedRobux=999,assetId=0},
 }
 C.PassById,C.ProductById,C.ProductByAsset={},{},{}
 for _,v in ipairs(C.Passes) do C.PassById[v.id]=v end
@@ -843,10 +843,10 @@ return Req
               <string name="Name">CoinUpgradeConfig</string>
               <ProtectedString name="Source"><![CDATA[-- Free progression. Costs use ordinary earned coins; diamonds remain Robux-only.
 local U={
- {id="income",name="Увеличить доход",detail="+4% к доходу кассы",base=90,growth=1.9,max=24,icon="💵"},
+ {id="income",name="Увеличить доход",detail="+4 п.п. к бонусу базового дохода после лимита",base=90,growth=1.55,max=24,icon="💵"},
  {id="security",name="Улучшить охрану",detail="Замедляет налёты игроков и чаще ловит НПС",base=2400,growth=8,max=5,icon="🛡"},
- {id="speed",name="Доработать двигатель",detail="+1 к максимальной скорости",base=4500,growth=2.5,max=12,icon="🚗"},
- {id="botSpeed",name="Обучить помощника",detail="+3 п.п. к выплате за доставку",base=3000,growth=2.45,max=12,icon="👷"},
+ {id="speed",name="Доработать двигатель",detail="+1 к максимальной скорости",base=4500,growth=1.9,max=12,icon="🚗"},
+ {id="botSpeed",name="Обучить помощника",detail="+3 п.п. к выплате за доставку",base=3000,growth=1.9,max=12,icon="👷"},
  {id="shelves",name="Дополнительная полка",detail="+3 места для добычи в гараже",base=180000,growth=18,max=2,icon="📦"},
 }
 U.ById={}
@@ -928,7 +928,7 @@ M.List={
  -- Persistent in-game outfits sold once for diamonds. Legacy IDs remain valid.
  -- Legacy rows below are mapped to the curated catalog collection later in this module.
  {id="hero_premium_archon",category="hero",name="АРХОНТ-ЧАРОДЕЙ",description="Остроконечная шляпа, длинная мантия, кристальный посох и открытое лицо",price=580,color=C(25,28,47),accent=C(181,91,255),style="sentinel",silhouette="sentinel",tier=5,premiumDesign="archon"},
- {id="hero_premium_ronin",category="hero",name="САКУРА РОНИН",description="Кабуто, маска они с клыками, пластинчатая броня и катаны",price=670,color=C(30,38,53),accent=C(255,65,140),style="ronin",silhouette="ronin",tier=5,premiumDesign="ronin"},
+ {id="hero_premium_ronin",category="hero",name="САКУРА РОНИН",description="Шлем кабуто, театральная маска, декоративные пластины и дорожный свиток",price=670,color=C(30,38,53),accent=C(255,65,140),style="ronin",silhouette="ronin",tier=5,premiumDesign="ronin"},
  {id="hero_premium_seraph",category="hero",name="НЕБЕСНЫЙ СЕРАФИМ",description="Твоё лицо и причёска, перламутровые крылья, нимб и светлая накидка",price=760,color=C(216,223,235),accent=C(78,201,255),style="astral",silhouette="astral",tier=5,premiumDesign="seraph"},
  {id="hero_premium_mech",category="hero",name="АКВАПИЛОТ",description="Обтекаемая броня, парные турбины и мятные световые вставки",price=850,color=C(38,87,111),accent=C(67,240,229),style="pilot",silhouette="pilot",tier=5,premiumDesign="mech"},
  {id="hero_premium_phoenix",category="hero",name="СОЛНЕЧНЫЙ ФЕНИКС",description="Птичий шлем с клювом, золотые перья и янтарные крылья",price=950,color=C(84,33,32),accent=C(255,174,51),style="solar",silhouette="solar",tier=5,premiumDesign="phoenix"},
@@ -1102,7 +1102,7 @@ return M
           </Properties>
         </Item>
         <Item class="ModuleScript" referent="RBX_STEAL60_V58_EconomyBalance"><Properties><string name="Name">EconomyBalance</string><ProtectedString name="Source"><![CDATA[-- All ordinary income boosts add percentage points; no bonus-on-bonus explosion.
-local M={VERSION=62,POLICE_FINE_RATE=.05,PASSIVE_DIVISOR=8,PASSIVE_SOFT_START=1200,PASSIVE_SOFT_SCALE=800}
+local M={VERSION=66,POLICE_FINE_RATE=.05,PASSIVE_DIVISOR=8,PASSIVE_SOFT_START=1200,PASSIVE_SOFT_SCALE=800}
 function M.baseIncome(raw)return math.max(0,raw or 0)/M.PASSIVE_DIVISOR end
 function M.passiveRate(raw)
  local scaled=M.baseIncome(raw)
@@ -1117,7 +1117,7 @@ end
 function M.income(base,showcase,premium,coins,partsPct,cosmeticsPct,multiplier)
  local bonus=math.max(0,showcase)+.03*math.max(0,premium)+.04*math.max(0,coins)
  bonus+=math.max(0,partsPct)/100+math.max(0,cosmeticsPct)/100
- return M.passiveRate(math.max(0,base)*(1+bonus))*math.max(1,multiplier or 1)
+ return M.passiveRate(math.max(0,base))*(1+bonus)*math.max(1,multiplier or 1)
 end
 function M.showcaseBonus(rarity,variant,stars)
  local strength=({common=.010,rare=.020,epic=.035,legendary=.050})[rarity]or .01
@@ -1357,9 +1357,9 @@ local function premiumDress(rig,def,opts)
     O(head,'SweptKabutoHorn',Vector3.new(.18-i*.02,.29,.19),CFrame.new(s*(hw*.37+i*.105),hh*(.60+i*.14),-.03)*CFrame.Angles(0,0,-s*(.18+i*.2)),trim,Enum.Material.Metal)
     T('LacquerWaistPlate',Vector3.new(tw*.39,.14,.15),CFrame.new(s*tw*.29,-th*(.35+i*.11),-tz*.56)*CFrame.Angles(0,0,s*.09),i%2==0 and primary or dark,Enum.Material.Metal)
    end
-   local a=Vector3.new(s*tw*.47,th*.90,tz*.88);local b=Vector3.new(-s*tw*.33,-th*.78,tz*.88)
-   tube(torso,'CrossedScabbard',a,b,.16,dark)
-   tube(torso,'KatanaGrip',a,a+(a-b).Unit*.49,.19,trim)
+   local a=Vector3.new(s*tw*.35,th*.45,tz*.9);local b=Vector3.new(s*tw*.35,-th*.45,tz*.9)
+   tube(torso,'TravelScrollCase',a,b,.32,primary)
+   O(torso,'ScrollCaseCap',Vector3.new(.36,.12,.36),CFrame.new(a),trim)
    O(torso,'SashKnot',Vector3.new(.30,.26,.20),CFrame.new(s*.11,-th*.43,-tz*.83),accent)
    T('SplitCoatTail',Vector3.new(tw*.49,th*1.2,.13),CFrame.new(s*tw*.35,-th*.62,tz*.66)*CFrame.Angles(0,0,s*.11),primary,Enum.Material.Fabric,nil,'WedgePart')
   end
@@ -1738,7 +1738,7 @@ local function dress(rig, def, opts)
             for i=1,3 do stud('Void_rune_'..i,0,.39-i*.29,front-.48,.12,accent) end
             A('Hanging_talisman',Vector3.new(.18,.47,.12),CFrame.new(0,-th*.57,front-.28),brass)
         elseif d=='ronin' then
-            -- Kabuto, crossed wakizashi, serrated mouth mask, armour lamellae.
+            -- Kabuto costume, travel pouches, theatrical mask and decorative panels.
             B('Kabuto_vertical_crest',Vector3.new(.10,.51,.76),CFrame.new(0,hh*.83,-.02),brass)
             for _,side in ipairs({-1,1}) do
                 B('Oni_cheek_fang_'..side,Vector3.new(.14,.30,.15),CFrame.new(side*.34,-hh*.31,hfront-.29)*CFrame.Angles(0,0,side*.28),silver)
@@ -1747,11 +1747,7 @@ local function dress(rig, def, opts)
                     A('Ronin_waist_sash_'..side..'_'..i,Vector3.new(.44,.18,.22),
                       CFrame.new(side*(tw*.29),-th*(.33+i*.085),front-.13),i%2==0 and primary or trim,Enum.Material.Fabric)
                 end
-                A('Blade_grip_'..side,Vector3.new(.23,.61,.23),CFrame.new(side*tw*.43,th*.86,tz*.84)*CFrame.Angles(0,0,side*.39),ash)
-                for j=1,4 do
-                    A('Grip_wrapping_'..side..j,Vector3.new(.26,.06,.25),CFrame.new(side*tw*.43,th*(.60+j*.10),tz*.84)*CFrame.Angles(0,0,side*.39),ruby)
-                end
-                A('Sword_guard_'..side,Vector3.new(.57,.11,.25),CFrame.new(side*tw*.42,th*.53,tz*.84)*CFrame.Angles(0,0,side*.39),brass)
+                A('Travel_pouch_'..side,Vector3.new(.45,.65,.28),CFrame.new(side*tw*.46,-th*.15,tz*.78),primary,Enum.Material.Fabric)
                 armDetail(side,'LowerArm',Vector3.new(.65,.25,.66),CFrame.new(0,-.27,0),ruby)
             end
             A('Samurai_chest_scales',Vector3.new(.93,.72,.18),CFrame.new(0,.02,front-.28),ink)
@@ -4587,7 +4583,7 @@ function M.create(parent, itemId, at, accent, isOwned, yaw)
             frontDisc("Левая катушка",.24,.05,Vector3.new(-.52,.00,-.48),steel)
             frontDisc("Правая катушка",.24,.05,Vector3.new(.07,.00,-.48),steel)
         else
-            screen("FM дисплей",1.21,.49,Vector3.new(-.23,.08,-.41),color)
+            screen("Дисплей радио",1.21,.49,Vector3.new(-.23,.08,-.41),color)
             for j=0,3 do
                 box("Кнопка памяти "..j,Vector3.new(.17,.10,.07),Vector3.new(-.65+j*.25,-.32,-.39),black)
             end
@@ -4786,7 +4782,7 @@ function M.start(gui)
   previousDistrict=district
   banner.Visible=district>5 and now<noticeUntil and not M.suppressHud(player)
   player:SetAttribute('Steal60DevelopmentNotice',banner.Visible)
-  local route=gui:FindFirstChild('RoutePanel');if route then route.Position=UDim2.new(1,-18,0,banner.Visible and width<980 and 110 or 66)end
+  local route=gui:FindFirstChild('RoutePanel');if route then route.Size=UDim2.fromOffset(math.min(300,width-24),88);route.Position=UDim2.new(1,-18,0,banner.Visible and width<980 and 110 or 66)end
   sync()
  end)
 end
@@ -4944,10 +4940,10 @@ local function upgrades(parent,data,a)
  W.header(parent,'ПРОКАЧКА САЛОНА',"Монеты зарабатываются в игре. Алмазы ускоряют выбор; уровень взлома растёт только за ОПЫТ.")
  W.summary(parent,{{'МОНЕТЫ',W.fmt(data.money)},{'АЛМАЗЫ',W.fmt(data.diamonds)},{'ВЗЛОМ',tostring(data.hackLevel)..' ур.'}})
  for _,section in ipairs({{title='ЗА МОНЕТЫ',rows=data.coinUpgrades or{},currency='$',key='coin'},{title='ЗА АЛМАЗЫ',rows=data.upgrades or{},currency='💎',key='diamond'}})do
-  W.header(parent,section.title,section.key=='coin'and'Цена растёт по мере развития. Выбирай то, что нужно сейчас.'or'Постоянные улучшения. Ограничение уровня машин сохраняется.')
+  W.header(parent,section.title,section.key=='coin'and'Доход после мягкого лимита базы; бонусы складываются. Следующая строка показывает фактический итог.'or'Постоянные улучшения. Ограничение уровня машин сохраняется.')
   for _,item in ipairs(section.rows)do
    local balance=section.key=='coin'and data.money or data.diamonds
-   W.card(parent,{kind=icon[item.id]or'coins',title=item.name,description=item.description or item.detail,effects='Сейчас: '..(item.currentEffect or'')..'\nДалее: '..(item.nextEffect or''),value=('УРОВЕНЬ %d / %d'):format(item.level,item.max),progress={item.level,item.max},action=item.cost and('УЛУЧШИТЬ · '..W.fmt(item.cost)..' '..section.currency)or'МАКСИМАЛЬНЫЙ УРОВЕНЬ',enabled=item.cost~=nil and(balance or 0)>=item.cost,click=function()invoke(a,section.key,item.id)end})
+   W.card(parent,{kind=icon[item.id]or'coins',title=item.name,description=item.description or item.detail,effects='Сейчас: '..(item.currentEffect or'')..'\nДалее: '..(item.nextEffect or''),value=('УРОВЕНЬ %d / %d'):format(item.level,item.max),progress={item.level,item.max},action=item.cost and('УЛУЧШИТЬ · '..W.fmt(item.cost)..' '..section.currency)or(item.blockedReason or'МАКСИМАЛЬНЫЙ УРОВЕНЬ'),enabled=item.cost~=nil and(balance or 0)>=item.cost,click=function()invoke(a,section.key,item.id)end})
   end
  end
  W.header(parent,'МАСТЕРСТВО ГЕРОЯ И ПИТОМЦА','Бонус сохраняется при смене облика. Каждый +1% стоит 20 алмазов; монетная цена растёт.')
@@ -5047,46 +5043,11 @@ function M.change(current,owned,valid,limit,incoming,outgoing)
  list[#list+1]=incoming;return list,'added'
 end
 return M
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_STEAL60_V64_LanguageCatalog"><Properties><string name="Name">LanguageCatalog</string><ProtectedString name="Source"><![CDATA[-- One canonical Russian source, one reviewed English translation. IDs are never translated.
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_STEAL60_V64_LanguageCatalog"><Properties><string name="Name">LanguageCatalog</string><ProtectedString name="Source"><![CDATA[-- Canonical RU source -> American English. Noun inflection is presentation-only in Grammar.
 return {
- ["Стик — ходьба · нажми на действие"]="Stick — move · tap an action",
- ["W/A/S/D — ходьба · E — действие"]="W/A/S/D — move · E — interact",
- ["Кнопки газа и руля — езда · R — выровнять"]="Throttle and steering buttons — drive · R — recover",
- ["W/S — газ · A/D — руль · R — выровнять"]="W/S — throttle · A/D — steer · R — recover",
- ["Бонус монет +%d%%"]="Coin bonus +%d%%",
- ["Сейчас: %s"]="Current: %s",
- ["Далее: %s"]="Next: %s",
- ["В разработке"]="In development",
- ["Редкие доставки"]="Rare deliveries",
- ["+3 п.п. к выплате за доставку"]="+3 percentage points to delivery payout",
- ["+4 п.п. к выплате за доставку"]="+4 percentage points to delivery payout",
- ["+15 п.п. за редкую, эпическую или легендарную доставку"]="+15 percentage points for rare, epic or legendary deliveries",
- ["Громкость музыки: %d%%"]="Music volume: %d%%",
- ["ВКЛ/ВЫКЛ"]="ON/OFF",
- ["Сейчас: "]="Current: ",
- ["Далее: "]="Next: ",
- ["Доход полок +%d%%"]="Shelf income +%d%%",
- ["Доставка +%d п.п.; редкая+ +%d п.п."]="Delivery +%d pp; rare+ +%d pp",
- ["Скорость %.1f студ/с"]="Speed %.1f studs/s",
- ["Охрана %d/5; НПС %d%%; удержание %.1f с"]="Security %d/5; NPC %d%%; hold %.1f s",
- ["Мест на полках: %d"]="Shelf capacity: %d",
- ["Зона успеха +%d п.п."]="Success zone +%d pp",
- ["Автокасса: каждые 15 с"]="Auto collect: every 15 s",
- ["Автокасса: выключена"]="Auto collect: off",
- ["Вместимость кассы: %d ч"]="Till capacity: %d h",
- ["Множитель дохода: x%d"]="Income multiplier: x%d",
- [" · Доход в час: %s $"]=" · Income per hour: %s $",
- ["Доход в час: %s $"]="Income per hour: %s $",
- ["Максимум"]="Maximum",
- ["Копии: "]="Copies: ",
- ["Коллекционная деталь"]="Collectible part",
- ["не найдена"]="not found",
-
- ["Салон уже занят налётом."]="This showroom is already being raided.",
- ["Сохранение недоступно. Налёт не завершён."]="Saving is unavailable. The raid was not completed.",
- ["Налёт отменён: подойди к машине снова."]="Raid cancelled: approach the car again.",
- ["Налёт сохранён. Начисление ожидает подтверждения."]="Raid saved. Your reward is awaiting confirmation.",
-
+ ["Достигнут предел скорости. Эта покупка больше не даст прибавки."]="Speed limit reached. This purchase would no longer improve your speed.",
+ ["ДОСТИГНУТ ПРЕДЕЛ СКОРОСТИ"]="SPEED LIMIT REACHED",
+ ["Бонус базового дохода +%d п.п."]="Base income bonus +%d pp",
  [" $/ч"]=" $/h",
  [" $/ч за штуку"]=" $/h each",
  [" %s · %s · +%s $/ч"]=" %s · %s · +%s $/h",
@@ -5095,6 +5056,7 @@ return {
  [" (только тестовая сессия)"]=" (test session only)",
  [" · 20 сек. Покупка не выполнялась."]=" · 20 sec. Nothing was purchased.",
  [" · ВОРОВСТВО УР. "]=" · THEFT LEVEL ",
+ [" · Доход в час: %s $"]=" · Income per hour: %s $",
  [" · Коллекция полностью прокачана"]=" · Collection fully upgraded",
  [" · МАКС"]=" · MAX",
  [" · НОВИНКА"]=" · NEW",
@@ -5123,7 +5085,7 @@ return {
  [" ур."]=" lvl",
  [" ч"]=" h",
  ["! Баланс алмазов обновлён."]="! Diamond balance updated.",
- ["$ %s  ·  💎 %s   |   БОНУСЫ — НА ВСЕ МОНЕТЫ И КАССУ"]="$ %s  ·  💎 %s   |   BONUSES APPLY TO ALL COINS AND THE TILL",
+ ["$ %s  ·  💎 %s   |   БОНУСЫ — НА ВСЕ МОНЕТЫ И КАССУ"]="$ %s  ·  💎 %s   |   BONUSES APPLY TO ALL COINS AND THE REGISTER",
  ["$ %s · %s/ч · 💎 %s"]="$ %s · %s/h · 💎 %s",
  ["% к монетам"]="% coins",
  ["%.1f млн"]="%.1fM",
@@ -5137,21 +5099,26 @@ return {
  ["%s · МАШИНА +%s$%s"]="%s · CAR +%s$%s",
  ["%s: %d/%d · потрачено %d $."]="%s: %d/%d · spent %d $.",
  ["%s: ★ %d/5 · +%d%% дохода предмета!"]="%s: ★ %d/5 · +%d%% item income!",
- ["+%d%% / +%d%% ко ВСЕМ монетам и доходу кассы"]="+%d%% / +%d%% to ALL coins and till income",
- ["+%d%% денег за угон · +%d%% ОПЫТ · касса %d ч."]="+%d%% theft coins · +%d%% XP · %d h till",
+ ["+%d%% / +%d%% ко ВСЕМ монетам и доходу кассы"]="+%d%% / +%d%% to ALL coins and register income",
+ ["+%d%% денег за угон · +%d%% ОПЫТ · касса %d ч."]="+%d%% theft coins · +%d%% XP · %d h register",
  ["+0% к деньгам за угоны"]="+0% theft earnings",
  ["+1 к максимальной скорости"]="+1 maximum speed",
  ["+1% ЗА 20 АЛМАЗОВ"]="+1% FOR 20 DIAMONDS",
  ["+1% ЗА МОНЕТЫ · "]="+1% FOR COINS · ",
+ ["+15 п.п. за редкую, эпическую или легендарную доставку"]="+15 percentage points for rare, epic or legendary deliveries",
  ["+2,5 к скорости машины"]="+2.5 car speed",
  ["+25% скорость собственных машин"]="+25% owned car speed",
  ["+3 места для добычи"]="+3 loot spaces",
  ["+3 места для добычи в гараже"]="+3 garage loot spaces",
+ ["+3 п.п. к бонусу базового дохода после лимита"]="+3 percentage points to the base income bonus after the soft cap",
+ ["+3 п.п. к выплате за доставку"]="+3 percentage points to delivery payout",
  ["+3% дохода полок"]="+3% shelf income",
- ["+30% монет за угон, +25% ОПЫТ и касса на 48 часов. Доступ к машинам определяется твоим уровнем."]="+30% theft coins, +25% XP and a 48-hour till. Your level determines which cars you can hack.",
- ["+4% к доходу кассы"]="+4% till income",
+ ["+30% монет за угон, +25% ОПЫТ и касса на 48 часов. Доступ к машинам определяется твоим уровнем."]="+30% theft coins, +25% XP and a 48-hour register. Your level determines which cars you can hack.",
+ ["+4 п.п. к бонусу базового дохода после лимита"]="+4 percentage points to the base income bonus after the soft cap",
+ ["+4 п.п. к выплате за доставку"]="+4 percentage points to delivery payout",
+ ["+4% к доходу кассы"]="+4% register income",
  ["+8 п.п. к зоне успеха; уровень обязателен"]="+8 percentage points to the success zone; required level still applies",
- ["+монеты за доставку · %s уже на полке.\nТеперь он приносит деньги в кассу у входа."]="+delivery coins · %s is on your shelf.\nIt now earns money in the till by your entrance.",
+ ["+монеты за доставку · %s уже на полке.\nТеперь он приносит деньги в кассу у входа."]="+delivery coins · %s is on your shelf.\nIt now earns money in the register by your entrance.",
  [", деньги = "]=", coins = ",
  [". Дубликаты улучшают звёзды."]=". Duplicates upgrade its stars.",
  ["/5 одинаковых копий"]="/5 matching copies",
@@ -5161,20 +5128,26 @@ return {
  ["03 / ПРИГОРОД"]="03 / HILLS",
  ["04 / ЗОЛОТОЙ БЕРЕГ"]="04 / GOLD COAST",
  ["05 / НЕОНОВАЯ БУХТА"]="05 / NEON BAY",
+ ["1 350 алмазов"]="1,350 diamonds",
  ["1 500 алмазов"]="1,500 diamonds",
+ ["2 970 алмазов"]="2,970 diamonds",
  ["2 точных взлома"]="2 precise hacks",
+ ["225 алмазов"]="225 diamonds",
  ["250 алмазов"]="250 diamonds",
  ["3 300 алмазов"]="3,300 diamonds",
  ["60 СЕК"]="60 SEC",
  ["60 СЕК   /   АВТОПРИКЛЮЧЕНИЕ"]="60 SEC   /   ROAD TRIP",
+ ["630 алмазов"]="630 diamonds",
  ["700 алмазов"]="700 diamonds",
  ["Piko 90 · учебная машина"]="Piko 90 · tutorial car",
  ["Roblox не завершил примерку. Возвращаем твой внешний вид; покупка не выполнялась."]="Roblox could not finish the preview. Restoring your appearance; nothing was purchased.",
  ["Roblox не завершил смену внешности. Попробуй ещё раз."]="Roblox did not finish changing your appearance. Try again.",
  ["Roblox не загрузил этот образ"]="Roblox could not load this look",
  ["Roblox не применил образ. Возвращён твой аватар."]="Roblox could not apply the look. Your avatar was restored.",
+ ["W/A/S/D — ходьба · E — действие"]="W/A/S/D — move · E — interact",
  ["W/S — газ  ·  A/D — руль  ·  R — выровнять"]="W/S — drive  ·  A/D — steer  ·  R — reset",
- ["W/S — газ и тормоз, A/D — руль. Езжай к зелёной парковке СВОЕГО салона и полностью остановись. Если застрял, используй возврат машины."]="W/S — accelerate and brake, A/D — steer. Drive into YOUR showroom's green parking bay and stop completely. If you get stuck, use the car reset.",
+ ["W/S — газ · A/D — руль · R — выровнять"]="W/S — throttle · A/D — steer · R — recover",
+ ["W/S — газ и тормоз, A/D — руль. Езжай к зелёной парковке СВОЕГО салона и полностью остановись. Если застрял, используй возврат машины."]="W/S — accelerate and brake, A/D — steer. Drive into YOUR garage's green parking bay and stop completely. If you get stuck, use the car reset.",
  ["[CarFactory] у модели "]="[CarFactory] model ",
  ["[DataService] Studio: DataStore недоступен, использую временный профиль (не сохраняется). Проверь Experience Settings > Security > Enable Studio Access to API Services и что игра опубликована."]="[DataService] Studio: DataStore unavailable; using a temporary profile that will not save. Check Experience Settings > Security > Enable Studio Access to API Services and publish the experience.",
  ["[DataService] Данные получены для "]="[DataService] Data received for ",
@@ -5184,14 +5157,13 @@ return {
  ["[DataService] попытка %d/%d не удалась: %s"]="[DataService] attempt %d/%d failed: %s",
  ["[DistrictManager] ошибка постройки района "]="[DistrictManager] Failed to build district ",
  ["[ParkingService] нет машин класса "]="[ParkingService] No cars in class ",
- ["[Steal60 v64 RU] Установлено: кнопка с нотой, предзагрузка музыки, быстрое переключение при взломе и полностью русский игровой текст."]="[Steal60 v64] Installed: visible music note toggle, preloaded soundtrack, instant heist transitions and fully localized game content.",
+ ["[Steal60 v64 RU] Установлено: кнопка с нотой, предзагрузка музыки, быстрое переключение при взломе и полностью русский игровой текст."]="[Steal60 v64] Installed: visible music note toggle, preloaded soundtrack, instant car theft transitions and fully localized game content.",
  ["[Steal60/Delivery] Сдача автомобиля без водителя: рамка парковки, остановка 0.65 сек"]="[Steal60/Delivery] Driverless delivery: park fully inside the bay and stop for 0.65 sec",
- ["[Steal60/TestDiamonds] Однократно выдано %d алмазов разработчику %s (%d)"]="[Steal60/TestDiamonds] One-time grant: %d developer diamonds for %s (%d)",
  ["[Steal60] Main запущен"]="[Steal60] Main started",
  ["[Steal60] Данные загружены: "]="[Steal60] Data loaded: ",
  ["[Steal60] Жду данные игрока "]="[Steal60] Waiting for player data: ",
  ["x2 доход (старый пропуск)"]="x2 income (legacy pass)",
- ["x2 дохода салона навсегда"]="x2 showroom income forever",
+ ["x2 дохода салона навсегда"]="x2 garage income forever",
  ["· ВИТРИНА "]="· DISPLAY ",
  ["· КОЛЛЕКЦИЯ"]="· COLLECTION",
  ["Ёлочка-ароматизатор"]="Pine Air Freshener",
@@ -5204,7 +5176,9 @@ return {
  ["АТЕЛЬЕ 60  ·  ПРЕМИАЛЬНЫЕ ОБРАЗЫ"]="ATELIER 60  ·  PREMIUM LOOKS",
  ["АУРА"]="AURA",
  ["Аворо Сити"]="Avoro City",
- ["Автокасса"]="Auto Till",
+ ["Автокасса"]="Auto Register",
+ ["Автокасса: выключена"]="Auto collect: off",
+ ["Автокасса: каждые 15 с"]="Auto collect: every 15 s",
  ["Автомобиль"]="Car",
  ["Автосбор (старый пропуск)"]="Auto collect (legacy pass)",
  ["Аерион Елевен"]="Aerion Eleven",
@@ -5239,23 +5213,25 @@ return {
  ["Белта Туринг"]="Belta Touring",
  ["Боковые пороги"]="Side Skirts",
  ["Большой набор с выгодой за объём"]="A larger pack with better value",
+ ["Бонус монет +%d%%"]="Coin bonus +%d%%",
  ["Бонус сохраняется при смене облика. Каждый +1% стоит 20 алмазов; монетная цена растёт."]="Your bonus stays when you change looks. Each +1% costs 20 diamonds; coin prices increase.",
  ["Боро 80"]="Boro 80",
  ["Бурнер Сикс"]="Burner Six",
  ["Быстрая машина (старый пропуск)"]="Fast car (legacy pass)",
  ["Быстрее возвращает машину"]="Returns your car faster",
- ["В кассе недостаточно денег для кражи."]="The till does not have enough money for a raid.",
- ["В кассе пока пусто."]="The till is empty for now.",
- ["В кассе: %s $ · копит до %d ч (вкл. офлайн)"]="Till: %s $ · holds up to %d h (including offline)",
- ["В учебном налёте касса не пострадала. Воришка вернётся — попробуй удержать E рядом с ним."]="Your till was safe during the practice raid. The thief will return — try holding E nearby.",
- ["В чужой кассе почти нет налички. Выбери другой салон."]="The other till has very little cash. Choose another showroom.",
- ["В этом салоне сейчас нельзя совершить кражу."]="This showroom cannot be raided right now.",
+ ["В кассе недостаточно денег для кражи."]="The register does not have enough money for a raid.",
+ ["В кассе пока пусто."]="The register is empty for now.",
+ ["В кассе: %s $ · копит до %d ч (вкл. офлайн)"]="Register: %s $ · holds up to %d h (including offline)",
+ ["В разработке"]="In development",
+ ["В учебном налёте касса не пострадала. Воришка вернётся — попробуй удержать E рядом с ним."]="Your register was safe during the practice raid. The thief will return — try holding E nearby.",
+ ["В чужой кассе почти нет налички. Выбери другой салон."]="The other register has very little cash. Choose another garage.",
+ ["В этом салоне сейчас нельзя совершить кражу."]="This garage cannot be raided right now.",
  ["ВАРИАЦИИ АВТОМОБИЛЯ"]="CAR VARIANTS",
  ["ВЕРНУТЬ МОЙ АВАТАР"]="RESTORE MY AVATAR",
  ["ВЗЛОМ"]="HACKING",
  ["ВИП"]="VIP",
  ["ВИП (старый пропуск)"]="VIP (legacy pass)",
- ["ВИП 1/7/30 дней: +30% монеты за угон, +25% ОПЫТ, касса 48 ч. Покупка у ВИП-НПС в своём салоне за алмазы."]="VIP for 1/7/30 days: +30% theft coins, +25% XP, 48 h till. Buy from your VIP vendor with diamonds.",
+ ["ВИП 1/7/30 дней: +30% монеты за угон, +25% ОПЫТ, касса 48 ч. Покупка у ВИП-НПС в своём салоне за алмазы."]="VIP for 1/7/30 days: +30% theft coins, +25% XP, 48 h register. Buy from your VIP vendor with diamonds.",
  ["ВИП · 1 ДЕНЬ"]="VIP · 1 DAY",
  ["ВИП · 30 ДНЕЙ"]="VIP · 30 DAYS",
  ["ВИП · 7 ДНЕЙ"]="VIP · 7 DAYS",
@@ -5265,12 +5241,13 @@ return {
  ["ВИП БЕЗ ОБЯЗАТЕЛЬНОЙ ПОДПИСКИ"]="VIP WITHOUT A REQUIRED SUBSCRIPTION",
  ["ВИП БЕССРОЧНО"]="PERMANENT VIP",
  ["ВИП НЕ АКТИВЕН"]="VIP INACTIVE",
- ["ВИП активирован на %d дн. · +%d%% монеты за угон · +%d%% ОПЫТ · касса %d ч.%s"]="VIP active for %d days · +%d%% theft coins · +%d%% XP · %d h till.%s",
+ ["ВИП активирован на %d дн. · +%d%% монеты за угон · +%d%% ОПЫТ · касса %d ч.%s"]="VIP active for %d days · +%d%% theft coins · +%d%% XP · %d h register.%s",
  ["ВИП: АКТИВЕН · %d дн. осталось"]="VIP: ACTIVE · %d days left",
  ["ВИП: БЕССРОЧНЫЙ (старый пропуск)"]="VIP: PERMANENT (legacy pass)",
  ["ВИП: НЕ АКТИВЕН"]="VIP: INACTIVE",
  ["ВИТРИНА "]="DISPLAY ",
  ["ВКЛ"]="ON",
+ ["ВКЛ/ВЫКЛ"]="ON/OFF",
  ["ВКЛЮЧИТЬ АВТОМАТИЧЕСКУЮ ВИТРИНУ"]="ENABLE AUTOMATIC DISPLAY",
  ["ВПЕРЕДИ САЛОНЫ / ТВОЙ ГАРАЖ"]="SALONS AHEAD / OWN GARAGE",
  ["ВЫБЕРИ: "]="CHOOSE: ",
@@ -5288,7 +5265,7 @@ return {
  ["Венто Спринт"]="Vento Sprint",
  ["Верлайн Туринг"]="Verlain Touring",
  ["Верни тачку!"]="Give my car back!",
- ["Вернись к салону. Воришка подойдёт с улицы через вход. Подойди к нему в пределах видимости и удерживай E «ПРОГНАТЬ». В учебном налёте деньги из кассы не теряются."]="Return to your showroom. The thief approaches through the street entrance. Get close with a clear line of sight and hold E to CHASE AWAY. Practice raids do not take any till money.",
+ ["Вернись к салону. Воришка подойдёт с улицы через вход. Подойди к нему в пределах видимости и удерживай E «ПРОГНАТЬ». В учебном налёте деньги из кассы не теряются."]="Return to your garage. The thief approaches through the street entrance. Get close with a clear line of sight and hold E to CHASE AWAY. Practice raids do not take any register money.",
  ["Вернуть свою одежду, лицо и аксессуары. Костюмы остаются в коллекции."]="Restore your own clothes, face and accessories. Purchased looks stay in your collection.",
  ["Верро Севен"]="Verro Seven",
  ["Веспер Гранд"]="Vesper Grand",
@@ -5303,27 +5280,28 @@ return {
  ["Виллы"]="Villas",
  ["Витрина (старый пропуск)"]="Display (legacy pass)",
  ["Витрина изменилась. Открой выбор замены ещё раз."]="The display changed. Open the replacement chooser again.",
- ["Витрина пуста. МЕНЮ → КАТАЛОГ → ОСТАВИТЬ НА ВИТРИНЕ, затем нажми «Поехать» у машины."]="Your display is empty. MENU → CATALOGUE → KEEP ON DISPLAY, then press Drive by the car.",
+ ["Витрина пуста. МЕНЮ → КАТАЛОГ → ОСТАВИТЬ НА ВИТРИНЕ, затем нажми «Поехать» у машины."]="Your display is empty. MENU → CATALOG → KEEP ON DISPLAY, then press Drive by the car.",
  ["Витринный пьедестал"]="Display Plinth",
  ["Вйксен Темпест"]="Vyxen Tempest",
  ["Вйлакс Спайдер"]="Vylax Spider",
  ["Владелец машины"]="Car owner",
+ ["Вместимость кассы: %d ч"]="Register capacity: %d h",
  ["Вместимость по текущему доходу: %s $"]="Capacity at your current income: %s $",
  ["Внешний вариант выбирается отдельно от редкости."]="The visual variant is rolled separately from rarity.",
  ["Внешний вид снят."]="Appearance removed.",
  ["Внешний вид: "]="Appearance: ",
  ["Внешность Roblox ещё загружается. Попробуй надеть образ чуть позже."]="Your Roblox appearance is still loading. Try equipping the look shortly.",
- ["Во вкладке КРАСКА находятся цвета и рисунки: они сохраняются отдельно и сочетаются. Во вкладке ТЮНИНГ — десять деталей: спойлер, капот, диски, подсветка, сплиттер, диффузор, пороги, воздухозаборник, выхлоп и зеркала. Каждая деталь покупается за алмазы один раз, затем включается и снимается отдельно для каждой своей модели."]="PAINT contains colours and liveries. They save independently and work together. TUNING has ten parts: spoiler, bonnet, wheels, underglow, splitter, diffuser, skirts, scoop, exhaust and mirrors. Buy each part once with diamonds, then install or remove it separately on each owned model.",
+ ["Во вкладке КРАСКА находятся цвета и рисунки: они сохраняются отдельно и сочетаются. Во вкладке ТЮНИНГ — десять деталей: спойлер, капот, диски, подсветка, сплиттер, диффузор, пороги, воздухозаборник, выхлоп и зеркала. Каждая деталь покупается за алмазы один раз, затем включается и снимается отдельно для каждой своей модели."]="PAINT contains colors and liveries. They save independently and work together. TUNING has ten parts: spoiler, hood, wheels, underglow, splitter, diffuser, skirts, scoop, exhaust and mirrors. Buy each part once with diamonds, then install or remove it separately on each owned model.",
  ["Возврат предыдущей машины на 35% быстрее"]="Returns your previous car 35% faster",
  ["Воздухозаборник крыши"]="Roof Scoop",
  ["Возьми свою машину"]="Take your own car",
  ["Вокс Р"]="Vox R",
  ["Волтайр Р"]="Voltair R",
  ["Воришка"]="Thief",
- ["Воришка забрал %d из кассы. Улучши охрану."]="A thief took %d from your till. Upgrade your security.",
- ["Воришка крадётся к салону. Перехвати его у входа и прогони E."]="A thief is sneaking towards your showroom. Stop them at the entrance and hold E.",
+ ["Воришка забрал %d из кассы. Улучши охрану."]="A thief took %d from your register. Upgrade your security.",
+ ["Воришка крадётся к салону. Перехвати его у входа и прогони E."]="A thief is sneaking towards your garage. Stop them at the entrance and hold E.",
  ["Воришка прогнан! +%d $"]="Thief chased away! +%d $",
- ["Воришка прогнан. Ты защитил салон!"]="Thief chased away. You protected your showroom!",
+ ["Воришка прогнан. Ты защитил салон!"]="Thief chased away. You protected your garage!",
  ["Вортекс Один"]="Vortex One",
  ["Вортексия Р"]="Vortexia R",
  ["Вращающиеся золотые монетки и искры тают в следе за спиной"]="Spinning gold coins and sparks fade behind you",
@@ -5334,13 +5312,13 @@ return {
  ["Все цели дня выполнены. Новые появятся завтра."]="All today's goals are complete. New goals arrive tomorrow.",
  ["Второй помощник"]="Second Helper",
  ["Второй помощник (старый пропуск)"]="Second helper (legacy pass)",
- ["Выбери в каталоге машину, которую заменить."]="Choose which car to replace in the catalogue.",
+ ["Выбери в каталоге машину, которую заменить."]="Choose which car to replace in the catalog.",
  ["Выбери машину и нажми ПРИМЕНИТЬ."]="Select a car and press APPLY.",
- ["Выбери провод нужного цвета — без таймера."]="Choose the matching wire colour. There is no timer.",
+ ["Выбери провод нужного цвета — без таймера."]="Choose the matching wire color. There is no timer.",
  ["Выбери район: здесь показаны итоговые шансы только для предметов, которые в нём встречаются."]="Choose a district to see the final odds for items actually found there.",
  ["Выбирай оформление и удобства. Монеты и ОПЫТ по-прежнему зарабатываются в игре."]="Choose looks and conveniences. Coins and XP are still earned through play.",
  ["Выбранный автомобиль займёт то же место. Убранный останется в коллекции."]="Your new car takes that exact spot. The removed car stays in your collection.",
- ["Выйди к витрине и нажми E на своей машине. Каталог остаётся твоим: с витрины можно брать машину для поездки к следующему угону."]="Go to your display and press E on your car. It stays in your catalogue: use displayed cars to reach your next heist.",
+ ["Выйди к витрине и нажми E на своей машине. Каталог остаётся твоим: с витрины можно брать машину для поездки к следующему угону."]="Go to your display and press E on your car. It stays in your catalog: use displayed cars to reach your next car theft.",
  ["Высокая остроконечная шляпа волшебника и сине-фиолетовый комплект."]="Tall pointed wizard hat with a blue-and-purple outfit.",
  ["Вэйфарер 7"]="Wayfarer 7",
  ["ГАРАЖ"]="GARAGE",
@@ -5354,7 +5332,9 @@ return {
  ["ГОРОДСКОЙ РАЙОН"]="METRO DISTRICT",
  ["ГОТОВИМ ПРЕДПРОСМОТР"]="PREPARING PREVIEW",
  ["Гавон Эстейт"]="Gavon Estate",
- ["Герой: +%d%% ко всем монетам, включая кассу."]="Hero: +%d%% to all coins, including the till.",
+ ["Геймпад: RT/LT — газ/назад · стик — руль · X — выровнять"]="Gamepad: RT/LT — drive/reverse · stick — steer · X — recover",
+ ["Геймпад: стик — ходьба · X — действие · Y — меню"]="Gamepad: stick — move · X — interact · Y — menu",
+ ["Герой: +%d%% ко всем монетам, включая кассу."]="Hero: +%d%% to all coins, including the register.",
  ["Герой: максимальное мастерство"]="Hero: maximum mastery",
  ["Герой: максимальное мастерство."]="Hero: maximum mastery.",
  ["Гипер-пилот · Абсолют"]="Hyper Pilot · Ultimate",
@@ -5372,6 +5352,7 @@ return {
  ["Готово! Основы освоены. Всё остальное — в РУКОВОДСТВЕ."]="Done! You know the basics. Everything else is in the HANDBOOK.",
  ["Гравен Х"]="Graven X",
  ["Гранро Туринг"]="Granro Touring",
+ ["Громкость музыки: %d%%"]="Music volume: %d%%",
  ["ДАЛЬШЕ ▶"]="NEXT ▶",
  ["ДЕТАЛИ  +"]="DETAILS  +",
  ["ДЕТАЛИ ДЛЯ ТВОЕЙ КОЛЛЕКЦИИ"]="PARTS FOR YOUR COLLECTION",
@@ -5384,6 +5365,8 @@ return {
  ["ДОСТАВЬ АВТО В ГАРАЖ"]="DELIVER THE CAR TO YOUR GARAGE",
  ["ДОХОД В ЧАС"]="INCOME PER HOUR",
  ["ДУБЛИКАТ: %s · %d/5 к следующей звезде (бонус не повторяется)"]="DUPLICATE: %s · %d/5 towards the next star (base bonus is not repeated)",
+ ["Далее: "]="Next: ",
+ ["Далее: %s"]="Next: %s",
  ["Данные ещё загружаются, попробуй через секунду."]="Data is still loading. Try again in a moment.",
  ["Данные загружаются"]="Loading data",
  ["Двойной доход"]="Double Income",
@@ -5391,13 +5374,14 @@ return {
  ["Денежный ящик"]="Cash Drawer",
  ["Дено Кэрриер"]="Deno Carrier",
  ["Деньги"]="Coins",
- ["Деньги $ — добыча, касса и лидерборд. Алмазы 💎 — исключительно улучшения."]="Coins $ — loot, till and leaderboard. Diamonds 💎 — premium upgrades.",
+ ["Деньги $ — добыча, касса и лидерборд. Алмазы 💎 — исключительно улучшения."]="Coins $ — loot, register and leaderboard. Diamonds 💎 — premium upgrades.",
  ["Деста Риде"]="Desta Ride",
  ["Детали"]="Parts",
  ["Диджей"]="DJ",
+ ["Дисплей радио"]="Radio display",
  ["Для выбранной машины убран стиль "]="Removed this style from the selected car: ",
  ["Для звезды нужно собрать 5 одинаковых предметов."]="Collect 5 matching items to earn a star.",
- ["Для примерки выбери свою модель автомобиля из каталога."]="Select an owned car from the catalogue to preview it.",
+ ["Для примерки выбери свою модель автомобиля из каталога."]="Select an owned car from the catalog to preview it.",
  ["До "]="Until ",
  ["До следующей звезды: "]="Next star: ",
  ["Добыча за доставки и налёты. Бонусы разных деталей складываются."]="Loot from deliveries and raids. Bonuses from different parts add together.",
@@ -5410,24 +5394,29 @@ return {
  ["Доро Компакт"]="Doro Compact",
  ["Дорожный конус на голове, очки и тактический жилет. Комичный дорожный образ."]="Traffic cone hat, glasses and a tactical vest. A playful roadworker look.",
  ["Дорожный тайник"]="Roadside stash",
- ["Доставка в салон №%s · %d студов до парковки"]="Deliver to showroom %s · %d studs to the parking bay",
+ ["Доставка +%d п.п.; редкая+ +%d п.п."]="Delivery +%d pp; rare+ +%d pp",
+ ["Доставка в салон №%s · %d студов до парковки"]="Deliver to garage %s · %d studs to the parking bay",
  ["Доставка: без жёсткого таймера"]="Delivery: no strict timer",
  ["Доставки"]="Deliveries",
  ["Доставки дают ОПЫТ взлома. С повышением уровня открываются более ценные машины и районы. Смотри требуемый уровень на машине: редкость, вариант и район влияют на добычу. Каждая третья копия машины даёт ей звезду, до 5 звёзд."]="Deliveries grant hacking XP. Higher levels unlock more valuable cars and districts. Check the level shown above each car: rarity, variant and district affect its loot. Every third copy grants a car star, up to 5 stars.",
  ["Доставлено!"]="Delivered!",
  ["Доставлено! +%d монет · добыча на полках."]="Delivered! +%d coins · loot is on your shelves.",
- ["Доставляй автомобили, собирай добычу и забирай доход в кассе у входа."]="Deliver cars, collect loot and claim your earnings from the till by the entrance.",
+ ["Доставляй автомобили, собирай добычу и забирай доход в кассе у входа."]="Deliver cars, collect loot and claim your earnings from the register by the entrance.",
  ["Доставь 3 машины"]="Deliver 3 cars",
  ["Доставь авто в гараж."]="Deliver the car to your garage.",
  ["Доставь машину домой"]="Bring the car home",
  ["Доставь машину: система сама поставит первые предметы."]="Deliver a car and your first items will be placed automatically.",
  ["Доставь редкую машину"]="Deliver a rare car",
  ["Доход"]="Income",
+ ["Доход в час: %s $"]="Income per hour: %s $",
+ ["Доход полок +%d%%"]="Shelf income +%d%%",
+ ["Доход после мягкого лимита базы; бонусы складываются. Следующая строка показывает фактический итог."]="The soft cap applies to base income; bonuses add afterward. The next line shows the actual total.",
  ["Доход: %.1f в секунду"]="Income: %.1f per second",
  ["Доход_"]="Income_",
  ["Дрифтлайн 4"]="Driftline 4",
  ["Дрон-искатель"]="Scout Drone",
- ["ЕДЕТ НА БАГАЖНИКЕ"]="RIDES ON THE BOOT",
+ ["ЕДЕТ НА БАГАЖНИКЕ"]="RIDES ON THE ROOF",
+ ["ЕДЕТ НА КРЫШЕ"]="RIDES ON THE ROOF",
  ["ЕЖЕДНЕВНЫЕ КОНТРАКТЫ"]="DAILY CONTRACTS",
  ["ЕЖЕДНЕВНЫЕ ЦЕЛИ"]="DAILY GOALS",
  ["ЕЗДИ · УГОНЯЙ · СОБИРАЙ"]="DRIVE · STEAL · COLLECT",
@@ -5455,10 +5444,10 @@ return {
  ["ЗОЛОТОЙ МАГНАТ"]="GOLDEN TYCOON",
  ["ЗОЛОТЫЕ МОНЕТКИ"]="GOLD COINS",
  ["ЗОЛОТЫЕ СИЯЮЩИЕ"]="GLOWING GOLD",
- ["ЗОНА САЛОНОВ"]="SHOWROOM AREA",
- ["За доставку ты нашёл предмет. Он стоит на полке и приносит деньги в кассу каждую секунду. Нажми «Понятно», затем посмотрим, как работают автоматические полки."]="Your delivery revealed an item. It sits on a shelf and earns money in your till every second. Press GOT IT, then see how automatic shelves work.",
+ ["ЗОНА САЛОНОВ"]="GARAGE AREA",
+ ["За доставку ты нашёл предмет. Он стоит на полке и приносит деньги в кассу каждую секунду. Нажми «Понятно», затем посмотрим, как работают автоматические полки."]="Your delivery revealed an item. It sits on a shelf and earns money in your register every second. Press GOT IT, then see how automatic shelves work.",
  ["Забери заработанное"]="Collect your earnings",
- ["Забрано из кассы: +%s"]="Collected from till: +%s",
+ ["Забрано из кассы: +%s"]="Collected from register: +%s",
  ["Забрать деньги"]="Collect earnings",
  ["Заводской цвет"]="Factory paint",
  ["Загружаем образ Roblox…"]="Loading Roblox look…",
@@ -5467,7 +5456,7 @@ return {
  ["Загрузка рейтинга..."]="Loading leaderboard...",
  ["Задания, поездки и рейтинг"]="Contracts, runs and leaderboard",
  ["Задний диффузор"]="Rear Diffuser",
- ["Закрепи любимую машину"]="Display your favourite car",
+ ["Закрепи любимую машину"]="Display your favorite car",
  ["Замедляет кражи игроков и ловит НПС"]="Slows player thefts and catches NPC thieves",
  ["Замедляет налёты игроков и чаще ловит НПС"]="Slows player raids and catches NPC thieves more often",
  ["Зантия Трек"]="Zantia Track",
@@ -5479,7 +5468,7 @@ return {
  ["Звёздный магнат · Турбо"]="Star Tycoon · Turbo",
  ["Звёздный магнат · Элитный"]="Star Tycoon · Elite",
  ["Звёздный спутник"]="Star Companion",
- ["Зелёная парковка твоего салона — остановись здесь"]="Your showroom's green parking bay — stop here",
+ ["Зелёная парковка твоего салона — остановись здесь"]="Your garage's green parking bay — stop here",
  ["Зентра ГТ"]="Zentra GT",
  ["Зерйкс Пульс"]="Zeryx Pulse",
  ["Золотая"]="Gold",
@@ -5487,8 +5476,9 @@ return {
  ["Золотой комплект"]="Golden Kit",
  ["Золотой металл с тёмной крышей"]="Gold metal with a dark roof",
  ["Золотой след"]="Golden Trail",
- ["Зона выбора цели и подготовки к угону"]="Choose a target and prepare your next heist here",
- ["Зона салонов"]="Showroom Area",
+ ["Зона выбора цели и подготовки к угону"]="Choose a target and prepare your next car theft here",
+ ["Зона салонов"]="Garage Area",
+ ["Зона успеха +%d п.п."]="Success zone +%d pp",
  ["Зорион Х"]="Zorion X",
  ["ИЗУМРУДНЫЕ КРИСТАЛЛЫ"]="EMERALD CRYSTALS",
  ["ИНФОРМАТОР · +12%"]="INFORMANT · +12%",
@@ -5503,14 +5493,14 @@ return {
  ["Итоговые шансы предмета за один бросок добычи в этом районе."]="Final item rarity odds for one loot roll in this district.",
  ["Ищи машины с золотой меткой ★"]="Look for cars marked with a gold ★",
  ["К МАШИНЕ"]="TO THE CAR",
- ["К ТВОЕМУ САЛОНУ"]="TO YOUR SHOWROOM",
+ ["К ТВОЕМУ САЛОНУ"]="TO YOUR GARAGE",
  ["К первой машине"]="To your first car",
  ["КАПИТАН РИФ"]="CAPTAIN REEF",
- ["КАССА"]="TILL",
- ["КАССА\n$ "]="TILL\n$ ",
- ["КАССА\n$ 0"]="TILL\n$ 0",
- ["КАССА  $ 0"]="TILL  $ 0",
- ["КАССА · %d ч\n$ %s"]="TILL · %d h\n$ %s",
+ ["КАССА"]="REGISTER",
+ ["КАССА\n$ "]="REGISTER\n$ ",
+ ["КАССА\n$ 0"]="REGISTER\n$ 0",
+ ["КАССА  $ 0"]="REGISTER  $ 0",
+ ["КАССА · %d ч\n$ %s"]="REGISTER · %d h\n$ %s",
  ["КОД: %d / %d"]="CODE: %d / %d",
  ["КОЛЛЕКЦИОННЫЕ ДЕТАЛИ"]="COLLECTIBLE PARTS",
  ["КОЛЛЕКЦИЯ"]="COLLECTION",
@@ -5525,14 +5515,14 @@ return {
  ["КУПИТЬ И УСТАНОВИТЬ · %d 💎"]="BUY AND INSTALL · %d 💎",
  ["КУПИТЬ НАВСЕГДА · %d 💎"]="BUY FOREVER · %d 💎",
  ["КУРОРТ НА ЗАКАТЕ"]="SUNSET RESORT",
- ["Кабуто, маска они с клыками, пластинчатая броня и катаны"]="Kabuto helmet, fanged oni mask, plate armour and katanas",
+ ["Кабуто, маска они с клыками, пластинчатая броня и катаны"]="Kabuto helmet, theatrical mask, decorative panels and a travel scroll",
  ["Кавенто ЛХ"]="Cavento LX",
  ["Каждые 50 успешных налётов дают коллекционную деталь. Она добавляет процент к деньгам за угон; 5 дубликатов автоматически повышают звезду, до 20 уровней. Смотреть: мастер монет → КОЛЛЕКЦИЯ. Это отдельно от доходных предметов."]="Every 50 successful raids grant a collectible part. It adds a percentage to theft earnings; 5 duplicates automatically upgrade it, up to 20 levels. View it at the coin mechanic → COLLECTION. These are separate from income items.",
  ["Кайро Турбо"]="Kairo Turbo",
  ["Кален Седан"]="Calen Sedan",
  ["Канто Бокс"]="Canto Box",
  ["Капсульный корпус, экран-улыбка и светящееся сердце"]="Capsule body, a smiling screen and a glowing heart",
- ["Карбоновая крыша и тёмный капот"]="Carbon roof and dark bonnet",
+ ["Карбоновая крыша и тёмный капот"]="Carbon roof and dark hood",
  ["Карбоновые зеркала"]="Carbon Mirrors",
  ["Карбоновый гонщик"]="Carbon Racer",
  ["Карбоновый обвес"]="Carbon Body Kit",
@@ -5541,17 +5531,17 @@ return {
  ["Карвен С"]="Karven S",
  ["Карго Финч"]="Cargo Finch",
  ["Каро Парсел"]="Caro Parcel",
- ["Касса"]="Till",
- ["Касса 48 ч (старый пропуск)"]="48 h till (legacy pass)",
- ["Касса на 48 часов"]="48-Hour Till",
- ["Касса по центру сразу за входом в салон. Подойди и нажми E. Деньги переходят из кассы в кошелёк. Касса копит до 12 часов дохода (с ВИП — 48). Пустая касса не засчитывается: дай предмету поработать."]="The till is centred just inside your showroom entrance. Approach and press E to move its earnings to your wallet. It stores up to 12 hours of income, or 48 with VIP. An empty till does not count: let your item earn first.",
- ["Касса_табло"]="Till_Display",
- ["Касса_терминал"]="Till_Terminal",
- ["Касса_экран"]="Till_Screen",
+ ["Касса"]="Register",
+ ["Касса 48 ч (старый пропуск)"]="48 h register (legacy pass)",
+ ["Касса на 48 часов"]="48-Hour Register",
+ ["Касса по центру сразу за входом в салон. Подойди и нажми E. Деньги переходят из кассы в кошелёк. Касса копит до 12 часов дохода (с ВИП — 48). Пустая касса не засчитывается: дай предмету поработать."]="The register is centered just inside your garage entrance. Approach and press E to move its earnings to your wallet. It stores up to 12 hours of income, or 48 with VIP. An empty register does not count: let your item earn first.",
+ ["Касса_табло"]="Register_Display",
+ ["Касса_терминал"]="Register_Terminal",
+ ["Касса_экран"]="Register_Screen",
  ["Кассетная магнитола"]="Cassette Radio",
- ["Каталог"]="Catalogue",
+ ["Каталог"]="Catalog",
  ["Каталожный капюшон «Доминус Эмпиреус» и холодная сине-белая палитра."]="Dominus Empyreus hood and a cool blue-and-white palette.",
- ["Каталожный образ ещё не загрузился. Покупка не выполнена."]="The catalogue look has not loaded yet. Nothing was purchased.",
+ ["Каталожный образ ещё не загрузился. Покупка не выполнена."]="The catalog look has not loaded yet. Nothing was purchased.",
  ["Кенто Мини"]="Cento Mini",
  ["Кера Коммутер"]="Kera Commuter",
  ["Керион Пульс"]="Cerion Pulse",
@@ -5560,10 +5550,12 @@ return {
  ["Клйра С"]="Klyra S",
  ["Клубничный кузов и сливочная крыша"]="Strawberry bodywork and a creamy roof",
  ["Клубничный пломбир"]="Strawberry Sundae",
- ["Кнопка ПРИМЕРИТЬ на карточке краски, рисунка или тюнинга выставляет отдельную машину на дорогу на 20 секунд. Она показывает выбранную покупку вместе с уже сохранённым оформлением. Примерка не тратит валюту и не заменяет настоящую машину. В каталоге есть кнопка ПОСМОТРЕТЬ НА ДОРОГЕ. По окончании осмотра временная машина исчезает."]="TRY ON on any paint, livery or tuning card places a separate car on the road for 20 seconds. It shows the selected item together with your saved customisation. Previews do not spend currency or replace your real car. The catalogue also has VIEW ON THE ROAD. The temporary car disappears when the preview ends.",
+ ["Кнопка ПРИМЕРИТЬ на карточке краски, рисунка или тюнинга выставляет отдельную машину на дорогу на 20 секунд. Она показывает выбранную покупку вместе с уже сохранённым оформлением. Примерка не тратит валюту и не заменяет настоящую машину. В каталоге есть кнопка ПОСМОТРЕТЬ НА ДОРОГЕ. По окончании осмотра временная машина исчезает."]="TRY ON on any paint, livery or tuning card places a separate car on the road for 20 seconds. It shows the selected item together with your saved customization. Previews do not spend currency or replace your real car. The catalog also has VIEW ON THE ROAD. The temporary car disappears when the preview ends.",
+ ["Кнопки газа и руля — езда · R — выровнять"]="Throttle and steering buttons — drive · R — recover",
  ["Кованые диски"]="Forged Wheels",
  ["Коврики"]="Floor Mats",
  ["Кожаные чехлы"]="Leather Seat Covers",
+ ["Коллекционная деталь"]="Collectible part",
  ["Коллекционная деталь улучшена полностью"]="Collectible part fully upgraded",
  ["Коллекционная панель_"]="Collection Panel_",
  ["Коллекционная подсветка_"]="Collection Light_",
@@ -5572,9 +5564,10 @@ return {
  ["Коллекция расставляется автоматически. Дубликаты сами повышают звёзды."]="The collection is arranged automatically. Duplicates upgrade stars automatically.",
  ["Колонки"]="Speakers",
  ["Контракт выполнен: "]="Contract complete: ",
- ["Контрастная крыша и спортивный капот"]="Contrasting roof and sport bonnet",
+ ["Контрастная крыша и спортивный капот"]="Contrasting roof and sport hood",
  ["Контрольные ворота пройдены! Бонус за маршрут при доставке."]="Route gate passed! Delivery route bonus earned.",
  ["Конфетти"]="Confetti",
+ ["Копии: "]="Copies: ",
  ["Кора Кросс"]="Kora Cross",
  ["Корделл Елите"]="Kordell Elite",
  ["Корин ГТ"]="Korin GT",
@@ -5634,7 +5627,7 @@ return {
  ["МАСТЕРСТВО ПИТОМЦА"]="PET MASTERY",
  ["МАШИНА ДЛЯ КРАСКИ / ТЮНИНГА"]="CAR TO PAINT / TUNE",
  ["МЕНЮ"]="MENU",
- ["МЕНЮ → КАТАЛОГ → выбери ручную витрину. Отмечай до шести машин кнопками «ОСТАВИТЬ НА ВИТРИНЕ» и «УБРАТЬ С ВИТРИНЫ». Пустые места остаются пустыми; выбор сохраняется. Кнопка автовитрины возвращает автоматический выбор. Машина для поездки остаётся в коллекции."]="MENU → CATALOGUE → choose manual display. Select up to six cars using KEEP ON DISPLAY and REMOVE FROM DISPLAY. Empty spots stay empty and your choice is saved. Auto display returns to automatic selection. A car you drive stays in your collection.",
+ ["МЕНЮ → КАТАЛОГ → выбери ручную витрину. Отмечай до шести машин кнопками «ОСТАВИТЬ НА ВИТРИНЕ» и «УБРАТЬ С ВИТРИНЫ». Пустые места остаются пустыми; выбор сохраняется. Кнопка автовитрины возвращает автоматический выбор. Машина для поездки остаётся в коллекции."]="MENU → CATALOG → choose manual display. Select up to six cars using KEEP ON DISPLAY and REMOVE FROM DISPLAY. Empty spots stay empty and your choice is saved. Auto display returns to automatic selection. A car you drive stays in your collection.",
  ["МОЙ ROBLOX-АВАТАР"]="MY ROBLOX AVATAR",
  ["МОНЕТЫ"]="COINS",
  ["МОНЕТЫ, ЗАРАБОТАННЫЕ ЗА СЕЗОН  ·  СЕЗОННЫЙ РЕЙТИНГ"]="COINS EARNED THIS SEASON  ·  SEASONAL LEADERBOARD",
@@ -5642,11 +5635,12 @@ return {
  ["Магазин"]="Shop",
  ["Магнитола"]="Radio",
  ["Магнитола ФМ"]="FM Radio",
+ ["Максимум"]="Maximum",
  ["Мало Вагон"]="Malo Wagon",
  ["Мара Дриве"]="Mara Drive",
  ["Мастер взлома"]="Master Hacker",
- ["Мастер на тротуаре перед машинами → ПРЕДМЕТЫ ★ → учебный предмет → «★ УЛУЧШИТЬ». Нужны 5 копий и монеты. Звезда добавит предмету +20% дохода; всего можно получить 5 звёзд."]="Mechanic on the pavement → ITEMS ★ → tutorial item → ★ UPGRADE. You need 5 copies and coins. Each star adds +20% item income, up to 5 stars.",
- ["Мастер → Увеличить доход за монеты. Касса у входа."]="Mechanic → Boost income with coins. Till by the entrance.",
+ ["Мастер на тротуаре перед машинами → ПРЕДМЕТЫ ★ → учебный предмет → «★ УЛУЧШИТЬ». Нужны 5 копий и монеты. Звезда добавит предмету +20% дохода; всего можно получить 5 звёзд."]="Mechanic on the sidewalk → ITEMS ★ → tutorial item → ★ UPGRADE. You need 5 copies and coins. Each star adds +20% item income, up to 5 stars.",
+ ["Мастер → Увеличить доход за монеты. Касса у входа."]="Mechanic → Boost income with coins. Register by the entrance.",
  ["Мастер-вор (старый пропуск)"]="Master Thief (legacy pass)",
  ["Мастерство героя"]="Hero mastery",
  ["Мастерство питомца"]="Pet mastery",
@@ -5663,12 +5657,14 @@ return {
  ["Меко Трейл"]="Meko Trail",
  ["Меня заметили! Бежать!"]="They spotted me! Run!",
  ["Меса Ютилити"]="Mesa Utility",
+ ["Мест на полках: %d"]="Shelf capacity: %d",
  ["Место %d · свободно"]="Slot %d · empty",
  ["Метка дохода"]="Income Label",
  ["Метка_"]="Label_",
  ["Механик"]="Mechanic",
  ["Мино Урбан"]="Mino Urban",
  ["Миро Коннект"]="Miro Connect",
+ ["Множитель дохода: x%d"]="Income multiplier: x%d",
  ["Мова Эйти"]="Mova Eighty",
  ["Монарх Л"]="Monarch L",
  ["Монетные усиления растут в цене по уровням; за алмазы их можно покупать сразу. Требований по уровню взлома или числу доставок нет. При смене облика бонус сохраняется. Доходные бонусы складываются, поэтому витрина больше не перемножает их в огромные значения. Уже купленные уровни и имущество сохранены."]="Coin upgrade prices rise with each level. Diamond purchases are available immediately without hacking-level or delivery requirements. Your bonus stays when you change looks. Income bonuses add together, preventing runaway multiplication from displays. Purchased levels and items remain yours.",
@@ -5690,14 +5686,15 @@ return {
  ["НАДЕТЬ"]="EQUIP",
  ["НАДЕТЬ БЕСПЛАТНО"]="EQUIP FOR FREE",
  ["НАЖМИ 1/2/3 ИЛИ ВЫБЕРИ МЫШКОЙ"]="PRESS 1/2/3 OR CLICK A BUTTON",
+ ["НАЖМИ A НА ГЕЙМПАДЕ"]="PRESS A ON GAMEPAD",
  ["НАЖМИ E / КЛИКНИ · ОТКРЫТЬ ТОП-100"]="PRESS E / CLICK · OPEN TOP 100",
  ["НАЖМИ F В ЗОНЕ"]="PRESS F IN THE ZONE",
- ["НАЗАД К КАТАЛОГУ"]="BACK TO CATALOGUE",
+ ["НАЗАД К КАТАЛОГУ"]="BACK TO CATALOG",
  ["НАЙДЕНО"]="FOUND",
  ["НАЙДИ МАШИНУ И ПРОЙДИ ВЗЛОМ"]="FIND A CAR AND HACK ITS LOCK",
- ["НАЛЁТ НА САЛОН! Машина исчезла на %d сек., из кассы пропало %s $. "]="SHOWROOM RAID! Car hidden for %d sec; %s $ taken from your till. ",
+ ["НАЛЁТ НА САЛОН! Машина исчезла на %d сек., из кассы пропало %s $. "]="GARAGE RAID! Car hidden for %d sec; %s $ taken from your register. ",
  ["НАЛЁТОВ ДО ДЕТАЛИ"]="RAIDS UNTIL A PART",
- ["НАЛЁТЫ НА САЛОНЫ"]="SHOWROOM RAIDS",
+ ["НАЛЁТЫ НА САЛОНЫ"]="GARAGE RAIDS",
  ["НАПИТКИ"]="DRINK",
  ["НЕ АКТИВЕН"]="INACTIVE",
  ["НЕ НАЙДЕНО"]="NOT FOUND",
@@ -5729,12 +5726,14 @@ return {
  ["Найди в районе "]="Find it in district ",
  ["Найми охрану"]="Hire security",
  ["Наклонная карбоновая панель с пятью плавниками. Подгоняется под выбранный кузов."]="Angled carbon panel with five fins. Fitted to your chosen bodywork.",
- ["Налёт на салон: %d/%d"]="Showroom raids: %d/%d",
- ["Налёт на салон: 0/50"]="Showroom raids: 0/50",
- ["Налёты на чужие салоны"]="Raid other showrooms",
+ ["Налёт на салон: %d/%d"]="Garage raids: %d/%d",
+ ["Налёт на салон: 0/50"]="Garage raids: 0/50",
+ ["Налёт отменён: подойди к машине снова."]="Raid cancelled: approach the car again.",
+ ["Налёт сохранён. Начисление ожидает подтверждения."]="Raid saved. Your reward is awaiting confirmation.",
+ ["Налёты на чужие салоны"]="Raid other garages",
  ["Насыщенный зелёный металлик"]="Deep green metallic paint",
  ["Наушники «Клокворк», объёмная причёска и яркая красная куртка."]="Clockwork headphones, voluminous hair and a bright red jacket.",
- ["Начать первый угон"]="Start your first heist",
+ ["Начать первый угон"]="Start your first car theft",
  ["Не найдена"]="Not found",
  ["Не удалось загрузить данные. Попробуйте зайти позже."]="Could not load your data. Please rejoin later.",
  ["Не удалось сохранить возвращение аватара. Попробуй ещё раз."]="Could not save your restored avatar. Try again.",
@@ -5755,7 +5754,7 @@ return {
  ["Неоновый ронин · Элитный"]="Neon Ronin · Elite",
  ["Неора ГТ"]="Neora GT",
  ["Неру Воркхорс"]="Neru Workhorse",
- ["Нет купленных машин в каталоге"]="No owned cars in your catalogue",
+ ["Нет купленных машин в каталоге"]="No owned cars in your catalog",
  ["Низкий сегментированный панцирь, короткие лапы и небольшая мордочка"]="Low segmented shell, short legs and a tiny face",
  ["Нимбле Тво"]="Nimble Two",
  ["Норвия Класс"]="Norvia Class",
@@ -5770,7 +5769,7 @@ return {
  ["Нужно %d $ для улучшения предмета."]="You need %d $ to upgrade this item.",
  ["Нужно %d алмазов 💎."]="You need %d diamonds 💎.",
  ["Нужно %d монет. Зарабатывай их за угоны."]="You need %d coins. Earn them by stealing cars.",
- ["Нужно %d монет. Зарабатывай их угонами и в кассе."]="You need %d coins. Earn them through thefts and the till.",
+ ["Нужно %d монет. Зарабатывай их угонами и в кассе."]="You need %d coins. Earn them through thefts and the register.",
  ["Нужно открыть питомца один раз (кнопки выше)"]="Unlock your pet once using the buttons above",
  ["ОБНОВИТЬ СПИСОК"]="REFRESH",
  ["ОБРАЗЫ ROBLOX · %d разных образов · %d/%d"]="ROBLOX LOOKS · %d unique looks · %d/%d",
@@ -5798,9 +5797,9 @@ return {
  ["Образ, ВИП или набор тюнинга"]="A look, VIP or tuning bundle",
  ["Образы продаются за алмазы. Выбери покупку за 💎."]="Looks cost diamonds. Choose the 💎 purchase option.",
  ["Образы, ауры и машины"]="Looks, auras and cars",
- ["Обтекаемая броня, парные турбины и мятные световые вставки"]="Streamlined armour, twin turbines and mint light panels",
+ ["Обтекаемая броня, парные турбины и мятные световые вставки"]="Streamlined armor, twin turbines and mint light panels",
  ["Обучить помощника"]="Train helper",
- ["Обчистить витрину"]="Raid showroom",
+ ["Обчистить витрину"]="Raid garage",
  ["Объезд полиции: +10% за поездку"]="Police detour: +10% per run",
  ["Объехал полицейский пост! +10% к базовой награде при доставке."]="Police checkpoint bypassed! +10% base reward on delivery.",
  ["Объёмные лепестки сакуры и сливочные цветы на кузове"]="Sculpted cherry blossom petals and creamy flowers across the bodywork",
@@ -5819,7 +5818,7 @@ return {
  ["Орвекс Соник"]="Orvex Sonic",
  ["Орелл Кросс"]="Orell Cross",
  ["Оригинальный 3D-костюм: арктический капюшон, визор, шарф"]="Original 3D outfit: arctic hood, visor and scarf",
- ["Оригинальный 3D-костюм: закрытый шлем, бронированные плечи"]="Original 3D outfit: full helmet and armoured shoulders",
+ ["Оригинальный 3D-костюм: закрытый шлем, бронированные плечи"]="Original 3D outfit: full helmet and armored shoulders",
  ["Оригинальный 3D-костюм: капюшон, умная маска, лазерные очки"]="Original 3D outfit: hood, smart mask and laser glasses",
  ["Оригинальный 3D-костюм: кепка, очки, сумка через плечо"]="Original 3D outfit: cap, glasses and a crossbody bag",
  ["Оригинальный 3D-костюм: корона, герб, роскошная накидка"]="Original 3D outfit: crown, crest and a luxurious cloak",
@@ -5832,7 +5831,7 @@ return {
  ["Оррион Ф"]="Orrion F",
  ["Осмотр машины на дороге"]="Inspect cars on the road",
  ["Основной набор для коллекции и усилений"]="The main pack for your collection and upgrades",
- ["Основы освоены: кража, доставка, свой автомобиль и доход салона. Дальше можно собирать коллекцию, открывать районы, улучшать предметы до звёзд и защищать гараж. Полное руководство доступно по кнопке «РУКОВОДСТВО»."]="You know the basics: steal, deliver, drive your own car and earn showroom income. Now collect cars, unlock districts, upgrade item stars and protect your garage. Open the full reference using HANDBOOK.",
+ ["Основы освоены: кража, доставка, свой автомобиль и доход салона. Дальше можно собирать коллекцию, открывать районы, улучшать предметы до звёзд и защищать гараж. Полное руководство доступно по кнопке «РУКОВОДСТВО»."]="You know the basics: steal, deliver, drive your own car and earn garage income. Now collect cars, unlock districts, upgrade item stars and protect your garage. Open the full reference using HANDBOOK.",
  ["Останови белую линию внутри зелёной зоны."]="Stop the white line inside the green zone.",
  ["Останови машину перед восстановлением."]="Stop the car before resetting it.",
  ["Остроконечная шляпа, длинная мантия, кристальный посох и открытое лицо"]="Pointed hat, long robe, crystal staff and an open face",
@@ -5843,13 +5842,14 @@ return {
  ["Открыть"]="Open",
  ["Открыть топ-100"]="Open top 100",
  ["Официальное пополнение через Roblox"]="Official Roblox diamond purchases",
- ["Офлайн-касса +%s · накопление до %d ч."]="Offline till +%s · stores up to %d h.",
+ ["Офлайн-касса +%s · накопление до %d ч."]="Offline register +%s · stores up to %d h.",
  ["Охрана"]="Security",
+ ["Охрана %d/5; НПС %d%%; удержание %.1f с"]="Security %d/5; NPC %d%%; hold %.1f s",
  ["Охрана уже достигла 5/5 (монеты и алмазы суммируются)."]="Security is already 5/5 (coin and diamond levels add together).",
  ["Охрана уже достигла общего максимума 5/5."]="Security has reached its combined maximum of 5/5.",
  ["Охрана! Ухожу!"]="A guard! I'm leaving!",
  ["Охранник · патруль"]="Guard · patrol",
- ["Охранник заметил воришку. Касса цела."]="Your guard spotted the thief. Your till is safe.",
+ ["Охранник заметил воришку. Касса цела."]="Your guard spotted the thief. Your register is safe.",
  ["Ошибка запуска машины. Попробуй ещё раз."]="Could not start the car. Try again.",
  ["ПАРКОВКА №"]="PARKING ",
  ["ПАТРУЛЬ 60"]="PATROL 60",
@@ -5865,7 +5865,7 @@ return {
  ["ПОДГОТОВКА..."]="GET READY...",
  ["ПОКАЗАТЬ ЦЕЛЬ"]="SHOW TARGET",
  ["ПОЛИЦИЯ · ОБЪЕЗД"]="POLICE · DETOUR",
- ["ПОЛИЦИЯ: из кассы списано 5%% — %d $! Возрождение пешком. Взлом закрыт на %d сек."]="POLICE: 5%% taken from your till — %d $! Respawned on foot. Hacking locked for %d sec.",
+ ["ПОЛИЦИЯ: из кассы списано 5%% — %d $! Возрождение пешком. Взлом закрыт на %d сек."]="POLICE: 5%% taken from your register — %d $! Respawned on foot. Hacking locked for %d sec.",
  ["ПОЛКА"]="SHELF",
  ["ПОЛКИ И КОЛЛЕКЦИЯ"]="SHELVES AND COLLECTION",
  ["ПОМОЩЬ ВКЛЮЧЕНА · ПОВТОРИ"]="ASSIST ON · TRY AGAIN",
@@ -5884,7 +5884,7 @@ return {
  ["ПРОВЕРКА ПОЛИЦИИ — ОБЪЕДЬ ПО СВОБОДНОЙ ПОЛОСЕ"]="POLICE CHECKPOINT — USE THE OPEN LANE",
  ["ПРОВЕРКА..."]="CHECKING...",
  ["ПРОГРЕСС НАВЫКА   %d / %d ОПЫТ"]="SKILL PROGRESS   %d / %d XP",
- ["ПРОКАЧКА САЛОНА"]="SHOWROOM UPGRADES",
+ ["ПРОКАЧКА САЛОНА"]="GARAGE UPGRADES",
  ["ПРОМЫШЛЕННЫЙ ДВОР"]="INDUSTRIAL YARD",
  ["ПУНКТ ДОСТАВКИ"]="RETURN BAY",
  ["Парковка · "]="Parking · ",
@@ -5903,7 +5903,7 @@ return {
  ["Питомец и его облики"]="Your pet and its looks",
  ["Питомец открывается один раз за заработанные монеты или алмазы. После лицензии все его облики бесплатны. Общий бонус питомца сохраняется при смене облика. Покупать питомца для завершения обучения не требуется."]="Unlock your pet once with earned coins or diamonds. All pet looks are free after buying the licence. Its shared bonus stays when you change looks. You do not need to buy a pet to finish the tutorial.",
  ["Питомец открыт навсегда! Все его облики теперь бесплатны."]="Pet unlocked forever! All its looks are now free.",
- ["Питомец: +%d%% ко всем монетам и кассе. Облики бесплатны."]="Pet: +%d%% to all coins and till income. All looks are free.",
+ ["Питомец: +%d%% ко всем монетам и кассе. Облики бесплатны."]="Pet: +%d%% to all coins and register income. All looks are free.",
  ["Питомец: максимальное мастерство."]="Pet: maximum mastery.",
  ["Плазменный хищник · Абсолют"]="Plasma Predator · Ultimate",
  ["Плазменный хищник · Легендарный"]="Plasma Predator · Legendary",
@@ -5916,7 +5916,7 @@ return {
  ["Повторное улучшение: "]="Repeat upgrade: ",
  ["Подожди! Мои ключи!"]="Wait! My keys!",
  ["Подойди к машине пешком, чтобы обчистить чужую витрину."]="Approach on foot to raid another player's display.",
- ["Подойди к отмеченному мастеру на тротуаре. Купи «Увеличить доход» за монеты. Если не хватает — забери деньги в кассе у входа. Остальные возможности есть в руководстве."]="Visit the marked mechanic on the pavement. Buy Boost income with coins. If you need more coins, collect them from the till by the entrance. Everything else is explained in the handbook.",
+ ["Подойди к отмеченному мастеру на тротуаре. Купи «Увеличить доход» за монеты. Если не хватает — забери деньги в кассе у входа. Остальные возможности есть в руководстве."]="Visit the marked mechanic on the sidewalk. Buy Boost income with coins. If you need more coins, collect them from the register by the entrance. Everything else is explained in the handbook.",
  ["Подсветка салона"]="Interior Lighting",
  ["Поездка на своей машине"]="Drive your own car",
  ["Поехать"]="Drive",
@@ -5935,15 +5935,15 @@ return {
  ["Получено: "]="Received: ",
  ["Получить наводку"]="Get intel",
  ["Помощник"]="Helper",
- ["Помощник вернул машину в салон."]="Your helper returned the car to the showroom.",
+ ["Помощник вернул машину в салон."]="Your helper returned the car to the garage.",
  ["Помощник забирает твою машину. Дождись её возвращения."]="Your helper is collecting the car. Wait for it to return.",
  ["Попади белой линией в зелёную зону. Нажимай кнопку на экране или F. Промах можно повторить."]="Land the white line in the green zone. Tap the screen button or press F. You can retry a miss.",
  ["Попади стрелкой в подсвеченный сектор."]="Land the pointer in the highlighted sector.",
  ["Пополнение пока недоступно"]="Diamond purchases are not available yet",
  ["Попробуй меня прогнать!"]="Try chasing me away!",
- ["Попытка открыть слишком сложную машину включает сигнализацию и вызывает патруль. Слышны сигнализация и приближающаяся сирена, у патруля мигают огни. При задержании из текущей кассы снимается 5% без верхнего предела. Кошелёк сохраняется; заработок в рейтинге не уменьшается. После возрождения есть короткая пауза до нового взлома."]="Trying to hack a car above your level triggers its alarm and calls a patrol. Hear the alarm and approaching siren, and watch the patrol's flashing lights. Being caught takes 5% of your current till with no upper cap. Your wallet and leaderboard earnings stay safe. After respawning, there is a short hacking cooldown.",
+ ["Попытка открыть слишком сложную машину включает сигнализацию и вызывает патруль. Слышны сигнализация и приближающаяся сирена, у патруля мигают огни. При задержании из текущей кассы снимается 5% без верхнего предела. Кошелёк сохраняется; заработок в рейтинге не уменьшается. После возрождения есть короткая пауза до нового взлома."]="Trying to hack a car above your level triggers its alarm and calls a patrol. Hear the alarm and approaching siren, and watch the patrol's flashing lights. Being caught takes 5% of your current register with no upper cap. Your wallet and leaderboard earnings stay safe. After respawning, there is a short hacking cooldown.",
  ["Поручи возврат помощнику"]="Let your helper return the car",
- ["Постоянная вместимость кассы вместо 12 ч"]="Permanent 48-hour till capacity instead of 12 h",
+ ["Постоянная вместимость кассы вместо 12 ч"]="Permanent 48-hour register capacity instead of 12 h",
  ["Постоянные улучшения. Ограничение уровня машин сохраняется."]="Permanent upgrades. Car hacking requirements still apply.",
  ["Почтальон"]="Mail Carrier",
  ["Правая_Стена_Топ100"]="Right_Wall_Top100",
@@ -5956,7 +5956,7 @@ return {
  ["Премиум"]="Premium",
  ["Престия Один"]="Prestia One",
  ["Пригород"]="Suburbs",
- ["Приезжай на своей машине к новой цели и начни её взлом. Помощник заберёт прошлую машину. Шаг завершится, когда она действительно вернётся в салон."]="Drive your own car to a new target and start hacking. Your helper collects the previous car. This step ends when it actually returns to your showroom.",
+ ["Приезжай на своей машине к новой цели и начни её взлом. Помощник заберёт прошлую машину. Шаг завершится, когда она действительно вернётся в салон."]="Drive your own car to a new target and start hacking. Your helper collects the previous car. This step ends when it actually returns to your garage.",
  ["Призрачный гонщик · Абсолют"]="Ghost Racer · Ultimate",
  ["Призрачный гонщик · Легендарный"]="Ghost Racer · Legendary",
  ["Призрачный гонщик · Первый"]="Ghost Racer · Starter",
@@ -5996,6 +5996,7 @@ return {
  ["Ранг %s · серия x%d · +%d ОПЫТ · бонус %d%% (детали +%d%%)"]="Grade %s · streak x%d · +%d XP · bonus %d%% (parts +%d%%)",
  ["Редкая"]="Rare",
  ["Редкая машина"]="Rare car",
+ ["Редкие доставки"]="Rare deliveries",
  ["Редкость машины на парковке"]="Parked car rarity",
  ["Рейтинг загружается. Закрой и открой эту вкладку через несколько секунд."]="Leaderboard is loading. Reopen this tab in a few seconds.",
  ["Рейтинг недоступен: проверь DataStore API"]="Leaderboard unavailable: check DataStore API",
@@ -6011,7 +6012,7 @@ return {
  ["С 2026 ГОДА"]="EST. 2026",
  ["САДОВЫЙ ПРОСПЕКТ"]="GARDEN AVENUE",
  ["САКУРА РОНИН"]="SAKURA RONIN",
- ["САЛОН "]="SHOWROOM ",
+ ["САЛОН "]="GARAGE ",
  ["СВОЙ АВАТАР УЖЕ НАДЕТ"]="YOUR AVATAR IS ALREADY EQUIPPED",
  ["СЕЗОН ПОКА ПУСТОЙ\nПервым заработай монеты и возглавь рейтинг!"]="NO SCORES THIS SEASON YET\nBe the first to earn coins and lead the board!",
  ["СЕРИЯ x%d  ·  ВЗЛОМ %d"]="STREAK x%d  ·  HACKING %d",
@@ -6033,15 +6034,18 @@ return {
  ["СТУДОВ/С"]="STUDS/S",
  ["Сабвуфер"]="Subwoofer",
  ["Сакура-дрифт"]="Sakura Drift",
- ["Салон"]="Showroom",
- ["Салон недавно ограбили. Защита ещё %d сек."]="This showroom was raided recently. Protected for %d more sec.",
+ ["Салон"]="Garage",
+ ["Салон недавно ограбили. Защита ещё %d сек."]="This garage was raided recently. Protected for %d more sec.",
+ ["Салон уже занят налётом."]="This garage is already being raided.",
  ["Саммит Краун"]="Summit Crown",
  ["Сандо Холер"]="Sando Hauler",
  ["Световой кант редкости"]="Rarity Light Trim",
  ["Светодиодная подсветка"]="LED Trim",
- ["Свободных участков под салон нет."]="No showroom plots are available.",
+ ["Свободных участков под салон нет."]="No garage plots are available.",
  ["Сезонный рейтинг"]="Seasonal leaderboard",
  ["Сейчас стоит на витрине · место "]="Currently on display · slot ",
+ ["Сейчас: "]="Current: ",
+ ["Сейчас: %s"]="Current: %s",
  ["Сервер рассчитан на 8 игроков. Попробуй другой сервер."]="This server supports 8 players. Please try another server.",
  ["Серия из %d угонов прервана. Следующая доставка начнёт новую серию."]="Your streak of %d thefts ended. Your next delivery starts a new streak.",
  ["Серия: 0 · Следующая цель"]="Streak: 0 · Next target",
@@ -6055,16 +6059,17 @@ return {
  ["Сйрекс В"]="Syrex V",
  ["Скейтбордист"]="Skater",
  ["Скорость"]="Speed",
+ ["Скорость %.1f студ/с"]="Speed %.1f studs/s",
  ["Следи за дорожными событиями и заказами на интерфейсе. Дневные задания и аккуратные доставки дают дополнительные монеты и ОПЫТ. МЕНЮ → ТОП-100 показывает сезонный рейтинг заработка."]="Watch road events and contracts on the HUD. Daily goals and careful deliveries grant extra coins and XP. MENU → TOP 100 shows this season's earnings leaderboard.",
- ["Следуй стрелке к машине ВЗЛОМ 1+ и начни угон."]="Follow the arrow to the HACKING 1+ car and begin your heist.",
+ ["Следуй стрелке к машине ВЗЛОМ 1+ и начни угон."]="Follow the arrow to the HACKING 1+ car and begin your car theft.",
  ["Следуй стрелке к машине на витрине. Нажми «Поехать» — теперь на ней можно добираться до новых целей."]="Follow the arrow to your displayed car. Press Drive to use it for reaching your next target.",
  ["Следуй стрелке к первой машине: ВЗЛОМ 1+."]="Follow the arrow to your first car: HACKING 1+.",
- ["Следуй стрелке к своему салону. Поставь машину целиком в зелёную рамку и остановись. На планшете — кнопки справа."]="Follow the arrow to your showroom. Park the whole car inside the green bay and stop. On a tablet, use the buttons on the right.",
+ ["Следуй стрелке к своему салону. Поставь машину целиком в зелёную рамку и остановись. На планшете — кнопки справа."]="Follow the arrow to your garage. Park the whole car inside the green bay and stop. On a tablet, use the buttons on the right.",
  ["Следуй стрелке над головой к подсвеченной машине «ВЗЛОМ 1+». Нажми кнопку у двери или удерживай E."]="Follow the overhead arrow to the highlighted HACKING 1+ car. Press the button by its door or hold E.",
  ["Следующая деталь"]="Next part",
  ["Следующая кража через %d сек."]="Next theft in %d sec.",
  ["Сначала верни эту машину из поездки."]="Return this car from your current trip first.",
- ["Сначала выбери купленную машину в каталоге."]="Select an owned car in the catalogue first.",
+ ["Сначала выбери купленную машину в каталоге."]="Select an owned car in the catalog first.",
  ["Сначала выбирается редкость, затем доступная модель или предмет. У каждой машины указан свой уровень взлома."]="Rarity is rolled first, followed by an available car or item. Every car shows its own required hacking level.",
  ["Сначала добеги пешком до первой машины и доставь её. Тогда откроется помощник!"]="Run to your first car and deliver it to unlock your helper!",
  ["Сначала доставь угнанную машину!"]="Deliver your stolen car first!",
@@ -6073,8 +6078,8 @@ return {
  ["Сначала открой любой скин героя."]="Unlock any hero look first.",
  ["Сначала открой питомца — один раз за монеты или алмазы."]="Unlock your pet once with coins or diamonds first.",
  ["Сначала открой питомца."]="Unlock your pet first.",
- ["Сначала соверши свой первый угон и доставь машину в салон!"]="Complete your first theft and deliver the car to your showroom first!",
- ["Сначала угони машину. Купленные цвета останутся в коллекции."]="Steal a car first. Purchased colours stay in your collection.",
+ ["Сначала соверши свой первый угон и доставь машину в салон!"]="Complete your first theft and deliver the car to your garage first!",
+ ["Сначала угони машину. Купленные цвета останутся в коллекции."]="Steal a car first. Purchased colors stay in your collection.",
  ["Собери 5 одинаковых предметов"]="Collect 5 matching items",
  ["Собирает деньги каждые 15 секунд"]="Collects earnings every 15 seconds",
  ["Сова Фэмили"]="Sova Family",
@@ -6088,6 +6093,7 @@ return {
  ["Солнечный рыцарь · Элитный"]="Solar Knight · Elite",
  ["Солярис Е"]="Solaris E",
  ["Соучастник"]="Accomplice",
+ ["Сохранение недоступно. Налёт не завершён."]="Saving is unavailable. The raid was not completed.",
  ["Спальный район"]="City Blocks",
  ["Спектра ГТ"]="Spectra GT",
  ["Спорт"]="Sport",
@@ -6095,13 +6101,14 @@ return {
  ["Спорт-приборы"]="Sport Gauges",
  ["Спорт-руль"]="Sport Steering Wheel",
  ["Спортивный впуск с тёмной решёткой; у открытых родстеров — за кабиной. Подгоняется под выбранный кузов."]="Sport intake with a dark grille; behind the cabin on open roadsters. Fitted to your chosen bodywork.",
- ["Спортивный капот"]="Sport Bonnet",
+ ["Спортивный капот"]="Sport Hood",
  ["Спортсмен"]="Athlete",
  ["Срок ВИП уже достиг максимального ограничения."]="VIP duration has reached the maximum limit.",
  ["Стандарт"]="Standard",
  ["Стена коллекции"]="Collection Wall",
  ["Стенд_"]="Stand_",
- ["Стилист на тротуаре перед машинами продаёт образы, ауры и стили машин за алмазы. Кнопка «ПРИМЕРИТЬ» временно меняет вид на 20 секунд без покупки. Затем прежний вид вернётся. Для машины выбери свой экземпляр с витрины или текущую поездку."]="The stylist on the pavement sells looks, auras and car styles for diamonds. TRY ON previews an appearance for 20 seconds without buying it, then restores your previous look. For cars, select an owned model from your display or current ride.",
+ ["Стик — ходьба · нажми на действие"]="Stick — move · tap an action",
+ ["Стилист на тротуаре перед машинами продаёт образы, ауры и стили машин за алмазы. Кнопка «ПРИМЕРИТЬ» временно меняет вид на 20 секунд без покупки. Затем прежний вид вернётся. Для машины выбери свой экземпляр с витрины или текущую поездку."]="The stylist on the sidewalk sells looks, auras and car styles for diamonds. TRY ON previews an appearance for 20 seconds without buying it, then restores your previous look. For cars, select an owned model from your display or current ride.",
  ["Стой! Я только за кофе вышел!"]="Stop! I only went out for coffee!",
  ["Страда Кап"]="Strada Cup",
  ["Стрйкс Тво"]="Stryx Two",
@@ -6111,8 +6118,8 @@ return {
  ["ТВОИ АЛМАЗЫ"]="YOUR DIAMONDS",
  ["ТВОИ АЛМАЗЫ: %s 💎"]="YOUR DIAMONDS: %s 💎",
  ["ТВОЙ ГАРАЖ"]="YOUR GARAGE",
- ["ТВОЙ САЛОН"]="YOUR SHOWROOM",
- ["ТВОЙ САЛОН №%s\n%d студов до парковки"]="YOUR SHOWROOM %s\n%d studs to the parking bay",
+ ["ТВОЙ САЛОН"]="YOUR GARAGE",
+ ["ТВОЙ САЛОН №%s\n%d студов до парковки"]="YOUR GARAGE %s\n%d studs to the parking bay",
  ["ТВОЯ КОЛЛЕКЦИЯ. ТВОИ ПРАВИЛА."]="YOUR COLLECTION. YOUR RULES.",
  ["ТВОЯ МАШИНА"]="YOUR CAR",
  ["ТОП-100 · монеты, заработанные за текущий сезон (30 дней)"]="TOP 100 · coins earned this season (30 days)",
@@ -6126,7 +6133,7 @@ return {
  ["Тач-дисплей"]="Touch Display",
  ["Твой Roblox-аватар восстановлен. Костюмы остались в коллекции."]="Your Roblox avatar is restored. Purchased outfits stay in your collection.",
  ["Твой Roblox-аватар восстановлен. Купленные образы сохранены."]="Your Roblox avatar is restored. Purchased looks are saved.",
- ["Твой участок: салон №%d"]="Your plot: showroom %d",
+ ["Твой участок: салон №%d"]="Your plot: garage %d",
  ["Твоя машина"]="Your car",
  ["Твоя первая добыча"]="Your first loot",
  ["Твоя первая золотая звезда"]="Your first gold star",
@@ -6142,7 +6149,7 @@ return {
  ["Тивекс Кор"]="Tivex Core",
  ["Тико Сити"]="Tiko City",
  ["Титановый выхлоп"]="Titanium Exhaust",
- ["Тихо… кажется, касса без присмотра."]="Quietly… looks like nobody is watching the till.",
+ ["Тихо… кажется, касса без присмотра."]="Quietly… looks like nobody is watching the register.",
  ["Тонио Компакт"]="Tonio Compact",
  ["Тонкий аэродинамический клинок с опорами. Подгоняется под выбранный кузов."]="Slim aerodynamic blade with supports. Fitted to your chosen bodywork.",
  ["Топ-100"]="Top 100",
@@ -6152,16 +6159,16 @@ return {
  ["Трек Ютилити"]="Trek Utility",
  ["Турист"]="Tourist",
  ["Ты бросил машину, и её забрали."]="You abandoned the car and it was taken away.",
- ["Ты готов к большому угону"]="Ready for a big heist",
+ ["Ты готов к большому угону"]="Ready for a big car theft",
  ["Ты отошёл слишком далеко от замка."]="You moved too far away from the lock.",
- ["Ты получил монеты за доставку, а найденный предмет уже приносит доход на полке. Полки заполняются автоматически. Касса у входа выдаёт накопленные монеты."]="You earned coins for delivery, and your new item is already earning income on the shelf. Shelves fill automatically. Collect stored earnings from the till by the entrance.",
- ["У НПС «МАСТЕР · МОНЕТЫ» купи первое улучшение дохода за обычные монеты. Оно усиливает кассу всего салона."]="Buy your first income upgrade with regular coins from the MECHANIC · COINS vendor. It boosts your whole showroom's till.",
+ ["Ты получил монеты за доставку, а найденный предмет уже приносит доход на полке. Полки заполняются автоматически. Касса у входа выдаёт накопленные монеты."]="You earned coins for delivery, and your new item is already earning income on the shelf. Shelves fill automatically. Collect stored earnings from the register by the entrance.",
+ ["У НПС «МАСТЕР · МОНЕТЫ» купи первое улучшение дохода за обычные монеты. Оно усиливает кассу всего салона."]="Buy your first income upgrade with regular coins from the MECHANIC · COINS vendor. It boosts your whole garage's register.",
  ["У мастера монет купи улучшение охраны. Охрана замедляет налёты игроков и повышает шанс поймать НПС-воришку. Для этого урока донат не нужен."]="Buy a security upgrade from the coin mechanic. Security slows player raids and improves your chance of catching NPC thieves. No payment is required for this lesson.",
  ["У тебя уже есть бессрочный ВИП — продлевать его не нужно."]="You already own permanent VIP. No renewal needed.",
  ["У тебя уже есть машина. Сначала верни её."]="You already have a car. Return it first.",
  ["УБРАТЬ С ВИТРИНЫ"]="REMOVE FROM DISPLAY",
  ["УГНАТЬ ЗА 60 СЕКУНД"]="STEAL IN 60 SECONDS",
- ["УГОН"]="HEIST",
+ ["УГОН"]="CAR THEFT",
  ["УГОН / 60"]="STEAL / 60",
  ["УГОН / 60\nЗагрузка..."]="STEAL / 60\nLoading...",
  ["УГОН 60 / ВЗЛОМ · КОРОТКИЕ ИСПЫТАНИЯ"]="STEAL60 / HACKING · QUICK CHALLENGES",
@@ -6178,22 +6185,23 @@ return {
  ["УСТУПИ"]="GIVE WAY",
  ["Увеличить доход"]="Boost income",
  ["Угнать"]="Steal",
- ["Угони доступную машину и доставь её в зелёную рамку салона. Найденный предмет появится здесь."]="Steal an accessible car and deliver it to your showroom's green bay. Your first item will appear here.",
- ["Угони первую машину, чтобы открыть каталог."]="Steal your first car to unlock the catalogue.",
+ ["Угони доступную машину и доставь её в зелёную рамку салона. Найденный предмет появится здесь."]="Steal an accessible car and deliver it to your garage's green bay. Your first item will appear here.",
+ ["Угони первую машину, чтобы открыть каталог."]="Steal your first car to unlock the catalog.",
  ["Уже куплено, нажми «НАДЕТЬ»."]="Already owned. Press EQUIP.",
  ["Узнаваемая большая голова и яркая куртка: отдельный мультяшный образ с большой улыбкой."]="Iconic Bighead and a bright jacket: a cartoon look with a huge smile.",
  ["Украсть"]="Steal",
+ ["Улучшение применено, но сохранение пока не подтверждено. Автосохранение повторит попытку."]="Upgrade applied, but saving is not confirmed yet. Autosave will retry.",
  ["Улучшение уже достигло максимума."]="This upgrade has reached its maximum.",
  ["Улучшение уже максимально прокачано."]="This upgrade is already maxed out.",
  ["Улучшено: %s · %d уровень (−%d 💎)"]="Upgraded: %s · level %d (−%d 💎)",
- ["Улучши доход салона"]="Boost showroom income",
+ ["Улучши доход салона"]="Boost garage income",
  ["Улучшить охрану"]="Upgrade security",
  ["Управление и звук"]="Controls and sound",
  ["Уровень %d/%d · %s"]="Level %d/%d · %s",
  ["Уровень взлома растёт за ОПЫТ от доставок. Точный взлом и дорогой класс дают больше ОПЫТ."]="Deliveries give hacking XP. Precise hacks and higher car classes give more XP.",
  ["Установлено на выбранную модель."]="Installed on the selected model.",
  ["Учебный воришка"]="Practice thief",
- ["Учебный воришка у входа! Подойди и удерживай E. Касса в безопасности."]="Practice thief at the entrance! Approach and hold E. Your till is safe.",
+ ["Учебный воришка у входа! Подойди и удерживай E. Касса в безопасности."]="Practice thief at the entrance! Approach and hold E. Your register is safe.",
  ["ФОНОВАЯ МУЗЫКА"]="BACKGROUND MUSIC",
  ["Фалтра Спринт"]="Faltra Sprint",
  ["Фалькон Спринт"]="Falcon Sprint",
@@ -6215,7 +6223,7 @@ return {
  ["Хромовый страж · Турбо"]="Chrome Guardian · Turbo",
  ["Хромовый страж · Элитный"]="Chrome Guardian · Elite",
  ["ЦЕЛЬ"]="TARGET",
- ["ЦЕЛЬ: ЗЕЛЁНАЯ ПАРКОВКА ТВОЕГО САЛОНА"]="TARGET: YOUR SHOWROOM'S GREEN PARKING BAY",
+ ["ЦЕЛЬ: ЗЕЛЁНАЯ ПАРКОВКА ТВОЕГО САЛОНА"]="TARGET: YOUR GARAGE'S GREEN PARKING BAY",
  ["Цвет: %s · рисунок: %s"]="Paint: %s · livery: %s",
  ["Цветные кружочки на боковых панелях"]="Colourful dots across the side panels",
  ["Цена в окне Roblox"]="Price in the Roblox prompt",
@@ -6229,16 +6237,17 @@ return {
  ["Четыре хромированных патрубка с глубоким каналом. Подгоняется под выбранный кузов."]="Four chrome tailpipes with deep outlets. Fitted to your chosen bodywork.",
  ["Чехлы"]="Seat Covers",
  ["Чужой автомобиль: удерживай E для кражи. Охрана увеличивает время."]="Another player's car: hold E to steal. Security increases the time needed.",
- ["Чужой салон · охрана %d/5"]="Another showroom · security %d/5",
- ["Чужую витрину можно временно ограбить: владелец сохраняет каталог машин. Есть личная перезарядка и защита жертвы от повторных налётов. Награда берётся из кассы жертвы; на неё действуют бонусы героя и питомца. Пустой салон не даёт денег. Доход от всех краж входит в рейтинг, траты и штрафы его не уменьшают. Налёт на другого игрока для урока не требуется."]="Raiding temporarily removes a displayed car; its owner keeps their catalogue. There is a personal cooldown and protection from repeated raids. Your reward comes from the victim's till and receives hero and pet bonuses. Empty showrooms give no money. All theft earnings count on the leaderboard; spending and fines do not reduce your score. Raiding another player is not required for the tutorial.",
+ ["Чужой салон · охрана %d/5"]="Another garage · security %d/5",
+ ["Чужую витрину можно временно ограбить: владелец сохраняет каталог машин. Есть личная перезарядка и защита жертвы от повторных налётов. Награда берётся из кассы жертвы; на неё действуют бонусы героя и питомца. Пустой салон не даёт денег. Доход от всех краж входит в рейтинг, траты и штрафы его не уменьшают. Налёт на другого игрока для урока не требуется."]="Raiding temporarily removes a displayed car; its owner keeps their catalog. There is a personal cooldown and protection from repeated raids. Your reward comes from the victim's register and receives hero and pet bonuses. Empty garages give no money. All raid earnings count on the leaderboard; spending and fines do not reduce your score. Raiding another player is not required for the tutorial.",
  ["Чёрный обсидиан"]="Black Obsidian",
  ["ШАНС ЗА ДОСТАВКУ"]="CHANCE PER DELIVERY",
  ["ШАНСЫ БЕЗ СЕКРЕТОВ"]="CLEAR AND OPEN ODDS",
  ["ШЛЕЙФ СО СПИНЫ"]="TRAIL BEHIND YOU",
- ["Шанс детали при доставке: 7%. Каждые 50 налётов на чужие салоны — гарантированная деталь."]="Part chance per delivery: 7%. Every 50 showroom raids guarantee a part.",
+ ["Шанс детали при доставке: 7%. Каждые 50 налётов на чужие салоны — гарантированная деталь."]="Part chance per delivery: 7%. Every 50 garage raids guarantee a part.",
  ["Шансы"]="Odds",
  ["Шансы редкости. Это шансы выбора редкости; конкретный предмет выбирается среди доступных для этого класса машин."]="Rarity odds. A rarity is rolled first; the item is then selected from those available for this car class.",
  ["Шансы редкости; конкретная модель выбирается отдельно."]="Rarity odds; the exact model is selected separately.",
+ ["Шлем кабуто, театральная маска, декоративные пластины и дорожный свиток"]="Kabuto helmet, theatrical mask, decorative panels and a travel scroll",
  ["ЭКИПИРОВКА И СТИЛЬ"]="GEAR & STYLE",
  ["ЭЛЕКТРИЧЕСКИЕ РАЗРЯДЫ"]="ELECTRIC ARCS",
  ["Эй! Это моя машина!"]="Hey! That's my car!",
@@ -6248,9 +6257,9 @@ return {
  ["Эпическая"]="Epic",
  ["Эта вещь доступна только за алмазы."]="This item is only available for diamonds.",
  ["Эта машина уже недоступна."]="This car is no longer available.",
- ["Это НПС чужого салона — используй свой магазин."]="This NPC belongs to another showroom. Use your own shop.",
- ["Это касса чужого салона."]="This till belongs to another showroom.",
- ["Этот каталожный образ сейчас не загрузился. Твой аватар сохранён."]="This catalogue look could not load. Your avatar is safe.",
+ ["Это НПС чужого салона — используй свой магазин."]="This NPC belongs to another garage. Use your own shop.",
+ ["Это касса чужого салона."]="This register belongs to another garage.",
+ ["Этот каталожный образ сейчас не загрузился. Твой аватар сохранён."]="This catalog look could not load. Your avatar is safe.",
  ["Этот предмет достиг 5 золотых звёзд."]="This item has reached 5 gold stars.",
  ["Этот предмет из другого обновления сохранён в твоей коллекции."]="This item from another update is still in your collection.",
  ["Этот старый вариант снят с продажи. Выбери образ из новой витрины."]="This legacy look is no longer sold. Choose one from the current collection.",
@@ -6265,7 +6274,7 @@ return {
  ["учебный предмет"]="tutorial item",
  ["№ 04"]="NO. 04",
  ["↻  ВЫРОВНЯТЬ"]="↻  RESET CAR",
- ["▼  ТВОЙ САЛОН\n    ОСТАНОВИСЬ ЗДЕСЬ"]="▼  YOUR SHOWROOM\n    STOP HERE",
+ ["▼  ТВОЙ САЛОН\n    ОСТАНОВИСЬ ЗДЕСЬ"]="▼  YOUR GARAGE\n    STOP HERE",
  ["◀ НАЗАД"]="◀ BACK",
  ["◀ ПРЕД."]="◀ PREV.",
  ["★  ТОП-10 УГОНЩИКОВ  /  30 ДНЕЙ"]="★  TOP 10 CAR THIEVES  /  30 DAYS",
@@ -6350,6 +6359,7 @@ end
 return M
 ]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_STEAL60_V64_TextTranslator"><Properties><string name="Name">TextTranslator</string><ProtectedString name="Source"><![CDATA[-- Exact entries, formatted messages and longest literal fragments; no network translation.
 local entries=require(script.Parent.LanguageCatalog)
+local Grammar=require(script.Parent.Grammar)
 local M={};local trie={};local buckets={};local anyPrefix={};local cache={};local cacheSize=0
 local function word(byte)return byte and((byte>=48 and byte<=57)or(byte>=65 and byte<=90)or(byte>=97 and byte<=122)or byte==95 or byte>=128)end
 local function escape(text)return(text:gsub('([%^%$%(%)%%%.%[%]%*%+%-%?])','%%%1'))end
@@ -6430,9 +6440,10 @@ translate=function(text,depth)
  return fragments(text)
 end
 function M.translate(text,locale)
- if type(text)~='string'or locale~='en'or text==''then return text end
+ if type(text)~='string'or text==''then return text end
+ if locale~='en'then return Grammar.russian(text)end
  local result=cache[text];if result then return result end
- result=translate(text,0)
+ result=Grammar.english(translate(text,0))
  if cacheSize>=2048 then table.clear(cache);cacheSize=0 end
  cache[text]=result;cacheSize+=1;return result
 end
@@ -6500,6 +6511,128 @@ function M.frame(vehicle,body,offset,flying)
  return body.CFrame*CFrame.new(x,y+(flying and 2.2 or offset)+.18,0)*CFrame.Angles(0,-math.pi/2,0)
 end
 return M
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_v66_Grammar"><Properties><string name="Name">Grammar</string><ProtectedString name="Source"><![CDATA[-- Presentation only: identifiers, canonical source strings and stored numbers stay unchanged.
+local M={}
+local function boundary(text,at)
+ local byte=text:byte(at)
+ return not byte or not((byte>=65 and byte<=90)or(byte>=97 and byte<=122)or byte>=128 or byte==95)
+end
+local function declension(text,forms,locale)
+ local done={}
+ for _,form in ipairs(forms)do if not done[form]then done[form]=true
+  text=text:gsub('()(%d[%d%., ]*)(%s+)'..form..'()',function(first,numeric,spaces,after)
+   if not boundary(text,after)then return numeric..spaces..form end
+   local clean=numeric:gsub('%s','')
+   local count=tonumber(locale=='ru'and clean:gsub(',','.')or clean:gsub(',',''))
+   if not count then return numeric..spaces..form end
+   local selected
+   if locale=='en'then selected=count==1 and forms[1]or forms[2]
+   elseif count%1~=0 then selected=forms[2]
+   else
+    local last100=count%100;local last=count%10
+    local before=text:sub(math.max(1,first-20),first-1)
+    local genitive=before:match('до%s+$')or before:match('из%s+$')or before:match('от%s+$')or before:match('для%s+$')or before:match('после%s+$')or before:match('без%s+$')
+    if genitive then selected=(last==1 and last100~=11)and(forms[4]or forms[2])or forms[3]
+    elseif last100>=11 and last100<=14 then selected=forms[3]
+    elseif last==1 then selected=forms[1]
+    elseif last>=2 and last<=4 then selected=forms[2]
+    else selected=forms[3]end
+   end
+   return numeric..spaces..selected
+  end)
+ end end
+ return text
+end
+function M.english(text)
+ for _,forms in ipairs({{'car theft','car thefts'},{'theft','thefts'},{'raid','raids'},{'delivery','deliveries'},{'day','days'},{'car','cars'},{'item','items'},{'coin','coins'},{'diamond','diamonds'},{'stud','studs'},{'second','seconds'},{'minute','minutes'},{'hour','hours'}})do
+  text=declension(text,forms,'en')
+ end
+ return text
+end
+function M.russian(text)
+ -- One player-facing place: garage. Internal Salon* identifiers are untouched.
+ for _,pair in ipairs({{'салонов','гаражей'},{'салоны','гаражи'},{'салоном','гаражом'},{'салоне','гараже'},{'салону','гаражу'},{'салона','гаража'},{'салон','гараж'},
+  {'Салонов','Гаражей'},{'Салоны','Гаражи'},{'Салоном','Гаражом'},{'Салоне','Гараже'},{'Салону','Гаражу'},{'Салона','Гаража'},{'Салон','Гараж'},
+  {'САЛОНОВ','ГАРАЖЕЙ'},{'САЛОНЫ','ГАРАЖИ'},{'САЛОНОМ','ГАРАЖОМ'},{'САЛОНЕ','ГАРАЖЕ'},{'САЛОНУ','ГАРАЖУ'},{'САЛОНА','ГАРАЖА'},{'САЛОН','ГАРАЖ'}})do
+  -- UTF-8 uppercase conversion is intentionally explicit, not string.upper.
+  text=text:gsub('()'..pair[1]..'()',function(first,after)
+   if(first==1 or boundary(text,first-1))and boundary(text,after)then return pair[2]end
+   return pair[1]
+  end)
+ end
+ for _,forms in ipairs({{'монета','монеты','монет','монеты'},{'алмаз','алмаза','алмазов','алмаза'},{'студ','студа','студов','студа'},
+  {'машина','машины','машин','машины'},{'день','дня','дней','дня'},{'предмет','предмета','предметов','предмета'},
+  {'секунда','секунды','секунд','секунды'},{'минута','минуты','минут','минуты'},{'час','часа','часов','часа'}})do
+  text=declension(text,forms,'ru')
+ end
+ return text
+end
+return M
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_v66_Messages"><Properties><string name="Name">Messages</string><ProtectedString name="Source"><![CDATA[local M={}
+local source={recover_stop='Останови машину перед восстановлением.'}
+function M.source(key)return type(key)=='string'and source[key]or nil end
+return M
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_v66_ProgressionConfig"><Properties><string name="Name">ProgressionConfig</string><ProtectedString name="Source"><![CDATA[-- Continuous early progression; owned hacking levels and XP are never reset.
+local M={}
+function M.needXP(level)
+ level=math.max(1,math.floor(tonumber(level)or 1))
+ if level<=5 then return 40+8*level end
+ return 80+18*(level-5)
+end
+return M
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_v66_InterfaceAccess"><Properties><string name="Name">InterfaceAccess</string><ProtectedString name="Source"><![CDATA[-- Native GUI selection and bounded modal scaling; no gameplay permissions live here.
+local M={}
+local targets={MainMenu=true,CosmeticShopV44=true,Steal60NPCShopV35=true,Steal60Handbook=true,HackVarietyV26=true}
+function M.scaleFor(width,height,baseWidth,baseHeight,reserve)
+ if baseWidth<=0 or baseHeight<=0 then return 1 end
+ local preferred=width>=1600 and height>=900 and 1.15 or 1
+ return math.max(.1,math.min(preferred,(width-24)/baseWidth,(height-(reserve or 24))/baseHeight))
+end
+function M.axes(stickX,rightTrigger,leftTrigger)
+ local steer=math.abs(stickX or 0)>.15 and math.clamp(stickX,-1,1)or 0
+ return math.clamp((rightTrigger or 0)-(leftTrigger or 0),-1,1),steer
+end
+function M.focus(frame,preferred)
+ local input=game:GetService('UserInputService')
+ if not input.GamepadEnabled then return end
+ local selected=preferred
+ if not selected then for _,object in ipairs(frame:GetDescendants())do
+  if object:IsA('GuiButton')and object.Visible and object.Active and object.Selectable then selected=object;break end
+ end end
+ if selected then game:GetService('GuiService').SelectedObject=selected end
+end
+function M.start(gui)
+ local frames=setmetatable({},{__mode='k'});local links={};local live=true
+ local function listen(signal,fn)local c=signal:Connect(fn);links[#links+1]=c end
+ local function watch(object)
+  if object:IsA('GuiButton')then
+   object.Selectable=object.Active
+   return
+  end
+  if not object:IsA('Frame')or not targets[object.Name]or frames[object]then return end
+  local scale=Instance.new('UIScale');scale.Name='Steal60AdaptiveScale';scale.Scale=1;scale.Parent=object;frames[object]=scale
+  local visible=object:GetPropertyChangedSignal('Visible'):Connect(function()if object.Visible then task.defer(function()if live and object.Parent then M.focus(object)end end)end end)
+  object.Destroying:Connect(function()visible:Disconnect();frames[object]=nil end)
+  if object.Visible then task.defer(function()if live and object.Parent then M.focus(object)end end)end
+ end
+ listen(gui.DescendantAdded,watch);for _,object in ipairs(gui:GetDescendants())do watch(object)end
+ local elapsed=0
+ listen(game:GetService('RunService').Heartbeat,function(dt)
+  elapsed+=dt;if elapsed<.25 then return end;elapsed=0
+  local camera=workspace.CurrentCamera;if not camera then return end
+  local viewport=camera.ViewportSize
+  for frame,scale in pairs(frames)do if frame.Parent and frame.Visible then
+   local size=frame.AbsoluteSize;local current=math.max(.01,scale.Scale)
+   local reserve=frame.Name=='Steal60Handbook'and 124 or 24
+   local nextScale=M.scaleFor(viewport.X,viewport.Y,size.X/current,size.Y/current,reserve)
+   -- The handbook's top anchor reserves the entire controls strip below it.
+   if frame.Name=='Steal60Handbook'then nextScale=math.min(1,nextScale)end
+   if math.abs(scale.Scale-nextScale)>.005 then scale.Scale=nextScale end
+  end end
+ end)
+ gui.Destroying:Connect(function()live=false;for _,c in ipairs(links)do c:Disconnect()end end)
+end
+return M
 ]]></ProtectedString></Properties></Item></Item>
     </Item>
     <Item class="Folder" referent="RBX33">
@@ -6537,6 +6670,7 @@ local function startOptional(name,...)
  end)
 end
 startOptional('HUDLayout',gui)
+startOptional('InterfaceAccess',gui)
 startOptional('MusicDirector',gui)
 startOptional('LanguageController',gui)
 startOptional('ClientPerformance')
@@ -6549,7 +6683,6 @@ local Settings = require(Shared:WaitForChild("Config"):WaitForChild("Settings"))
 
 local remotes = ReplicatedStorage:WaitForChild("Remotes")
 local HackStart = remotes:WaitForChild("HackStart")
-local HackResult = remotes:WaitForChild("HackResult")
 local Notify = remotes:WaitForChild("Notify")
 
 local function corner(parent, radius)
@@ -6592,6 +6725,8 @@ local toastLimit=Instance.new('UISizeConstraint');toastLimit.MaxSize=Vector2.new
 refreshToastLayout(false)
 
 Notify.OnClientEvent:Connect(function(text, kind)
+    if type(text)=='table'then text=require(Shared.Messages).source(text.key)end
+    if type(text)~='string'then return end
     if kind=="hack_success"then return end
 	if kind == "closehack" then
 		if closeHack then
@@ -6657,6 +6792,7 @@ local function runMinigame(params)
     local waiting=false
     local victoryShown=false
     local renderConn,inputConn
+    local Access=require(Shared.InterfaceAccess)
 
     local root=Instance.new("Frame")
     root.Name="HackVarietyV26"
@@ -6881,6 +7017,7 @@ local function runMinigame(params)
         if activeHackStep then activeHackStep:Disconnect() end
         activeHackStep=nil
         closeHack=nil
+        game:GetService('GuiService').SelectedObject=nil
         root:Destroy()
     end
     closeHack=close
@@ -6898,7 +7035,8 @@ local function runMinigame(params)
         pulsePanel.Visible=(mode=="signal")
         memoryPanel.Visible=(mode=="memory")
         action.Visible=(mode~="wires"and mode~="memory")
-        action.Text="ПОПАСТЬ  ·  [F]"
+        action.Text=UserInputService:GetLastInputType()==Enum.UserInputType.Gamepad1 and'НАЖМИ A НА ГЕЙМПАДЕ'or'ПОПАСТЬ  ·  [F]'
+        Access.focus(root,mode=='wires'and wireButtons[1]or mode=='memory'and memoryButtons[1]or action)
         action.BackgroundColor3=theme
         for i,cell in ipairs(lamps) do
             cell.BackgroundColor3=i<current.round and theme
@@ -6941,6 +7079,9 @@ local function runMinigame(params)
         if finished then return end
         HackTap:FireServer("cancel")
         close()
+    end
+    for _,buttons in ipairs({wireButtons,memoryButtons})do
+        for i,b in ipairs(buttons)do b.Selectable=true;b.NextSelectionLeft=buttons[(i-2)%#buttons+1];b.NextSelectionRight=buttons[i%#buttons+1]end
     end
     for i,b in ipairs(wireButtons) do
         b.Activated:Connect(function() submit("wire_"..i) end)
@@ -6986,8 +7127,9 @@ local function runMinigame(params)
     end)
     inputConn=UserInputService.InputBegan:Connect(function(input,processed)
         if finished then return end
+        if input.KeyCode==Enum.KeyCode.ButtonB then cancelAction();return end
         if victoryShown then
-            if input.KeyCode==Enum.KeyCode.F or input.KeyCode==Enum.KeyCode.Escape then close() end
+            if input.KeyCode==Enum.KeyCode.F or input.KeyCode==Enum.KeyCode.Escape or input.KeyCode==Enum.KeyCode.ButtonA then close() end
             return
         end
         if processed then return end
@@ -7155,11 +7297,23 @@ local function setWorldLabelsVisible(visible)
 end
 
 UserInputService.InputBegan:Connect(function(input, processed)
-    if not processed and input.KeyCode == Enum.KeyCode.R and lastCar and lastCar.Parent then
+    if not processed and (input.KeyCode == Enum.KeyCode.R or input.KeyCode==Enum.KeyCode.ButtonX) and lastCar and lastCar.Parent then
         RecoverCar:FireServer(lastCar)
     end
 end)
 
+local gamepadStick,gamepadRight,gamepadLeft=0,0,0
+local function padInput(input,ended)
+ if input.UserInputType~=Enum.UserInputType.Gamepad1 then return end
+ local value=ended and 0 or input.Position.Z
+ if input.KeyCode==Enum.KeyCode.Thumbstick1 then gamepadStick=ended and 0 or input.Position.X
+ elseif input.KeyCode==Enum.KeyCode.ButtonR2 then gamepadRight=value
+ elseif input.KeyCode==Enum.KeyCode.ButtonL2 then gamepadLeft=value end
+end
+UserInputService.InputChanged:Connect(function(input)padInput(input,false)end)
+UserInputService.InputBegan:Connect(function(input)padInput(input,false)end)
+UserInputService.InputEnded:Connect(function(input)padInput(input,true)end)
+UserInputService.GamepadDisconnected:Connect(function()gamepadStick,gamepadRight,gamepadLeft=0,0,0 end)
 local lastDrivingState = false
 RunService.Heartbeat:Connect(function(dt)
     local car,seat=DriveState.current(player)
@@ -7174,6 +7328,7 @@ RunService.Heartbeat:Connect(function(dt)
         local handbook=player:GetAttribute('Steal60ActiveModal')=='Steal60Handbook'
         local training=player:GetAttribute('DataLoaded')==true and player:GetAttribute('TutorialComplete')~=true
         driveHint.Text=UserInputService.TouchEnabled and'Стик — ходьба · нажми на действие'or'W/A/S/D — ходьба · E — действие'
+        if UserInputService:GetLastInputType()==Enum.UserInputType.Gamepad1 then driveHint.Text='Геймпад: стик — ходьба · X — действие · Y — меню'end
         driveHint.Visible=(training or handbook)and not player:GetAttribute('HackActive')and not player:GetAttribute('CosmeticPreviewToken')and(not player:GetAttribute('Steal60MenuOpen')or handbook)
         touchThrottle, touchSteer = 0, 0
         return
@@ -7190,6 +7345,7 @@ RunService.Heartbeat:Connect(function(dt)
     local menuActive=player:GetAttribute('Steal60MenuOpen')==true or player:GetAttribute('HackActive')==true
     driveUI.Visible = UserInputService.TouchEnabled and not menuActive
     driveHint.Text=UserInputService.TouchEnabled and'Кнопки газа и руля — езда · R — выровнять'or'W/S — газ · A/D — руль · R — выровнять'
+    if UserInputService:GetLastInputType()==Enum.UserInputType.Gamepad1 then driveHint.Text='Геймпад: RT/LT — газ/назад · стик — руль · X — выровнять'end
     driveHint.Visible = not player:GetAttribute('HackActive') and
         (player:GetAttribute('TutorialComplete')~=true or player:GetAttribute('Steal60ActiveModal')=='Steal60Handbook') and
         (not menuActive or player:GetAttribute('Steal60ActiveModal')=='Steal60Handbook')
@@ -7203,6 +7359,7 @@ RunService.Heartbeat:Connect(function(dt)
         if keyThrottle ~= 0 then throttle = keyThrottle end
         if keySteer ~= 0 then steer = keySteer end
     end
+    if UserInputService:GetLastInputType()==Enum.UserInputType.Gamepad1 then throttle,steer=require(Shared.InterfaceAccess).axes(gamepadStick,gamepadRight,gamepadLeft)end
     if menuActive then throttle,steer=0,0 end
     DriveState.setInput(car,throttle,steer)
     if os.clock() - lastSent >= .08 then
@@ -7594,7 +7751,8 @@ local function setMenuOpen(open)
     player:SetAttribute("Steal60MenuOpen", open)
     if open then
         renderTab(currentTab)
-    end
+        require(Shared.InterfaceAccess).focus(panel)
+    else game:GetService('GuiService').SelectedObject=nil end
 end
 player:SetAttribute("Steal60MenuOpen", false)
 UserInputService.InputBegan:Connect(function(input, processed)
@@ -7729,6 +7887,10 @@ remotes:WaitForChild("ShowTop100").OnClientEvent:Connect(function()
     currentTab = "top"
     setMenuOpen(true)
     renderTab("top")
+end)
+UserInputService.InputBegan:Connect(function(input,processed)
+    if input.KeyCode==Enum.KeyCode.ButtonY and not player:GetAttribute('HackActive')then setMenuOpen(not panel.Visible)
+    elseif input.KeyCode==Enum.KeyCode.ButtonB and panel.Visible then setMenuOpen(false)end
 end)
 menuBtn.Activated:Connect(function()
     setMenuOpen(not panel.Visible)
@@ -8498,6 +8660,8 @@ end)
 for _,name in ipairs({'Steal60MenuOpen','HackActive'})do player:GetAttributeChangedSignal(name):Connect(draw)end
 player:GetAttributeChangedSignal('Steal60OpenHandbook'):Connect(openBook)
 action:FireServer('request');task.spawn(function()while gui.Parent do draw();task.wait(.25)end;highlight:Destroy()end)
+
+game:GetService('UserInputService').InputBegan:Connect(function(input)if input.KeyCode==Enum.KeyCode.ButtonB and book then book:Destroy();book=nil;game:GetService('GuiService').SelectedObject=nil end end)
 ]]></ProtectedString></Properties></Item><Item class="LocalScript" referent="RBX_V33_ECONOMY_HUD"><Properties><string name="Name">EconomyHUD</string><bool name="Disabled">false</bool><ProtectedString name="Source"><![CDATA[-- Static vendor interfaces: upgrades, automatic income shelves, collections and diamonds.
 -- Client renders data; all purchases, prices and swaps are checked by server.
 local Players = game:GetService("Players")
@@ -8710,7 +8874,7 @@ openRemote.OnClientEvent:Connect(function(kind)
  vendor=kind;tab=kind=="coins"and player:GetAttribute("TutorialStep")=="star"and"items"or"coins"
  setOpen(true)
 end)
-Input.InputBegan:Connect(function(input,processed)if not processed and input.KeyCode==Enum.KeyCode.Escape and panel.Visible then setOpen(false)end end)
+Input.InputBegan:Connect(function(input,processed)if (not processed and input.KeyCode==Enum.KeyCode.Escape or input.KeyCode==Enum.KeyCode.ButtonB) and panel.Visible then setOpen(false)end end)
 remotes:WaitForChild("CurrencyUpdate").OnClientEvent:Connect(function()if panel.Visible then task.defer(draw)end end)
 ]]></ProtectedString></Properties></Item><Item class="LocalScript" referent="RBXGEN_V37_CosmeticHUD">
           <Properties>
@@ -9181,7 +9345,7 @@ local function itemCard(def,data)
    text(b,selectedCarId and "ДЛЯ ВЫБРАННОЙ МАШИНЫ" or "СНАЧАЛА ВЫБЕРИ МАШИНУ",
     UDim2.new(1,-x-12,0,21),UDim2.fromOffset(x,wide and 157 or 142),11,C(121,236,196),true)
   elseif isPet then
-   text(b,def.movement=="fly" and "ЛЕТАЕТ ЗА ВЛАДЕЛЬЦЕМ" or "ЕДЕТ НА БАГАЖНИКЕ",
+   text(b,def.movement=="fly" and "ЛЕТАЕТ ЗА ВЛАДЕЛЬЦЕМ" or "ЕДЕТ НА КРЫШЕ",
     UDim2.new(1,-x-12,0,21),UDim2.fromOffset(x,wide and 157 or 142),11,C(121,236,196),true)
   end
  else
@@ -9344,7 +9508,7 @@ end)
 update.OnClientEvent:Connect(function() if panel.Visible then task.defer(render) end end)
 currency.OnClientEvent:Connect(function() if panel.Visible then task.defer(render) end end)
 Input.InputBegan:Connect(function(input,processed)
- if not processed and input.KeyCode==Enum.KeyCode.Escape and panel.Visible then setOpen(false) end
+ if (not processed and input.KeyCode==Enum.KeyCode.Escape or input.KeyCode==Enum.KeyCode.ButtonB) and panel.Visible then setOpen(false) end
 end)
 
 
@@ -9649,14 +9813,6 @@ function DataService.getSeasonScore(player)
     return reconcileSeason(data), math.max(0, math.floor(tonumber(data.seasonEarnings) or 0))
 end
 
--- DEVELOPER / TEST ACCOUNT ONLY. Premium gems cannot be farmed by gameplay.
--- This grant is restricted to Studio; published servers never grant free test gems.
--- The whitelist is server-side; other players have no free-gem path.
-local ENABLE_ONE_TIME_TEST_GRANT = false
-local TEST_ACCOUNT_USERNAME = "HarDvRaiN" -- Roblox username shown in earlier Studio Output
-local TEST_GRANT_AMOUNT = 1000000
-local TEST_GRANT_FLAG = "testGrant_1m_v24_20261030"
-
 local DEFAULT_DATA = {
 	version = 3,
 
@@ -9901,18 +10057,6 @@ local function onPlayerAdded(player)
     -- A saved absolute timestamp, not a session timer. Existing progress is untouched.
     data.vipUntil=math.clamp(math.floor(tonumber(data.vipUntil) or 0),0,4102444800)
     data.diamonds=math.clamp(math.floor(tonumber(data.diamonds) or 0),0,Durable.MAX)
-    local testGrantApplied=false
-    -- A single explicit Roblox username is allowed to receive the developer grant.
-    -- No RemoteEvent/client code can trigger this. No starter gems for other users.
-    if ENABLE_ONE_TIME_TEST_GRANT and RunService:IsStudio()
-        and player.Name:lower()==TEST_ACCOUNT_USERNAME:lower()
-        and data[TEST_GRANT_FLAG] ~= true then
-        data.diamonds=math.min(Durable.MAX,data.diamonds+TEST_GRANT_AMOUNT)
-        data[TEST_GRANT_FLAG]=true
-        testGrantApplied=true
-        print(("[Steal60/TestDiamonds] Однократно выдано %d алмазов разработчику %s (%d)")
-            :format(TEST_GRANT_AMOUNT,player.Name,player.UserId))
-    end
     local resetApplied=StudioProfile.reset(data,player,RunService:IsStudio(),noSave[player]==true)
     if resetApplied then print('[Steal60/Studio] Fresh test progression; diamonds and hacking skill preserved in isolated Studio storage.')end
     player:SetAttribute('StudioTestProfile',RunService:IsStudio())
@@ -9920,9 +10064,9 @@ local function onPlayerAdded(player)
 	profiles[player] = data
     DataService.recordEarnings(player,EarningsLedger.migrationAmount(data))
 	player:SetAttribute("DataLoaded", true)
-    -- Save immediately so a quick test/exit doesn't lose a first-time grant.
+    -- Persist the isolated personal Studio reset immediately.
     -- Without Studio API access the fallback profile is intentionally temporary.
-    if(testGrantApplied or resetApplied)and not noSave[player]then
+    if resetApplied and not noSave[player]then
         task.spawn(function()
             if player.Parent then save(player,false) end
         end)
@@ -11530,7 +11674,7 @@ function Net.init()
  Security.init()
 	local folder = Instance.new("Folder")
 	folder.Name = "Remotes"
-	for _, name in ipairs({ "HackStart", "HackResult", "HackTap", "HackStep", "DriveInput", "DriveSnapshot", "RecoverCar", "Notify", "PinCar", "LootReveal", "BuyUpgrade", "CurrencyUpdate", "ShowTop100", "BuyCoinUpgrade", "ManageWorkshop", "OpenEconomyNPC", "BuyVIP", "CosmeticAction", "CosmeticUpdate", "TutorialAction", "TutorialUpdate", "SetLanguage", "SetAudio" }) do
+	for _, name in ipairs({ "HackStart", "HackTap", "HackStep", "DriveInput", "DriveSnapshot", "RecoverCar", "Notify", "PinCar", "LootReveal", "BuyUpgrade", "CurrencyUpdate", "ShowTop100", "BuyCoinUpgrade", "ManageWorkshop", "OpenEconomyNPC", "BuyVIP", "CosmeticAction", "CosmeticUpdate", "TutorialAction", "TutorialUpdate", "SetLanguage", "SetAudio" }) do
 		local e = Instance.new("RemoteEvent")
 		e.Name = name
 		e.Parent = folder
@@ -11548,6 +11692,12 @@ function Net.init()
 end
 
 -- kind: "info" | "good" | "bad" | "closehack"
+function Net.notifyKey(player,key,kind)
+ if require(ReplicatedStorage.Shared.Messages).source(key)and Net.Notify and player and player.Parent then
+  Net.Notify:FireClient(player,{key=key},kind or'info')
+ end
+end
+
 function Net.notify(player, text, kind)
 	if Net.Notify and player and player.Parent then
 		Net.Notify:FireClient(player, text, kind or "info")
@@ -11915,7 +12065,7 @@ local function rescue(player,car,automatic)
     if not occupant or occupant.Parent~=player.Character then return end
     if os.clock()-state.lastRecovery < (automatic and 7 or COOLDOWN) then return end
     if not automatic and state.body.AssemblyLinearVelocity.Magnitude>9 then
-        Net.notify(player,"Останови машину перед восстановлением.","info")
+        Net.notifyKey(player,'recover_stop','info')
         return
     end
     local pos=state.body.Position
@@ -12930,7 +13080,7 @@ end
 function HackService.init()
     ParkingService.onPromptTriggered(onPrompt)
     Net.HackTap.OnServerEvent:Connect(onTap)
-    -- Old HackResult endpoint is deliberately no longer accepted for rewards.
+    -- Only bounded HackTap commands are accepted; rewards remain server-authoritative.
     Players.PlayerRemoving:Connect(function(player)
         policePending[player] = nil
         lastMode[player] = nil
@@ -13217,7 +13367,7 @@ local SLOT_UV = { {-30,0}, {-20,0}, {-10,0}, {10,0}, {20,0}, {30,0} }
 
 -- PvP salon burglary is a short temporary disruption, NOT a permanent transfer.
 local THEFT_COOLDOWN = 5 * 60 -- after each successful raid, and after no-reward invalid attempts never consumed
-local TARGET_PROTECTION = 5 * 60 -- one victim salon cannot be repeatedly farmed
+local TARGET_PROTECTION = 2 * 60 -- one victim salon cannot be repeatedly farmed
 local HIDE_SECONDS = 10
 local MAX_LOSS = 2500  -- max stolen from accumulated till, not from owner's bank balance
 local theftBusy = {} -- reentrancy protection per thief
@@ -13334,7 +13484,7 @@ local function upgradeEffect(data,player,id)
  local rate=computeIncome(data,player)*3600
  if id=='doubleIncome'and(u.doubleIncome or 0)>0 and not Monetization.has(player,'doubleIncome')then rate*=2 end
  local effect
- if id=='income'then effect=('Доход полок +%d%%'):format(3*(u.income or 0)+4*(c.income or 0))
+ if id=='income'then effect=('Бонус базового дохода +%d п.п.'):format(3*(u.income or 0)+4*(c.income or 0))
  elseif id=='botSpeed'or id=='secondBot'then
   local Bonus=require(Shared.DeliveryBonus)
   effect=('Доставка +%d п.п.; редкая+ +%d п.п.'):format(Bonus.points(data,'common',Monetization.has(player,'secondBot')),Bonus.points(data,'rare',Monetization.has(player,'secondBot')))
@@ -14239,10 +14389,12 @@ local function menuData(player)
     for _, def in ipairs(Upgrade) do
         local level = data.upgrades[def.id] or 0
         local currentEffect,nextEffect=upgradePreview(data,player,def.id,'diamond',def.max)
+        local speedCap=(def.id=='speed'or def.id=='fastRide')and DriveService.maxSpeedFor(data,player)>=Settings.MaxCarSpeed-.001
         table.insert(upgrades, {
-            currentEffect=currentEffect,nextEffect=nextEffect,
+            currentEffect=currentEffect,nextEffect=nextEffect,blockedReason=speedCap and'ДОСТИГНУТ ПРЕДЕЛ СКОРОСТИ'or nil,
             id = def.id, name = def.name, description = def.description,
             level = level, max = def.max, cost = (function()
+                if speedCap then return nil end
                 if def.id=='security'and((data.upgrades.security or 0)+((data.coinUpgrades or{}).security or 0))>=5 then return nil end
                 return Upgrade.cost(def.id,level)
             end)(),
@@ -14280,14 +14432,15 @@ local function menuData(player)
                 local level=math.clamp(math.floor(tonumber((data.coinUpgrades or {})[def.id]) or 0),0,def.max)
                 local total=def.id=="security" and math.min(5,level+math.floor(tonumber((data.upgrades or {}).security) or 0)) or level
                 local price=CoinUpgrade.cost(def.id,level);if def.id=='security'and total>=5 then price=nil end
+                local speedCap=def.id=='speed'and DriveService.maxSpeedFor(data,player)>=Settings.MaxCarSpeed-.001
+                if speedCap then price=nil end
                 local currentEffect,nextEffect=upgradePreview(data,player,def.id,'coin',def.max)
-                table.insert(list,{currentEffect=currentEffect,nextEffect=nextEffect,id=def.id,name=def.name,detail=def.detail,icon=def.icon,level=level,max=def.max,cost=price,coinLevel=level})
+                table.insert(list,{currentEffect=currentEffect,nextEffect=nextEffect,blockedReason=speedCap and'ДОСТИГНУТ ПРЕДЕЛ СКОРОСТИ'or nil,id=def.id,name=def.name,detail=def.detail,icon=def.icon,level=level,max=def.max,cost=price,coinLevel=level})
             end
             return list
         end)(),
         hackLevel = data.hackLevel,
         masterKeyTokens = data.masterKeyTokens or 0,
-        boostSeconds = math.max(0, (data.boostUntil or 0) - os.time()),
         upgrades = upgrades,
         masteryEffects=(function()
             local result={}
@@ -14680,15 +14833,42 @@ local Upgrade = require(game.ReplicatedStorage.Shared.Config.UpgradeConfig)
 local CoinUpgrade=require(game.ReplicatedStorage.Shared.Config.CoinUpgradeConfig)
 local Salon = require(script.Parent.SalonService)
 local Tutorial=require(script.Parent.TutorialService)
+local Drive=require(script.Parent.DriveService)
+local Settings=require(game.ReplicatedStorage.Shared.Config.Settings)
+local function speedCapped(data,player)
+ return Drive.maxSpeedFor(data,player)>=Settings.MaxCarSpeed-.001
+end
 local UpgradeService = {}
-local cooldown = {}
+local cooldown = {diamond={},coin={}}
+local active={diamond={},coin={}}
+local function serialized(currency,handler)
+ return function(player,id)
+  if active[currency][player]then return end
+  active[currency][player]=true
+  local ok,err=pcall(handler,player,id)
+  active[currency][player]=nil
+  if not ok then warn('[Steal60 upgrade] '..tostring(err))end
+ end
+end
+local function persistPurchase(player)
+ if not Data.canSave(player)then return true end -- explicitly temporary Studio session
+ local saved=Data.saveNow(player)
+ if not saved then
+  Data.requestSave(player)
+  Net.notify(player,'Улучшение применено, но сохранение пока не подтверждено. Автосохранение повторит попытку.','info')
+ end
+ return saved
+end
 local function buy(player, id)
     if typeof(id) ~= "string" then return end
-    if os.clock() - (cooldown[player] or 0) < 0.25 then return end
-    cooldown[player] = os.clock()
+    if os.clock() - (cooldown.diamond[player] or -10) < 0.25 then return end
+    cooldown.diamond[player] = os.clock()
     local def = Upgrade.ById[id]
     local data = Data.get(player)
     if not def or not data then return end
+    if(id=='speed'or id=='fastRide')and speedCapped(data,player)then
+        Net.notify(player,'Достигнут предел скорости. Эта покупка больше не даст прибавки.','info');return
+    end
     local level = (data.upgrades[id] or 0)
     local cost = Upgrade.cost(id, level)
     if not cost then
@@ -14712,15 +14892,19 @@ local function buy(player, id)
         Salon.refresh(player)
     end
     if Net.CurrencyUpdate then Net.CurrencyUpdate:FireClient(player,data.diamonds) end
+    if not persistPurchase(player)then return end
     Net.notify(player,("Улучшено: %s · %d уровень (−%d 💎)"):format(def.name,level+1,cost),"good")
 end
 local function buyCoin(player, id)
     if typeof(id)~="string" then return end
-    if os.clock()-(cooldown[player] or 0)<.20 then return end
-    cooldown[player]=os.clock()
+    if os.clock()-(cooldown.coin[player] or -10)<.20 then return end
+    cooldown.coin[player]=os.clock()
     local def=CoinUpgrade.ById[id]
     local data=Data.get(player)
     if not def or not data then return end
+    if(id=='speed'or id=='fastRide')and speedCapped(data,player)then
+        Net.notify(player,'Достигнут предел скорости. Эта покупка больше не даст прибавки.','info');return
+    end
     data.coinUpgrades=data.coinUpgrades or {}
     local lvl=math.clamp(math.floor(tonumber(data.coinUpgrades[id]) or 0),0,def.max)
     local cost=CoinUpgrade.cost(id,lvl)
@@ -14740,6 +14924,8 @@ local function buyCoin(player, id)
         data.shelfCapacity=12+premium*3+(data.coinUpgrades.shelves or 0)*3
     end
     if id=="security" or id=="shelves" or id=="income" then Salon.refresh(player) end
+    local saved=persistPurchase(player)
+    if not saved then return end
     if id=="security" then
         local total=math.min(5,lvl+1+math.floor(tonumber((data.upgrades or {}).security) or 0))
         Net.notify(player,("ОХРАНА УЛУЧШЕНА: %d/5 · против игроков только замедляет, НПС ловит чаще. −%d $"):format(total,cost),"good")
@@ -14749,10 +14935,10 @@ local function buyCoin(player, id)
     Net.notify(player,("%s: %d/%d · потрачено %d $."):format(def.name,lvl+1,def.max,cost),"good")
 end
 function UpgradeService.init()
-    Net.BuyUpgrade.OnServerEvent:Connect(buy)
-    Net.BuyCoinUpgrade.OnServerEvent:Connect(buyCoin)
+    Net.BuyUpgrade.OnServerEvent:Connect(serialized('diamond',buy))
+    Net.BuyCoinUpgrade.OnServerEvent:Connect(serialized('coin',buyCoin))
     game:GetService("Players").PlayerRemoving:Connect(function(player)
-        cooldown[player] = nil
+        cooldown.diamond[player]=nil;cooldown.coin[player]=nil;active.diamond[player]=nil;active.coin[player]=nil
     end)
 end
 return UpgradeService
@@ -15598,7 +15784,7 @@ local function dailyKey()
     return math.floor(os.time() / 86400) -- UTC calendar day, independent of server timezone
 end
 local function needXP(level)
-    return 55 + math.floor(math.max(1,level) * 18)
+    return require(Shared.ProgressionConfig).needXP(level)
 end
 local function getDaily(data)
     local daily = data.dailyHeists
@@ -16455,7 +16641,7 @@ local function sanitized(data)
   end
  end
  if data.petUnlocked==true then
-  -- A license opens all four current visuals and all future pet appearances.
+  -- A license opens every current and future pet appearance; upgrades are separate.
   for _,def in ipairs(Config.List) do
    if def.category=="pet" then data.cosmeticsOwned[def.id]=true end
   end
@@ -18214,99 +18400,8 @@ local function giveClient(player)
     if tutorial then tutorial:Clone().Parent = screen end
 end
 
-----------------------------------------------------------------------
--- ВРЕМЕННО (до этапов 5-6): награда за доставку и рост уровня взлома
-----------------------------------------------------------------------
-DeliveryService.onDelivered(function(player, info)
-	local data = DataService.get(player)
-	if not data then
-		return
-	end
-    local isNew = DataService.addToCatalog(player, info.carId, info.rarity, info.variantId)
-    local firstSuccess = data.botUnlocked ~= true
-    if firstSuccess then
-        data.botUnlocked = true
-        player:SetAttribute("HelperUnlocked", true)
-
-    end
-
-	local variantMult = 1
-	for _, v in ipairs(Cars.Variants) do
-		if v.id == info.variantId then
-			variantMult = v.incomeMult
-		end
-	end
-	local reward = math.floor(CarClasses[info.classId].baseValue * Rarity.Info[info.rarity].incomeMult * variantMult * 0.25)
-    local payout, runResult = HeistService.onDelivered(player, info, reward, isNew)
-    -- Extra rewards are calculated from the delivered car and persisted server contract.
-    local eventBonus, eventResult = RoadChallengeService.onDelivered(player, info, reward)
-    local cosmeticBonusPct=require(Shared.Config.CosmeticConfig).coinBonusPct(data)
-    payout += math.floor(eventBonus*(1+cosmeticBonusPct/100)+.5)
-    DataService.addMoney(player, payout, true)
-    if eventResult ~= "" then runResult ..= " · " .. eventResult end
-    player:SetAttribute("HeistCarrying", false)
-    SalonService.openCar(player, info, isNew, payout)
-    SalonService.refresh(player) -- may have won a new accessory on delivery
-    Tutorial.event(player,"delivered")
-    Net.notify(player,("Доставлено! +%d монет · добыча на полках."):format(payout),"good")
-end)
-
-----------------------------------------------------------------------
--- ВРЕМЕННО (тест): плашки на экране и быстрая ходьба в Studio
-----------------------------------------------------------------------
-local function makeLabel(gui, y, height)
-	local label = Instance.new("TextLabel")
-	label.Size = UDim2.fromOffset(340, height)
-	label.Position = UDim2.fromOffset(10, y)
-	label.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-	label.BackgroundTransparency = 0.3
-	label.TextColor3 = Color3.new(1, 1, 1)
-	label.TextSize = 20
-	label.Font = Enum.Font.GothamBold
-	label.TextXAlignment = Enum.TextXAlignment.Left
-	label.Text = ""
-	label.Parent = gui
-	return label
-end
-
-local function setupDebug(player)
-	if RunService:IsStudio() then
-		local function apply(char)
-			local hum = char:WaitForChild("Humanoid")
-			hum.WalkSpeed = 50
-		end
-		player.CharacterAdded:Connect(apply)
-		if player.Character then
-			task.spawn(apply, player.Character)
-		end
-	end
-
-	task.spawn(function()
-		local gui = Instance.new("ScreenGui");gui.AutoLocalize=false
-		gui.Name = "TrackDebug"
-		gui.ResetOnSpawn = false
-		local label = makeLabel(gui, 190, 90)
-		gui.Parent = player:WaitForChild("PlayerGui")
-
-		while player.Parent do
-			local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-			if hrp then
-				local x = hrp.Position.X
-				local idx = Layout.indexAt(x)
-				local name = idx == 0 and "Зона салонов" or (tostring(idx).." · "..Districts[Layout.themeIndex(idx)].name)
-				local list = DistrictManager.getLoadedIndices()
-				label.Text = ("Район: %s\nЗагружены: %s\nX: %d"):format(
-					name, #list > 0 and table.concat(list, ", ") or "-", math.floor(x))
-			end
-			task.wait(0.3)
-		end
-	end)
-end
-
 local function setupStats(player)
-	print("[Steal60] Жду данные игрока " .. player.Name)
 	DataService.onLoaded(player, function(data)
-        print("[Steal60] Данные загружены: " .. player.Name .. ", деньги = " .. data.money)
         if data.botUnlocked ~= true and next(data.catalog or {}) == nil then
             task.delay(5,function()
                 if player.Parent and not player:GetAttribute("HelperUnlocked") then
@@ -18355,7 +18450,7 @@ local function onPlayer(player)
     end
     player.CharacterAdded:Connect(giveRunSpeed)
     if player.Character then task.spawn(giveRunSpeed, player.Character) end
-	-- Cinematic edition: legacy studio debug boxes disabled; RouteHUD shows district and route progress.
+	-- RouteHUD shows district and route progress.
 end
 
 Players.PlayerAdded:Connect(onPlayer)

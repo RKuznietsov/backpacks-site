@@ -1,0 +1,81 @@
+{
+  "baseline_initial_v66_commit": "58661d98ebe77fdb471166257641c2e5a8da2a79",
+  "final_xml_sha256": "b8adffa1d934ec8f6bca639e13bce4b07b83e704c339552d46fb710d7aad8e4b",
+  "diamond_income": {
+    "old": {
+      "total": 15379,
+      "last": 5271
+    },
+    "new": {
+      "total": 1080,
+      "last": 193
+    }
+  },
+  "coin_income": {
+    "old": {
+      "total": 489876148,
+      "last": 232046665
+    },
+    "new": {
+      "total": 6050976,
+      "last": 2147195
+    }
+  },
+  "all_diamond_upgrades": {
+    "old": 19551,
+    "new": 5402
+  },
+  "all_coin_upgrades": {
+    "old": 780110645,
+    "new": 39141333
+  },
+  "coin_engine": {
+    "old": {
+      "total": 178810935,
+      "last": 107288361
+    },
+    "new": {
+      "total": 11061573,
+      "last": 5242062
+    }
+  },
+  "coin_helper": {
+    "old": {
+      "total": 96769162,
+      "last": 57272769
+    },
+    "new": {
+      "total": 7374384,
+      "last": 3494708
+    }
+  },
+  "deliveries_model": {
+    "assumptions": "No VIP; always highest unlocked class; precise=false/true means +0/+3 XP per delivery; no travel-time or fail-time simulation.",
+    "rows": [
+      {
+        "target_level": 5,
+        "precise": false,
+        "old_deliveries": 45,
+        "new_deliveries": 27
+      },
+      {
+        "target_level": 5,
+        "precise": true,
+        "old_deliveries": 34,
+        "new_deliveries": 20
+      },
+      {
+        "target_level": 25,
+        "precise": false,
+        "old_deliveries": 419,
+        "new_deliveries": 319
+      },
+      {
+        "target_level": 25,
+        "precise": true,
+        "old_deliveries": 350,
+        "new_deliveries": 267
+      }
+    ]
+  }
+}

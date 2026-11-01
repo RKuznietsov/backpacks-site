@@ -210,8 +210,8 @@ local function fmt(n)local s=tostring(math.floor(n));return(s:reverse():gsub('(%
 local current,following,rate=previewFor(fixture,'income','coin',24)
 local base=Loot[1].income*2500
 local expected=Balance.income(base,0,2,4,0,0,1)*3600
-check(current:find('Доход полок +18%',1,true)~=nil,'current coin+diamond total shown')
-check(following:find('Доход полок +22%',1,true)~=nil,'next combined income bonus')
+check(current:find('Бонус базового дохода +18 п.п.',1,true)~=nil,'current coin+diamond total shown')
+check(following:find('Бонус базового дохода +22 п.п.',1,true)~=nil,'next combined income bonus')
 check(following:find('Доход в час: '..fmt(expected)..' $',1,true)~=nil,'next actual nonlinear income shown')
 check(rate==Balance.income(base,0,2,3,0,0,1)*3600,'live and preview income use same formula')
 current,following=previewFor(fixture,'doubleIncome','diamond',1)
@@ -237,4 +237,107 @@ function Players:GetPlayers()return {}end
 step();check(next(loaded)==nil,'unused districts unload with no players')
 Players.GetPlayers=originalPlayers;player.Character=nil;character:Destroy()
 print('PASS: actual district manager needed/load/unload lifecycle for 1,000 crossings (zero-delay test config)')
-print('FINAL ASSERTIONS: '..checks)
+
+-- Audit regression: both already-protected expensive remotes remain bounded.
+do
+ local beforeMovement=Security.movement;Security.movement=function()return true end
+ for _,entry in ipairs({{'PinCar',3,'rusty_hatch'},{'GetMenuData',4}})do
+  local actor=Instance.new('Player');actor.Parent=Players;actor:SetAttribute('DataLoaded',true);actor:SetAttribute('GameplayReady',true)
+  local calls=0;local wrapped=Security.wrap(entry[1],function()calls+=1 end)
+  for i=1,30 do if entry[3]then wrapped(actor,entry[3])else wrapped(actor)end end
+  check(calls==entry[2],entry[1]..' expensive work limited by token bucket')
+ end
+ Security.movement=beforeMovement
+end
+print('PASS: actual PinCar and GetMenuData rate limits')
+-- Full marginal bonus value after the cap at low and very high raw income.
+for _,raw in ipairs({0,80,9600,10000,100000,1000000,1e10})do
+ for _,multiplier in ipairs({1,2,4})do
+  local current=Balance.income(raw,.2,4,5,30,20,multiplier)
+  local nextDiamond=Balance.income(raw,.2,5,5,30,20,multiplier)
+  local nextCoin=Balance.income(raw,.2,4,6,30,20,multiplier)
+  local base=Balance.passiveRate(raw)*multiplier
+  check(math.abs(nextDiamond-current-base*.03)<1e-7,'diamond bonus not eaten by logarithm')
+  check(math.abs(nextCoin-current-base*.04)<1e-7,'coin bonus not eaten by logarithm')
+  check(math.abs(Balance.income(raw,.2,4,5,30,20,multiplier*2)-current*2)<1e-7,'honest x2 at all income levels')
+ end
+end
+local Diamond=require('UpgradeConfig');local Coin=require('CoinUpgradeConfig')
+local function ladder(config,id)local total=0;local last;for level=0,config.ById[id].max-1 do last=config.cost(id,level);total+=last end;return total,last end
+local dTotal,dLast=ladder(Diamond,'income');local cTotal,cLast=ladder(Coin,'income')
+check(dTotal==1080 and dLast==193,'rebalanced diamond income ladder')
+check(cTotal==6050976 and cLast==2147195,'rebalanced coin income ladder')
+check(Diamond.cost('doubleIncome',0)==300,'moderately repriced permanent x2')
+local XP=require('ProgressionConfig')
+check(XP.needXP(1)==48 and XP.needXP(5)==80 and XP.needXP(6)==98,'smooth early XP curve')
+for level=2,150 do check(XP.needXP(level)>XP.needXP(level-1),'XP thresholds monotonic')end
+print('PASS: late-income marginal value, exact new prices and early progression')
+-- Execute the actual upgrade handlers with controlled persistence results.
+do
+ local backup={data=modules.DataService,net=modules.Net,salon=modules.SalonService,tutorial=modules.TutorialService,drive=modules.DriveService}
+ local profiles={};local saves={};local notices={};local requests=0
+ local diamondEvent,coinEvent=signal(),signal()
+ modules.DataService={get=function(actor)return profiles[actor]end,canSave=function()return true end,
+ spendDiamonds=function(actor,cost)local data=profiles[actor];if data.diamonds<cost then return false end;data.diamonds-=cost;return true end,
+ spendMoney=function(actor,cost)local data=profiles[actor];if data.money<cost then return false end;data.money-=cost;return true end,
+ saveNow=function(actor)saves[#saves+1]=deepCopy(profiles[actor]);return not actor:GetAttribute('SimulateSaveFailure')end,
+ requestSave=function()requests+=1 end}
+ modules.Net={BuyUpgrade={OnServerEvent=diamondEvent},BuyCoinUpgrade={OnServerEvent=coinEvent},CurrencyUpdate={FireClient=function()end},notify=function(_,text,kind)notices[#notices+1]={text=text,kind=kind}end}
+ modules.SalonService={refresh=function()end};modules.TutorialService={sync=function()end}
+ modules.DriveService={maxSpeedFor=function(data)return math.min(84,42+(data.upgrades.speed or 0)*2.5+(data.coinUpgrades.speed or 0))end}
+ game.ReplicatedStorage=services.ReplicatedStorage
+ require('UpgradeService').init()
+ local function actor(failing)
+  local value=Instance.new('Player');value.Parent=Players;value:SetAttribute('SimulateSaveFailure',failing)
+  profiles[value]={money=100000,diamonds=10000,upgrades={speed=0,income=0,botSpeed=0,security=0,shelves=0},coinUpgrades={}}
+  return value
+ end
+ local a=actor(false);diamondEvent:Fire(a,'speed');coinEvent:Fire(a,'income')
+ check(#saves==2,'both currencies save immediately with separate cooldowns')
+ check(saves[1].upgrades.speed==1 and saves[1].diamonds==9988,'diamond level and debit persisted together')
+ check(saves[2].coinUpgrades.income==1 and saves[2].money==99955,'coin level and debit persisted together')
+ for i=1,100 do diamondEvent:Fire(a,'speed');coinEvent:Fire(a,'income')end
+ check(#saves==2 and profiles[a].upgrades.speed==1,'upgrade spam blocked')
+ local failed=actor(true);diamondEvent:Fire(failed,'income')
+ check(profiles[failed].diamonds==9985 and profiles[failed].upgrades.income==1,'uncertain persistence keeps paired debit/level, no unsafe rollback')
+ check(requests==1 and notices[#notices].kind=='info','failed immediate save schedules retry without announcing confirmed success')
+ local capped=actor(false);profiles[capped].upgrades.speed=12;profiles[capped].coinUpgrades.speed=12
+ local before=profiles[capped].diamonds;local previousSaves=#saves
+ diamondEvent:Fire(capped,'fastRide');coinEvent:Fire(capped,'speed')
+ check(#saves==previousSaves and profiles[capped].diamonds==before,'speed cap prevents useless paid upgrades')
+ modules.DataService,modules.Net,modules.SalonService,modules.TutorialService,modules.DriveService=backup.data,backup.net,backup.salon,backup.tutorial,backup.drive
+end
+print('PASS: real upgrade handlers save immediately, separate cooldowns and paired failure behavior')
+local Grammar=require('Grammar')
+for _,test in ipairs({{'1 монет','1 монета'},{'2 монет','2 монеты'},{'5 монет','5 монет'},{'11 алмазов','11 алмазов'},{'21 алмазов','21 алмаз'},{'22 алмазов','22 алмаза'},{'111 машин','111 машин'},{'121 машин','121 машина'},{'до 21 монет','до 21 монеты'},{'до 22 монет','до 22 монет'},{'1.5 алмазов','1.5 алмаза'},{'1 001 монет','1 001 монета'},{'Салон','Гараж'},{'ПРОКАЧКА САЛОНА','ПРОКАЧКА ГАРАЖА'}})do
+ check(Grammar.russian(test[1])==test[2],'Russian inflection: '..test[1]..' -> '..Grammar.russian(test[1]))
+end
+for _,test in ipairs({{'1 days','1 day'},{'21 days','21 days'},{'1 cars','1 car'},{'1 items','1 item'},{'1,001 coins','1,001 coins'},{'1 diamonds','1 diamond'},{'1 car thefts','1 car theft'}})do
+ check(Grammar.english(test[1])==test[2],'English number inflection: '..test[1]..' -> '..Grammar.english(test[1]))
+end
+check(Text.translate('ВИП активирован на 1 дн. · +30% монеты за угон · +25% ОПЫТ · касса 48 ч.','en'):find('1 day',1,true)~=nil,'translated VIP singular')
+check(Text.translate('Касса','en')=='Register'and Text.translate('Салон','en')=='Garage','consistent register/garage glossary')
+print('PASS: Russian inflection, English singulars, American English and unified glossary')
+local Access=require('InterfaceAccess')
+for _,size in ipairs({{240,240},{320,320},{360,640},{640,360},{1024,768},{1920,1080},{3840,2160}})do
+ local width,height=size[1],size[2];local scale=Access.scaleFor(width,height,550,350,24)
+ check(550*scale<=width-24+.01 and 350*scale<=height-24+.01,'modal scale fits available viewport')
+end
+local throttle,steer=Access.axes(.1,1,0);check(throttle==1 and steer==0,'gamepad dead zone')
+throttle,steer=Access.axes(-.7,.2,.9);check(math.abs(throttle+.7)<1e-10 and steer==-.7,'analog gamepad throttle and steering')
+check(require('Messages').source('recover_stop')~=nil and require('Messages').source('unknown')==nil,'bounded message keys')
+print('PASS: adaptive-scale geometry, analog control mapping and notification keys (no hardware rendering)')
+local Cosmetics=require('CosmeticConfig')
+local license={petUnlocked=true,petBonusLevel=17,cosmeticsOwned={},cosmeticsEquipped={pet='pet_dog'}}
+sanitized(license)
+local petCount,heroCount,auraCount=0,0,0
+for _,def in ipairs(Cosmetics.List)do
+ if def.category=='pet'then petCount+=1;check(license.cosmeticsOwned[def.id]==true,'one pet license unlocks every look')
+ elseif def.category=='hero'then heroCount+=1;check(not license.cosmeticsOwned[def.id],'hero looks remain separate purchases')
+ elseif def.category=='aura'then auraCount+=1 end
+end
+check(petCount==10 and license.petBonusLevel==17,'all ten looks retain shared paid mastery')
+local legacyPet={cosmeticsOwned={pet_dog=true},petBonusLevel=5};sanitized(legacyPet)
+check(legacyPet.petUnlocked==true and legacyPet.petBonusLevel==5,'legacy pet purchase migrates to shared license')
+print('PASS: actual pet-license sanitization; '..petCount..' pets, '..heroCount..' hero entries, '..auraCount..' auras; separate paid mastery')
+print('AUDIT FINAL ASSERTIONS: '..checks)
