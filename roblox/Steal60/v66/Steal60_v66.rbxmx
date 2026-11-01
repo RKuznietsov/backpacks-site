@@ -18400,6 +18400,41 @@ local function giveClient(player)
     if tutorial then tutorial:Clone().Parent = screen end
 end
 
+-- Server-verified delivery: catalog, reward, XP, loot and tutorial progression.
+DeliveryService.onDelivered(function(player, info)
+	local data = DataService.get(player)
+	if not data then
+		return
+	end
+    local isNew = DataService.addToCatalog(player, info.carId, info.rarity, info.variantId)
+    local firstSuccess = data.botUnlocked ~= true
+    if firstSuccess then
+        data.botUnlocked = true
+        player:SetAttribute("HelperUnlocked", true)
+
+    end
+
+	local variantMult = 1
+	for _, v in ipairs(Cars.Variants) do
+		if v.id == info.variantId then
+			variantMult = v.incomeMult
+		end
+	end
+	local reward = math.floor(CarClasses[info.classId].baseValue * Rarity.Info[info.rarity].incomeMult * variantMult * 0.25)
+    local payout, runResult = HeistService.onDelivered(player, info, reward, isNew)
+    -- Extra rewards are calculated from the delivered car and persisted server contract.
+    local eventBonus, eventResult = RoadChallengeService.onDelivered(player, info, reward)
+    local cosmeticBonusPct=require(Shared.Config.CosmeticConfig).coinBonusPct(data)
+    payout += math.floor(eventBonus*(1+cosmeticBonusPct/100)+.5)
+    DataService.addMoney(player, payout, true)
+    if eventResult ~= "" then runResult ..= " · " .. eventResult end
+    player:SetAttribute("HeistCarrying", false)
+    SalonService.openCar(player, info, isNew, payout)
+    SalonService.refresh(player) -- may have won a new accessory on delivery
+    Tutorial.event(player,"delivered")
+    Net.notify(player,("Доставлено! +%d монет · добыча на полках."):format(payout),"good")
+end)
+
 local function setupStats(player)
 	DataService.onLoaded(player, function(data)
         if data.botUnlocked ~= true and next(data.catalog or {}) == nil then

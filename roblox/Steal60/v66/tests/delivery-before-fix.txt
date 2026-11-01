@@ -1,0 +1,20 @@
+EXPECTED FAILURE: published commit a0ec9e1adedfd3c493aaccacd22ee81a1c23bddb
+Regression reproduced by actual Main + DeliveryService startup.
+Final XML SHA-256: b8adffa1d934ec8f6bca639e13bce4b07b83e704c339552d46fb710d7aad8e4b
+XML instances: 120 script sources: 109
+PASS: installer paths, infinite bounds, audio ingress and reset configuration
+PASS: 1236 unique translations, format tokens, American English and no numeric require/loadstring
+Compiled 18 KLOC into 1089 KB bytecode (read 0.00s, parse 0.02s, compile 0.02s)
+/tmp/steal60-v66-fjvl9bf3/run.luau:144: delivered car credits money after recycle
+stacktrace:
+[C] function assert
+/tmp/steal60-v66-fjvl9bf3/run.luau:144 function check
+/tmp/steal60-v66-fjvl9bf3/run.luau:19529
+[Steal60] Main запущен
+[Steal60/Delivery] Сдача автомобиля без водителя: рамка парковки, остановка 0.65 сек
+Traceback (most recent call last):
+  File "/workspace/backpacks-site/roblox/Steal60/v66/tests/validate.py", line 131, in <module>
+    subprocess.run([str(a.luau),str(bundle)],check=True)
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['/tmp/steal60-luau/luau', '/tmp/steal60-v66-fjvl9bf3/run.luau']' returned non-zero exit status 1.

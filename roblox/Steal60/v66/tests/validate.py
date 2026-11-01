@@ -2,7 +2,7 @@
 """Compile the FINAL XML, then execute selected real Luau sources with explicit Roblox test doubles."""
 import argparse, hashlib, json, pathlib, re, subprocess, tempfile, xml.etree.ElementTree as ET
 HERE=pathlib.Path(__file__).resolve().parent
-p=argparse.ArgumentParser();p.add_argument('--luau',required=True,type=pathlib.Path);p.add_argument('--compiler',required=True,type=pathlib.Path);p.add_argument('--baseline',type=pathlib.Path);p.add_argument('--xml',type=pathlib.Path,default=HERE.parent/'Steal60_v66.rbxmx');a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--luau',required=True,type=pathlib.Path);p.add_argument('--compiler',required=True,type=pathlib.Path);p.add_argument('--baseline',type=pathlib.Path);p.add_argument('--integration-only',action='store_true');p.add_argument('--xml',type=pathlib.Path,default=HERE.parent/'Steal60_v66.rbxmx');a=p.parse_args()
 def extract(path):
  tree=ET.parse(path);sources={};parents={};refs=[]
  def visit(item,parent=''):
@@ -106,7 +106,27 @@ with tempfile.TemporaryDirectory(prefix='steal60-v66-')as temp:
  ''')
  cosmetic=sources['CosmeticService'];start=cosmetic.index('local function sanitized');end=cosmetic.index('local function shallow',start)
  parts.append('local Config=require("CosmeticConfig")\n'+cosmetic[start:end])
- parts.append((HERE/'scenarios.luau').read_text())
+ # Actual loot/catalog functions run with mocked IO and world presentation only.
+ salon=sources['SalonService'];start=salon.index('local function pickItem(');end=salon.index('-- Меню (данные для клиента)',start)
+ parts.append('''local function makeActualSalon(DataService,Tutorial,Net)
+ local Shared=shared;local SalonService={};local salons={}
+ local Loot=require('Loot');local CarClasses=require('CarClasses');local Cars=require('Cars');local Rarity=require('Rarity');local Balance=require('EconomyBalance');local Placement=require('ShelfPlacement')
+ local RARITY_INDEX={};for i,r in ipairs(Rarity.Order)do RARITY_INDEX[r]=i end
+ local rng=Random.new(660);local function ensureShelfSlots(data)return Placement.arrange(data,Loot.ById)end
+ local function renderShelf(rec)rec.shelfRenders=(rec.shelfRenders or 0)+1 end
+ local function refreshShowcase(rec)rec.catalogRenders=(rec.catalogRenders or 0)+1 end
+ '''+salon[start:end]+'''
+ function SalonService.attach(player)salons[player]={player=player}end
+ function SalonService.refresh(player)renderShelf(salons[player]);refreshShowcase(salons[player])end
+ function SalonService.init()end
+ return SalonService
+ end
+ ''')
+ data=sources['DataService'];start=data.index('function DataService.addToCatalog(');end=data.index('function DataService.saveNow(',start)
+ parts.append('local function attachActualCatalog(DataService)\n'+data[start:end]+'\nend\n')
+ if not a.integration_only:parts.append((HERE/'scenarios.luau').read_text())
+ parts.append((HERE/'delivery_integration.luau').read_text())
+ parts.append("print('FINAL COMBINED ASSERTIONS: '..checks)")
  bundle=temp/'run.luau';bundle.write_text('\n'.join(parts))
  subprocess.run([str(a.luau),str(bundle)],check=True)
 print('NOT RUN: Roblox Engine/Studio rendering, physics, live DataStore and Marketplace integration.',flush=True)

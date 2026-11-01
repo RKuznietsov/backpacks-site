@@ -1,5 +1,7 @@
 # Steal60 v66 · RU / EN
 
+**Исправлена доставка после обновления по аудиту.** Восстановлен рабочий обработчик Main, ошибочно удалённый вместе с отладочным блоком. Машина теперь запускает выдачу каталога/монет/XP/добычи и продвижение обучения. Скачайте текущий файл, остановите Play и замените старый контейнер установщика; профиль сбрасывать не нужно. [Проверка полной цепочки](RESULTS.md).
+
 Обновлено после [проверки замечаний v64](AUDIT-v64.md). Экономика, немедленное сохранение улучшений, US English, числовые формы и управление геймпадом доработаны; имя установщика и ветка сохранены.
 
 Один двуязычный установщик, восстановленный **из приложенного v65**, без использования недоступной сборки v66. RU/EN переключается внутри игры. Каталог из 150 автомобилей и идентификаторы сохранений сохранены.
@@ -40,6 +42,8 @@
 **Roblox Engine/Studio в облачной среде отсутствует.** Автоматические сценарии используют Luau и явно обозначенные тестовые двойники Roblox API. Они не подтверждают качество изображения, живую физику/репликацию, доступность аудио и внешних NPC-ассетов, настоящий DataStore или Marketplace. Перед публикацией игры выполните Studio-проверки из RESULTS.md. Ветка GitHub публикует установщик, но не публикует Roblox Experience.
 
 ## English
+
+Delivery hotfix: the Main delivery-reward callback was accidentally removed during debug cleanup and has now been restored. Replace the old installer while Studio is stopped; do not reset your profile. A new integration test runs actual Main startup and the delivery/reward/tutorial chain.
 
 This is one bilingual installer rebuilt from the attached v65. Open [Steal60_v66.rbxmx](Steal60_v66.rbxmx) on GitHub and click **Download raw file**. Stop Studio, keep only one Steal60 installer container in Workspace, disable an already-installed old `ServerScriptService/Main`, and insert the downloaded file into Workspace using **Insert from File…**. Play to install; the new Main is enabled last. Keep the installer in the edit-time Place when saving/publishing because Play-time changes are reverted by Studio.
 

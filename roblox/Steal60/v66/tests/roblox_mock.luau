@@ -1,4 +1,6 @@
 -- Deliberately small test double, NOT Roblox Engine. No rendering/physics/network emulation.
+local nativeOS=os;local testClock
+local os=setmetatable({clock=function()return testClock or nativeOS.clock()end},{__index=nativeOS})
 local queue={};local deferSignals=false
 local function signal()
  local s={listeners={}}
@@ -96,6 +98,7 @@ function methods:GetAttribute(k)return self.attrs[k]end
 function methods:Destroy()self.Destroying:Fire();for _,c in ipairs(self:GetChildren())do c:Destroy()end;self.Parent=nil end
 function methods:GetPivot()return self.props.WorldPivot or CF.new()end
 function methods:PivotTo(cf)local delta=cf*self:GetPivot():Inverse();for _,p in ipairs(self:GetDescendants())do if p:IsA('BasePart')then p.CFrame=delta*p.CFrame end end;self.WorldPivot=cf end
+function methods:FindFirstChildOfClass(c)return self:FindFirstChildWhichIsA(c,false)end
 function methods:FindFirstChildWhichIsA(c,recurse)for _,p in ipairs(recurse and self:GetDescendants()or self.children)do if p:IsA(c)then return p end end end
 function methods:IsDescendantOf(parent)local at=self.Parent;while at do if at==parent then return true end;at=at.Parent end;return false end
 local Random={}
