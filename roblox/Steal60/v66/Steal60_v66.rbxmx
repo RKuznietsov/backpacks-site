@@ -259,7 +259,7 @@ return {
 	-- Езда (аркадная физика, считается на клиенте водителя)
 	Drive = {
 		BaseSpeed = 42,       -- студов/сек без прокачки
-		SpeedPerLevel = 2.5,    -- прибавка за уровень прокачки скорости
+		SpeedPerLevel = 1,    -- прибавка за уровень прокачки скорости
         Accel = 34,
         Brake = 310, -- S reduces forward speed quickly before reverse starts
         Coast = 78, -- release gas -> coasts less; starts to settle naturally
@@ -579,20 +579,20 @@ return Loot
           <Item class="ModuleScript" referent="RBX_NEW_UpgradeConfig">
             <Properties>
               <string name="Name">UpgradeConfig</string>
-              <ProtectedString name="Source"><![CDATA[-- Единственная валюта для ВСЕХ улучшений: алмазы (не обычные деньги).
+              <ProtectedString name="Source"><![CDATA[-- Алмазные цены и прежние счётчики; UpgradePolicy добавляет выбор валюты для обычных улучшений.
 -- Цены задаются здесь, валидируются и списываются только на сервере.
 local U = {
-    { id="speed", name="Скорость", description="+2,5 к скорости машины", base=12, growth=1.45, max=12 },
-    { id="income", name="Доход", description="+3 п.п. к бонусу базового дохода после лимита", base=15, growth=1.20, max=15 },
-    { id="botSpeed", name="Соучастник", description="+4 п.п. к выплате за доставку", base=14, growth=1.55, max=8 },
-    { id="security", name="Охрана", description="Замедляет кражи игроков и ловит НПС", base=18, growth=1.65, max=5 },
-    { id="shelves", name="Полки", description="+3 места для добычи", base=24, growth=1.75, max=2 },
+    { id="speed", name="Скорость", description="+1 к скорости машины", base=20, growth=1, max=12 },
+    { id="income", name="Доход", description="Увеличивает доход кассы", base=15, growth=1.20, max=15 },
+    { id="botSpeed", name="Соучастник", description="+4% к выплате за доставку", base=14, growth=1.55, max=8 },
+    { id="security", name="Охранник", description="Замедляет кражи игроков и ловит НПС", base=18, growth=1.65, max=5 },
+    { id="shelves", name="Полки", description="+3 места для добычи", base=24, growth=1.75, max=4 },
     { id="till48h", name="Касса на 48 часов", description="Постоянная вместимость кассы вместо 12 ч", base=95, growth=1, max=1 },
     { id="doubleIncome", name="Двойной доход", description="x2 дохода салона навсегда", base=300, growth=1, max=1 },
     { id="fastRide", name="Спорт-двигатель", description="+25% скорость собственных машин", base=95, growth=1, max=1 },
-    { id="masterThief", name="Мастер взлома", description="+8 п.п. к зоне успеха; уровень обязателен", base=130, growth=1, max=1 },
-    { id="secondBot", name="Редкие доставки", description="+15 п.п. за редкую, эпическую или легендарную доставку", base=100, growth=1, max=1 },
-    { id="autoCollect", name="Автокасса", description="Собирает деньги каждые 15 секунд", base=125, growth=1, max=1 },
+    { id="masterThief", name="Мастер взлома", description="+8% к зоне успеха; уровень обязателен", base=130, growth=1, max=1 },
+    { id="secondBot", name="Редкие доставки", description="+15% за редкую, эпическую или легендарную доставку", base=100, growth=1, max=1 },
+    { id="autoCollect", name="Автокасса", description="Собирает деньги каждые 15 секунд", base=300, growth=1, max=1 },
 }
 U.ById={}
 for _,u in ipairs(U) do
@@ -602,7 +602,7 @@ end
 function U.cost(id,level)
     local u=U.ById[id]
     if not u or type(level)~="number" or level<0 or level>=u.max then return nil end
-    return math.max(1,math.floor(u.base*(u.growth^level)+.5))
+    return math.max(5,math.ceil(u.base*(u.growth^level)/5)*5)
 end
 return U
 ]]></ProtectedString>
@@ -843,11 +843,11 @@ return Req
               <string name="Name">CoinUpgradeConfig</string>
               <ProtectedString name="Source"><![CDATA[-- Free progression. Costs use ordinary earned coins; diamonds remain Robux-only.
 local U={
- {id="income",name="Увеличить доход",detail="+4 п.п. к бонусу базового дохода после лимита",base=90,growth=1.55,max=24,icon="💵"},
- {id="security",name="Улучшить охрану",detail="Замедляет налёты игроков и чаще ловит НПС",base=2400,growth=8,max=5,icon="🛡"},
+ {id="income",name="Увеличить доход",detail="Увеличивает доход кассы",base=90,growth=1.55,max=24,icon="💵"},
+ {id="security",name="Охранник",detail="Замедляет налёты и ловит воришек",base=2400,growth=8,max=5,icon="🛡"},
  {id="speed",name="Доработать двигатель",detail="+1 к максимальной скорости",base=4500,growth=1.9,max=12,icon="🚗"},
- {id="botSpeed",name="Обучить помощника",detail="+3 п.п. к выплате за доставку",base=3000,growth=1.9,max=12,icon="👷"},
- {id="shelves",name="Дополнительная полка",detail="+3 места для добычи в гараже",base=180000,growth=18,max=2,icon="📦"},
+ {id="botSpeed",name="Обучить помощника",detail="Больше монет за доставленные машины",base=3000,growth=1.9,max=12,icon="👷"},
+ {id="shelves",name="Дополнительная полка",detail="+3 места для добычи в гараже",base=180000,growth=18,max=4,icon="📦"},
 }
 U.ById={}
 for _,v in ipairs(U) do U.ById[v.id]=v end
@@ -855,6 +855,7 @@ function U.cost(id,level)
  local v=U.ById[id]
  if not v or type(level)~="number" or level<0 or level>=v.max then return nil end
  if id=="income"and level==0 then return 45 end
+ if id=="shelves"then return ({180000,3240000,6000000,10000000})[level+1]end
  return math.floor(v.base*v.growth^level+0.5)
 end
 return U
@@ -914,7 +915,7 @@ M.COIN_HERO_ID='hero_worker_coin_v66'
 M.List={
  {id='hero_worker_coin_v66',category='hero',name='ОБЫЧНЫЙ РАБОЧИЙ',description='Простая серая рабочая рубашка, тёмные брюки, каштановая причёска и открытое лицо. Мастерство героя доступно за монеты.',priceCoins=4000000,currency='coins',color=C(116,127,132),catalogLook='worker',featuredCoins=true},
  {id='paint_workgray_coin_v66',category='paint',name='Рабочий серый',description='Спокойный серый кузов без узоров и свечения.',priceCoins=750000,currency='coins',color=C(122,134,142),material='SmoothPlastic',style='solid'},
- {id='aura_breeze_coin_v66',category='aura',name='Лёгкий ветер',description='Два коротких тонких воздушных следа у плеч при движении. Без дыма, частиц и свечения.',priceCoins=1500000,currency='coins',color=C(165,188,200),simple=true},
+ {id='aura_breeze_coin_v66',category='aura',name='Лёгкий ветер',description='Три плавные воздушные дуги вокруг героя. Спокойное движение и мягкий голубой свет.',priceCoins=1500000,currency='coins',color=C(165,188,200),simple=true},
  {id="skin_sakura",category="skin",name="Сакура-дрифт",description="Объёмные лепестки сакуры и сливочные цветы на кузове",price=320,color=C(255,146,189),style="sakura"},
  {id="paint_bubblegum",category="paint",name="Клубничный пломбир",description="Клубничный кузов и сливочная крыша",price=125,color=C(255,139,182),accent=C(255,244,218),material="SmoothPlastic",style="twoTone"},
  {id="paint_soda",category="paint",name="Мятная газировка",description="Мятный кузов и ванильная отделка",price=125,color=C(108,230,191),accent=C(255,241,208),material="SmoothPlastic",style="twoTone"},
@@ -1078,6 +1079,7 @@ function M.migrateHeroOwnership(owned)
  end
  for id in pairs(grants)do owned[id]=true end
 end
+for _,def in ipairs(M.List)do if def.price and def.price>0 then def.price=math.ceil(def.price/5)*5 end end
 M.ById={}
 for _,v in ipairs(M.List) do
  assert(not M.ById[v.id],"Duplicate cosmetic id "..v.id)
@@ -1089,13 +1091,18 @@ end
 function M.petLevel(data)
  return math.clamp(math.floor(tonumber(data and data.petBonusLevel) or 0),0,M.PET_MAX)
 end
+function M.heroUnlocked(data)
+ for id,owned in pairs(type(data and data.cosmeticsOwned)=='table'and data.cosmeticsOwned or{})do
+  local def=M.ById[id]
+  if owned==true and def and def.category=='hero'then return true end
+ end
+ return false
+end
 function M.coinBonusPct(data)
  if type(data)~="table" then return 0,0,0 end
  local equip=type(data.cosmeticsEquipped)=="table" and data.cosmeticsEquipped or {}
  local owned=type(data.cosmeticsOwned)=="table" and data.cosmeticsOwned or {}
- local heroId=equip.hero
- local hero=heroId and M.ById[heroId]
- local heroPct=(hero and hero.category=="hero" and owned[heroId]==true) and M.heroLevel(data) or 0
+ local heroPct=M.heroUnlocked(data)and M.heroLevel(data)or 0
  local petId=equip.pet
  local pet=petId and M.ById[petId]
  local petPct=(pet and pet.category=="pet" and data.petUnlocked==true) and M.petLevel(data) or 0
@@ -3440,21 +3447,7 @@ function M.create(root,def)
  if not host then host=root end
  local tracked={};local half=math.clamp(host.Size.X*.56,.65,1.1);local back=host.Size.Z*.5+.18
  local high=host.Size.Y*.35;local low=-host.Size.Y*.42
- if def.simple then
-  -- Two narrow air strokes beside the shoulders. Nothing originates at the waist.
-  for _,side in ipairs({-1,1})do
-   local x=side*(host.Size.X*.5+.20);local y=host.Size.Y*.35
-   local a=Instance.new('Attachment');a.Name='Steal60BreezeShoulderTop'..side;a.Position=Vector3.new(x,y+.16,0);a.Parent=host;tracked[#tracked+1]=a
-   local b=Instance.new('Attachment');b.Name='Steal60BreezeShoulderBottom'..side;b.Position=Vector3.new(x,y,0);b.Parent=host;tracked[#tracked+1]=b
-   local trail=Instance.new('Trail');trail.Name=side<0 and'BreezeLeft'or'BreezeRight';trail.Attachment0=a;trail.Attachment1=b;trail.Enabled=false
-   trail.FaceCamera=true;trail.Lifetime=.22;trail.MinLength=.05;trail.MaxLength=2.5;trail.LightEmission=0;trail.LightInfluence=.25
-   trail.Color=ColorSequence.new(def.color);trail.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,.38),NumberSequenceKeypoint.new(.45,.62),NumberSequenceKeypoint.new(1,1)})
-   trail.WidthScale=NumberSequence.new({NumberSequenceKeypoint.new(0,.8),NumberSequenceKeypoint.new(.5,.45),NumberSequenceKeypoint.new(1,0)});trail.Parent=folder
-  end
-  folder:SetAttribute('TrailCount',2);folder:SetAttribute('EmitterCount',0);folder:SetAttribute('AuraId',def.id);folder:SetAttribute('AuraOrigin','Shoulders')
-  folder.Destroying:Connect(function()states[root]=nil;for _,a in ipairs(tracked)do if a.Parent then a:Destroy()end end end)
-  return folder
- end
+ if def.simple then require(script.Parent.BreezeAura).create(root,host,folder,def);return folder end
  local accent=def.id=='aura_plasma'and C(185,95,255)or def.id=='aura_crimson'and C(255,201,64)or def.id=='aura_gold'and C(255,246,173)or C(113,255,217)
  local function attach(name,pos)
   local a=Instance.new('Attachment');a.Name='Steal60BackTrail_'..name;a.Position=pos;a.Parent=host;tracked[#tracked+1]=a;return a
@@ -3505,6 +3498,7 @@ local function collect(root,folder,t,previous)
 end
 function M.step(root,t)
  local folder=root:FindFirstChild('Steal60CosmeticAura');if not folder then states[root]=nil;return end
+ if folder:GetAttribute('AuraOrigin')=='WindOrbit'then require(script.Parent.BreezeAura).step(folder,t);return end
  local state=states[root]
  if not state or state.folder~=folder then state=collect(root,folder,t,nil)
  elseif t>=state.refresh then state=collect(root,folder,t,state)end
@@ -4164,8 +4158,8 @@ end
 return M
 ]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_STEAL60_V58_MusicScore"><Properties><string name="Name">MusicScore</string><ProtectedString name="Source"><![CDATA[-- Public Roblox catalog audio with alternatives. Availability is checked by the native Sound loader.
 local M={}
-M.Ambient={1848354536,1841647093,1843529601}
-M.Heists={1843529634,1837875734,1840684529,1837849285,1837768517}
+M.Ambient={1848354536,1841647093}
+M.Heists={1840684529,1837849285,1837768517}
 M.Siren={} -- Removed: unverified police clips can contain startling voices.
 M.Alarm={} -- Police lights/UI remain; no arrest scream or loud alarm playback.
 function M.order(list,rng,last)
@@ -4901,15 +4895,27 @@ end
 function W.card(p,options)
  local effects=options.effects~=nil
  local extra=effects and 142 or 0
- local f=W.box(p,212+extra);f.Name='IllustratedMenuCard'
+ local f=W.box(p,options.choices and(246+154*#options.choices)or(212+extra+(options.actions and 18 or 0)));f.Name='IllustratedMenuCard'
  local compact=p.AbsoluteSize.X>0 and p.AbsoluteSize.X<570;local imageWidth=compact and 98 or 136;local textX=imageWidth+25;f:SetAttribute("TextColumnX",textX)
  local image=W.preview(f,options.kind or'coins',options.id,options.color);image.Position=UDim2.fromOffset(11,11);image.Size=UDim2.fromOffset(imageWidth,139)
  local title=W.text(f,options.title,UDim2.fromOffset(textX,14),UDim2.new(1,-textX-12,0,38),compact and 14 or 17,options.color or W.light);title.Name="CardTitle"
  W.text(f,options.description,UDim2.fromOffset(textX,58),UDim2.new(1,-textX-12,0,48),12,C(217,232,240))
  local value=W.text(f,options.value,UDim2.fromOffset(textX,112),UDim2.new(1,-textX-12,0,24),17,W.accent);value.Name="CardValue"
  if options.progress then W.bar(f,options.progress[1],options.progress[2],UDim2.fromOffset(textX,144),1,C(129,218,246)).Size=UDim2.new(1,-textX-14,0,6)end
+ if options.choices then
+  W.text(f,options.currentEffect or'',UDim2.fromOffset(12,162),UDim2.new(1,-24,0,72),13,C(228,239,244))
+  for index,choice in ipairs(options.choices)do
+   local y=242+(index-1)*154
+   W.text(f,choice.title,UDim2.fromOffset(12,y),UDim2.new(1,-24,0,24),13,W.accent)
+   W.text(f,choice.effect,UDim2.fromOffset(12,y+26),UDim2.new(1,-24,0,60),12,C(217,232,240))
+   for buttonIndex,action in ipairs(choice.actions)do W.button(f,action.text,UDim2.new((buttonIndex-1)/2,buttonIndex==1 and 11 or 4,0,y+90),UDim2.new(.5,-15,0,52),action.click,action.enabled,action.color)end
+  end
+  return f
+ end
  if effects then W.text(f,options.effects,UDim2.fromOffset(12,162),UDim2.new(1,-24,0,132),13,C(228,239,244))end
- if options.action then W.button(f,options.action,UDim2.fromOffset(11,166+extra),UDim2.new(1,-22,0,34),options.click,options.enabled,options.buttonColor)
+ if options.actions then
+  for index,action in ipairs(options.actions)do W.button(f,action.text,UDim2.new((index-1)/2, index==1 and 11 or 4,0,166+extra),UDim2.new(.5,-15,0,52),action.click,action.enabled,action.color)end
+ elseif options.action then W.button(f,options.action,UDim2.fromOffset(11,166+extra),UDim2.new(1,-22,0,34),options.click,options.enabled,options.buttonColor)
  else W.text(f,options.footer or'',UDim2.fromOffset(12,170+extra),UDim2.new(1,-24,0,30),11,C(160,190,206))end
  return f
 end
@@ -4965,12 +4971,10 @@ local icon={speed='car',income='coins',botSpeed='car',security='security',shelve
 local function upgrades(parent,data,a)
  W.header(parent,'ПРОКАЧКА САЛОНА',"Монеты зарабатываются в игре. Алмазы ускоряют выбор; уровень взлома растёт только за ОПЫТ.")
  W.summary(parent,{{'МОНЕТЫ',W.fmt(data.money)},{'АЛМАЗЫ',W.fmt(data.diamonds)},{'ВЗЛОМ',tostring(data.hackLevel)..' ур.'}})
- for _,section in ipairs({{title='ЗА МОНЕТЫ',rows=data.coinUpgrades or{},currency='$',key='coin'},{title='ЗА АЛМАЗЫ',rows=data.upgrades or{},currency='💎',key='diamond'}})do
-  W.header(parent,section.title,section.key=='coin'and'Доход после мягкого лимита базы; бонусы складываются. Следующая строка показывает фактический итог.'or'Постоянные улучшения. Ограничение уровня машин сохраняется.')
-  for _,item in ipairs(section.rows)do
-   local balance=section.key=='coin'and data.money or data.diamonds
-   W.card(parent,{kind=icon[item.id]or'coins',title=item.name,description=item.description or item.detail,effects='Сейчас: '..(item.currentEffect or'')..'\nДалее: '..(item.nextEffect or''),value=('УРОВЕНЬ %d / %d'):format(item.level,item.max),progress={item.level,item.max},action=item.cost and('УЛУЧШИТЬ · '..W.fmt(item.cost)..' '..section.currency)or(item.blockedReason or'МАКСИМАЛЬНЫЙ УРОВЕНЬ'),enabled=item.cost~=nil and(balance or 0)>=item.cost,click=function()invoke(a,section.key,item.id)end})
-  end
+ require(Shared.UpgradeView).render(parent,data,a)
+ W.header(parent,'ДОПОЛНИТЕЛЬНЫЕ УДОБСТВА ЗА АЛМАЗЫ','Постоянные возможности; уже купленные права сохраняются.')
+ for _,item in ipairs(data.upgrades or{})do
+  W.card(parent,{kind=icon[item.id]or'coins',title=item.name,description=item.description,effects='Сейчас: '..(item.currentEffect or'')..'\nДалее: '..(item.nextEffect or''),value=('УРОВЕНЬ %d / %d'):format(item.level,item.max),progress={item.level,item.max},action=item.cost and('УЛУЧШИТЬ · '..W.fmt(item.cost)..' 💎')or(item.blockedReason or'МАКСИМАЛЬНЫЙ УРОВЕНЬ'),enabled=item.cost~=nil and(data.diamonds or 0)>=item.cost,click=function()invoke(a,'diamond',item.id)end})
  end
  W.header(parent,'МАСТЕРСТВО ГЕРОЯ И ПИТОМЦА','Бонус сохраняется при смене облика. Каждый +1% стоит 20 алмазов; монетная цена растёт.')
  for _,category in ipairs({'hero','pet'})do
@@ -4980,7 +4984,7 @@ local function upgrades(parent,data,a)
   if hero then for id,owned in pairs(data.cosmeticsOwned or{})do local def=Cosmetics.ById[id];if owned and def and def.category=='hero'then unlocked=true;break end end end
   local id=(data.cosmeticsEquipped or{})[category]or(hero and'hero_premium_mech'or'pet_turtle')
   local effects=(data.masteryEffects or{})[category]
-  W.card(parent,{effects=effects and('Сейчас: '..effects.current..'\nДалее: '..effects.next),kind=category,id=id,title=hero and'Мастерство героя'or'Мастерство питомца',description=hero and'Надень любой свой образ — бонус действует на все монеты.'or'Один общий бонус для всех твоих питомцев.',value=('БОНУС +%d%% / +%d%%'):format(level,maximum),progress={level,maximum},action=unlocked and(level>=maximum and'МАКСИМУМ'or('+1% ЗА МОНЕТЫ · '..W.fmt(coins)..' $'))or'ОТКРЫТЬ АТЕЛЬЕ',enabled=not unlocked or(level<maximum and(data.money or 0)>=(coins or math.huge)),click=function()if not unlocked then invoke(a,'atelier',category)else invoke(a,'mastery',category,'coins')end end})
+  W.card(parent,{effects=effects and('Сейчас: '..effects.current..'\nДалее: '..effects.next),kind=category,id=id,title=hero and'Мастерство героя'or'Мастерство питомца',description=hero and'Бонус действует и с твоим стандартным Roblox-аватаром.'or'Один общий бонус для всех твоих питомцев.',value=('БОНУС +%d%% / +%d%%'):format(level,maximum),progress={level,maximum},action=unlocked and(level>=maximum and'МАКСИМУМ'or('+1% ЗА МОНЕТЫ · '..W.fmt(coins)..' $'))or'ОТКРЫТЬ АТЕЛЬЕ',enabled=not unlocked or(level<maximum and(data.money or 0)>=(coins or math.huge)),click=function()if not unlocked then invoke(a,'atelier',category)else invoke(a,'mastery',category,'coins')end end})
   if unlocked and level<maximum then local f=W.box(parent,48);W.button(f,'+1% ЗА 20 АЛМАЗОВ',UDim2.fromOffset(10,7),UDim2.new(1,-20,0,34),function()invoke(a,'mastery',category,'diamonds')end,(data.diamonds or 0)>=20,C(130,220,249))end
  end
 end
@@ -5085,6 +5089,7 @@ return {
  [" · НОВИНКА"]=" · NEW",
  [" · РЕКОМЕНДУЕМ"]=" · RECOMMENDED",
  [" · ворота %d/2"]=" · gates %d/2",
+ [" · выбери валюту для улучшения"]=" · choose the upgrade currency",
  [" · задания +%d$"]=" · contracts +%d$",
  [" · информация +12%"]=" · intel +12%",
  [" · купить за Робакс"]=" · buy with Robux",
@@ -5118,6 +5123,7 @@ return {
  ["%d уникальных 3D-питомцев · все доступны сразу после лицензии · сейчас показаны все варианты"]="%d unique 3D pets · all unlocked with one licence · showing every style",
  ["%d. %s · %s · +%s/ч"]="%d. %s · %s · +%s/h",
  ["%s · %d ст."]="%s · %d studs",
+ ["%s · %d/%d"]="%s · %d/%d",
  ["%s · %s · ★%d · копий %d · ценность %s"]="%s · %s · ★%d · copies %d · value %s",
  ["%s · МАШИНА +%s$%s"]="%s · CAR +%s$%s",
  ["%s: %d/%d · потрачено %d $."]="%s: %d/%d · spent %d $.",
@@ -5126,23 +5132,34 @@ return {
  ["+%d%% денег за угон · +%d%% ОПЫТ · касса %d ч."]="+%d%% theft coins · +%d%% XP · %d h register",
  ["+0% к деньгам за угоны"]="+0% theft earnings",
  ["+1 к максимальной скорости"]="+1 maximum speed",
+ ["+1 к предельной скорости машины"]="+1 to the car speed limit",
+ ["+1 к скорости машины"]="+1 to car speed",
  ["+1 п.п. · %d 💎"]="+1 pp · %d 💎",
  ["+1 п.п. · %s $"]="+1 pp · %s $",
  ["+1% ЗА 20 АЛМАЗОВ"]="+1% FOR 20 DIAMONDS",
  ["+1% ЗА МОНЕТЫ · "]="+1% FOR COINS · ",
+ ["+1%% · %d 💎"]="+1%% · %d 💎",
+ ["+1%% · %s $"]="+1%% · %s $",
  ["+15 п.п. за редкую, эпическую или легендарную доставку"]="+15 percentage points for rare, epic or legendary deliveries",
+ ["+15% за редкую, эпическую или легендарную доставку"]="+15% for rare, epic or legendary deliveries",
  ["+2,5 к скорости машины"]="+2.5 car speed",
  ["+25% скорость собственных машин"]="+25% owned car speed",
  ["+3 места для добычи"]="+3 loot spaces",
  ["+3 места для добычи в гараже"]="+3 garage loot spaces",
+ ["+3 места для доходных предметов"]="+3 income item slots",
  ["+3 п.п. к бонусу базового дохода после лимита"]="+3 percentage points to the base income bonus after the soft cap",
  ["+3 п.п. к выплате за доставку"]="+3 percentage points to delivery payout",
  ["+3% дохода полок"]="+3% shelf income",
+ ["+3% к бонусу базового дохода после лимита"]="+3 percentage points to the base income bonus after the soft cap",
+ ["+3% к выплате за доставку"]="+3 percentage points to delivery payout",
  ["+30% монет за угон, +25% ОПЫТ и касса на 48 часов. Доступ к машинам определяется твоим уровнем."]="+30% theft coins, +25% XP and a 48-hour register. Your level determines which cars you can hack.",
  ["+4 п.п. к бонусу базового дохода после лимита"]="+4 percentage points to the base income bonus after the soft cap",
  ["+4 п.п. к выплате за доставку"]="+4 percentage points to delivery payout",
+ ["+4% к бонусу базового дохода после лимита"]="+4 percentage points to the base income bonus after the soft cap",
+ ["+4% к выплате за доставку"]="+4 percentage points to delivery payout",
  ["+4% к доходу кассы"]="+4% register income",
  ["+8 п.п. к зоне успеха; уровень обязателен"]="+8 percentage points to the success zone; required level still applies",
+ ["+8% к зоне успеха; уровень обязателен"]="+8% to the success zone; required level still applies",
  ["+монеты за доставку · %s уже на полке.\nТеперь он приносит деньги в кассу у входа."]="+delivery coins · %s is on your shelf.\nIt now earns money in the register by your entrance.",
  [", деньги = "]=", coins = ",
  [". Дубликаты улучшают звёзды."]=". Duplicates upgrade its stars.",
@@ -5239,13 +5256,23 @@ return {
  ["Без рисунка"]="No livery",
  ["Белта Туринг"]="Belta Touring",
  ["Боковые пороги"]="Side Skirts",
+ ["Больше монет за доставленные машины"]="More coins for delivered cars",
  ["Большой набор с выгодой за объём"]="A larger pack with better value",
+ ["Бонус базового дохода +%d %%"]="Base income bonus +%d %%",
  ["Бонус базового дохода +%d п.п."]="Base income bonus +%d pp",
+ ["Бонус базового дохода +%d%%"]="Base income bonus +%d%%",
+ ["Бонус действует и с твоим стандартным Roblox-аватаром."]="The bonus also applies with your own Roblox avatar.",
+ ["Бонус монет +%d %% · Доход в час: %s $"]="Coin bonus +%d %% · Income per hour: %s $",
  ["Бонус монет +%d п.п. · Доход в час: %s $"]="Coin bonus +%d pp · Income per hour: %s $",
  ["Бонус монет +%d%%"]="Coin bonus +%d%%",
+ ["Бонус монет +%d%% · Доход в час: %s $"]="Coin bonus +%d%% · Income per hour: %s $",
  ["Бонус сохраняется при смене облика. Каждый +1% стоит 20 алмазов; монетная цена растёт."]="Your bonus stays when you change looks. Each +1% costs 20 diamonds; coin prices increase.",
+ ["Бонус: +%d %% / +%d %%"]="Bonus: +%d %% / +%d %%",
+ ["Бонус: +%d %% / +%d %% · следующий +1%%"]="Bonus: +%d %% / +%d %% · next +1%%",
  ["Бонус: +%d п.п. / +%d п.п."]="Bonus: +%d pp / +%d pp",
  ["Бонус: +%d п.п. / +%d п.п. · следующий +1 п.п."]="Bonus: +%d pp / +%d pp · next +1 pp",
+ ["Бонус: +%d%% / +%d%%"]="Bonus: +%d%% / +%d%%",
+ ["Бонус: +%d%% / +%d%% · следующий +1%%"]="Bonus: +%d%% / +%d%% · next +1%%",
  ["Боро 80"]="Boro 80",
  ["Бурнер Сикс"]="Burner Six",
  ["Быстрая машина (старый пропуск)"]="Fast car (legacy pass)",
@@ -5280,6 +5307,7 @@ return {
  ["ВКЛ"]="ON",
  ["ВКЛ/ВЫКЛ"]="ON/OFF",
  ["ВКЛЮЧИТЬ АВТОМАТИЧЕСКУЮ ВИТРИНУ"]="ENABLE AUTOMATIC DISPLAY",
+ ["ВОЗДУШНЫЕ ДУГИ ВОКРУГ ГЕРОЯ"]="AIR ARCS AROUND YOUR CHARACTER",
  ["ВПЕРЕДИ САЛОНЫ / ТВОЙ ГАРАЖ"]="SALONS AHEAD / OWN GARAGE",
  ["ВЫБЕРИ: "]="CHOOSE: ",
  ["ВЫБИРАТЬ МАШИНЫ САМОСТОЯТЕЛЬНО"]="CHOOSE MY DISPLAY CARS",
@@ -5366,7 +5394,9 @@ return {
  ["Гавон Эстейт"]="Gavon Estate",
  ["Геймпад: RT/LT — газ/назад · стик — руль · X — выровнять"]="Gamepad: RT/LT — drive/reverse · stick — steer · X — recover",
  ["Геймпад: стик — ходьба · X — действие · Y — меню"]="Gamepad: stick — move · X — interact · Y — menu",
+ ["Герой: +%d %% к бонусу монет и кассы."]="Hero: +%d %% to the coin and register bonus.",
  ["Герой: +%d п.п. к бонусу монет и кассы."]="Hero: +%d pp to the coin and register bonus.",
+ ["Герой: +%d%% к бонусу монет и кассы."]="Hero: +%d%% to the coin and register bonus.",
  ["Герой: +%d%% ко всем монетам, включая кассу."]="Hero: +%d%% to all coins, including the register.",
  ["Герой: максимальное мастерство"]="Hero: maximum mastery",
  ["Герой: максимальное мастерство."]="Hero: maximum mastery.",
@@ -5393,6 +5423,7 @@ return {
  ["ДИДЖЕЙ МАНГО"]="DJ MANGO",
  ["ДЛЯ ВЫБРАННОЙ МАШИНЫ"]="FOR THE SELECTED CAR",
  ["ДОБЫЧА ПО РАЙОНАМ"]="LOOT BY DISTRICT",
+ ["ДОПОЛНИТЕЛЬНЫЕ УДОБСТВА ЗА АЛМАЗЫ"]="EXTRA DIAMOND CONVENIENCES",
  ["ДОРОЖНАЯ КОМАНДА"]="CONE CREW",
  ["ДОСТАВЛЯЙ УГНАННЫЕ АВТО"]="DELIVER STOLEN CARS",
  ["ДОСТАВЬ АВТО В ГАРАЖ"]="DELIVER THE CAR TO YOUR GARAGE",
@@ -5429,7 +5460,11 @@ return {
  ["Доро Компакт"]="Doro Compact",
  ["Дорожный конус на голове, очки и тактический жилет. Комичный дорожный образ."]="Traffic cone hat, glasses and a tactical vest. A playful roadworker look.",
  ["Дорожный тайник"]="Roadside stash",
+ ["Доставка +%d %%; редкая+ +%d %%"]="Delivery +%d %%; rare+ +%d %%",
  ["Доставка +%d п.п.; редкая+ +%d п.п."]="Delivery +%d pp; rare+ +%d pp",
+ ["Доставка +%d%%; редкая+ +%d%%"]="Delivery +%d%%; rare+ +%d%%",
+ ["Доставка +3% к базе"]="Delivery +3% of base",
+ ["Доставка +4% к базе"]="Delivery +4% of base",
  ["Доставка в салон №%s · %d студов до парковки"]="Deliver to garage %s · %d studs to the parking bay",
  ["Доставка: без жёсткого таймера"]="Delivery: no strict timer",
  ["Доставки"]="Deliveries",
@@ -5444,6 +5479,8 @@ return {
  ["Доставь редкую машину"]="Deliver a rare car",
  ["Достигнут предел скорости. Эта покупка больше не даст прибавки."]="Speed limit reached. This purchase would no longer improve your speed.",
  ["Доход"]="Income",
+ ["Доход +3% к базе"]="Income +3% of base",
+ ["Доход +4% к базе"]="Income +4% of base",
  ["Доход в час: %s $"]="Income per hour: %s $",
  ["Доход полок +%d%%"]="Shelf income +%d%%",
  ["Доход после мягкого лимита базы; бонусы складываются. Следующая строка показывает фактический итог."]="The soft cap applies to base income; bonuses add afterward. The next line shows the actual total.",
@@ -5496,6 +5533,7 @@ return {
  ["Задний диффузор"]="Rear Diffuser",
  ["Закрепи любимую машину"]="Display your favorite car",
  ["Замедляет кражи игроков и ловит НПС"]="Slows player thefts and catches NPC thieves",
+ ["Замедляет налёты и ловит воришек"]="Slows raids and catches thieves",
  ["Замедляет налёты игроков и чаще ловит НПС"]="Slows player raids and catches NPC thieves more often",
  ["Зантия Трек"]="Zantia Track",
  ["Запомни мигающие кнопки и повтори их порядок."]="Watch the flashing buttons, then repeat their order.",
@@ -5516,7 +5554,9 @@ return {
  ["Золотой след"]="Golden Trail",
  ["Зона выбора цели и подготовки к угону"]="Choose a target and prepare your next car theft here",
  ["Зона салонов"]="Garage Area",
+ ["Зона успеха +%d %%"]="Success zone +%d %%",
  ["Зона успеха +%d п.п."]="Success zone +%d pp",
+ ["Зона успеха +%d%%"]="Success zone +%d%%",
  ["Зорион Х"]="Zorion X",
  ["ИГРОК"]="PLAYER",
  ["ИЗУМРУДНЫЕ КРИСТАЛЛЫ"]="EMERALD CRYSTALS",
@@ -5655,12 +5695,15 @@ return {
  ["МАКС"]="MAX",
  ["МАКС · ЗОЛОТЫЕ"]="MAX · GOLD",
  ["МАКС · сияющее золото"]="MAX · glowing gold",
+ ["МАКС ЗА АЛМАЗЫ"]="DIAMOND MAX",
+ ["МАКС ЗА МОНЕТЫ"]="COIN MAX",
  ["МАКСИМАЛЬНЫЙ УРОВЕНЬ"]="MAXIMUM LEVEL",
  ["МАКСИМАЛЬНЫЙ УРОВЕНЬ · открыто навсегда"]="MAXIMUM LEVEL · unlocked forever",
  ["МАКСИМУМ"]="MAXIMUM",
  ["МАКСИМУМ ЗВЁЗД"]="MAXIMUM STARS",
  ["МАСТЕР"]="MECHANIC",
  ["МАСТЕР · МОНЕТЫ И ПРЕДМЕТЫ"]="MECHANIC · COINS AND ITEMS",
+ ["МАСТЕР · УЛУЧШЕНИЯ"]="WORKSHOP · UPGRADES",
  ["МАСТЕР · УЛУЧШЕНИЯ ЗА $"]="MECHANIC · COIN UPGRADES",
  ["МАСТЕРСКАЯ"]="WORKSHOP",
  ["МАСТЕРСКАЯ ДИЗАЙНА"]="DESIGN & LAB",
@@ -5686,6 +5729,7 @@ return {
  ["Мастер → Увеличить доход за монеты. Касса у входа."]="Mechanic → Boost income with coins. Register by the entrance.",
  ["Мастер-вор (старый пропуск)"]="Master Thief (legacy pass)",
  ["Мастерство героя"]="Hero mastery",
+ ["Мастерство действует и с твоим Roblox-аватаром."]="Mastery also applies with your own Roblox avatar.",
  ["Мастерство питомца"]="Pet mastery",
  ["Машина"]="Car",
  ["Машина "]="Car ",
@@ -5891,15 +5935,18 @@ return {
  ["Офлайн-касса +%s · накопление до %d ч."]="Offline register +%s · stores up to %d h.",
  ["Охрана"]="Security",
  ["Охрана %d/5; НПС %d%%; удержание %.1f с"]="Security %d/5; NPC %d%%; hold %.1f s",
+ ["Охрана +1 уровень"]="Security +1 level",
  ["Охрана уже достигла 5/5 (монеты и алмазы суммируются)."]="Security is already 5/5 (coin and diamond levels add together).",
  ["Охрана уже достигла общего максимума 5/5."]="Security has reached its combined maximum of 5/5.",
  ["Охрана! Ухожу!"]="A guard! I'm leaving!",
+ ["Охранник"]="Security Guard",
  ["Охранник · патруль"]="Guard · patrol",
  ["Охранник заметил воришку. Касса цела."]="Your guard spotted the thief. Your register is safe.",
  ["Ошибка запуска машины. Попробуй ещё раз."]="Could not start the car. Try again.",
  ["ПАРКОВКА №"]="PARKING ",
  ["ПАТРУЛЬ 60"]="PATROL 60",
  ["ПЕРВЫЙ УГОН: БЕГИ ПЕШКОМ К МАШИНЕ"]="FIRST THEFT: RUN TO THE CAR ON FOOT",
+ ["ПЕРЕКРЁСТОК %d"]="INTERSECTION %d",
  ["ПИТОМЕЦ"]="PET",
  ["ПЛАМЯ И ГОРЯЧИЕ ИСКРЫ"]="FLAMES AND HOT SPARKS",
  ["ПОВЕРНИ ДИСК"]="TURN THE DIAL",
@@ -5949,7 +5996,9 @@ return {
  ["Питомец и его облики"]="Your pet and its looks",
  ["Питомец открывается один раз за заработанные монеты или алмазы. После лицензии все его облики бесплатны. Общий бонус питомца сохраняется при смене облика. Покупать питомца для завершения обучения не требуется."]="Unlock your pet once with earned coins or diamonds. All pet looks are free after buying the licence. Its shared bonus stays when you change looks. You do not need to buy a pet to finish the tutorial.",
  ["Питомец открыт навсегда! Все его облики теперь бесплатны."]="Pet unlocked forever! All its looks are now free.",
+ ["Питомец: +%d %% к бонусу монет и кассы. Облики бесплатны."]="Pet: +%d %% to the coin and register bonus. Looks are free.",
  ["Питомец: +%d п.п. к бонусу монет и кассы. Облики бесплатны."]="Pet: +%d pp to the coin and register bonus. Looks are free.",
+ ["Питомец: +%d%% к бонусу монет и кассы. Облики бесплатны."]="Pet: +%d%% to the coin and register bonus. Looks are free.",
  ["Питомец: +%d%% ко всем монетам и кассе. Облики бесплатны."]="Pet: +%d%% to all coins and register income. All looks are free.",
  ["Питомец: максимальное мастерство."]="Pet: maximum mastery.",
  ["Плазменный хищник · Абсолют"]="Plasma Predator · Ultimate",
@@ -5990,7 +6039,9 @@ return {
  ["Попробуй меня прогнать!"]="Try chasing me away!",
  ["Попытка открыть слишком сложную машину включает сигнализацию и вызывает патруль. Слышны сигнализация и приближающаяся сирена, у патруля мигают огни. При задержании из текущей кассы снимается 5% без верхнего предела. Кошелёк сохраняется; заработок в рейтинге не уменьшается. После возрождения есть короткая пауза до нового взлома."]="Trying to hack a car above your level triggers its alarm and calls a patrol. Hear the alarm and approaching siren, and watch the patrol's flashing lights. Being caught takes 5% of your current register with no upper cap. Your wallet and leaderboard earnings stay safe. After respawning, there is a short hacking cooldown.",
  ["Поручи возврат помощнику"]="Let your helper return the car",
+ ["После покупки: "]="After purchase: ",
  ["Постоянная вместимость кассы вместо 12 ч"]="Permanent 48-hour register capacity instead of 12 h",
+ ["Постоянные возможности; уже купленные права сохраняются."]="Permanent features; existing purchases are retained.",
  ["Постоянные улучшения. Ограничение уровня машин сохраняется."]="Permanent upgrades. Car hacking requirements still apply.",
  ["Почтальон"]="Mail Carrier",
  ["Правая_Стена_Топ100"]="Right_Wall_Top100",
@@ -6099,6 +6150,7 @@ return {
  ["Сейчас: "]="Current: ",
  ["Сейчас: %s"]="Current: %s",
  ["Сейчас: %s\nДалее: %s"]="Current: %s\nNext: %s",
+ ["Сейчас: %s\nЗа монеты: %s\nЗа алмазы: %s"]="Current: %s\nFor coins: %s\nFor diamonds: %s",
  ["Сервер рассчитан на 8 игроков. Попробуй другой сервер."]="This server supports 8 players. Please try another server.",
  ["Серия из %d угонов прервана. Следующая доставка начнёт новую серию."]="Your streak of %d thefts ended. Your next delivery starts a new streak.",
  ["Серия: 0 · Следующая цель"]="Streak: 0 · Next target",
@@ -6113,6 +6165,7 @@ return {
  ["Скейтбордист"]="Skater",
  ["Скорость"]="Speed",
  ["Скорость %.1f студ/с"]="Speed %.1f studs/s",
+ ["Скорость +1"]="Speed +1",
  ["Следи за дорожными событиями и заказами на интерфейсе. Дневные задания и аккуратные доставки дают дополнительные монеты и ОПЫТ. МЕНЮ → ТОП-100 показывает сезонный рейтинг заработка."]="Watch road events and contracts on the HUD. Daily goals and careful deliveries grant extra coins and XP. MENU → TOP 100 shows this season's earnings leaderboard.",
  ["Следуй стрелке к машине ВЗЛОМ 1+ и начни угон."]="Follow the arrow to the HACKING 1+ car and begin your car theft.",
  ["Следуй стрелке к машине на витрине. Нажми «Поехать» — теперь на ней можно добираться до новых целей."]="Follow the arrow to your displayed car. Press Drive to use it for reaching your next target.",
@@ -6211,6 +6264,7 @@ return {
  ["Торин Трейл"]="Torin Trail",
  ["Точный взлом"]="Precise hack",
  ["Трек Ютилити"]="Trek Utility",
+ ["Три плавные воздушные дуги вокруг героя. Спокойное движение и мягкий голубой свет."]="Three flowing air arcs around your character. Gentle motion and a soft blue glow.",
  ["Турист"]="Tourist",
  ["Ты бросил машину, и её забрали."]="You abandoned the car and it was taken away.",
  ["Ты готов к большому угону"]="Ready for a big car theft",
@@ -6232,11 +6286,16 @@ return {
  ["УЛУЧШЕНИЯ"]="UPGRADES",
  ["УЛУЧШИТЬ\n"]="UPGRADE\n",
  ["УЛУЧШИТЬ · "]="UPGRADE · ",
+ ["УЛУЧШИТЬ · %s $"]="UPGRADE · %s $",
+ ["УЛУЧШИТЬ · %s $\n%d/%d"]="UPGRADE · %s $\n%d/%d",
+ ["УЛУЧШИТЬ · %s 💎"]="UPGRADE · %s 💎",
+ ["УЛУЧШИТЬ · %s 💎\n%d/%d"]="UPGRADE · %s 💎\n%d/%d",
  ["УЛУЧШИТЬ · 5 КОПИЙ + "]="UPGRADE · 5 COPIES + ",
  ["УРОВЕНЬ %d / %d"]="LEVEL %d / %d",
  ["УРОВЕНЬ ВЗЛОМА %d+"]="HACKING LEVEL %d+",
  ["УСТАНОВИТЬ ВСЁ КУПЛЕННОЕ"]="INSTALL ALL OWNED PARTS",
  ["УСТУПИ"]="GIVE WAY",
+ ["Увеличивает доход кассы"]="Increases register income",
  ["Увеличить доход"]="Boost income",
  ["Угнать"]="Steal",
  ["Угони доступную машину и доставь её в зелёную рамку салона. Найденный предмет появится здесь."]="Steal an accessible car and deliver it to your garage's green bay. Your first item will appear here.",
@@ -6248,6 +6307,7 @@ return {
  ["Улучшение уже достигло максимума."]="This upgrade has reached its maximum.",
  ["Улучшение уже максимально прокачано."]="This upgrade is already maxed out.",
  ["Улучшено: %s · %d уровень (−%d 💎)"]="Upgraded: %s · level %d (−%d 💎)",
+ ["Улучшено: %s · %d уровень · −%d %s"]="Upgraded: %s · level %d · −%d %s",
  ["Улучши доход салона"]="Boost garage income",
  ["Улучшить охрану"]="Upgrade security",
  ["Управление и звук"]="Controls and sound",
@@ -6873,10 +6933,21 @@ function M.parameters(speed,maximum,driving)
  local ratio=math.clamp(math.abs(speed or 0)/math.max(1,maximum or 42),0,1)
  return .012+.013*ratio,.72+.50*ratio
 end
+function M.loopRange(length)
+ if type(length)~='number'or length<.5 then return nil end
+ return length*.20,length*.78
+end
 function M.start(gui)
  local Players=game:GetService('Players');local SoundService=game:GetService('SoundService');local Run=game:GetService('RunService')
  local Content=game:GetService('ContentProvider');local Drive=require(script.Parent.DriveState);local player=Players.LocalPlayer
  local sound=Instance.new('Sound');sound.Name='Steal60QuietEngine';sound.SoundId=M.ASSET;sound.Volume=0;sound.Looped=true;sound.PlaybackSpeed=.72;sound.Parent=SoundService
+ local equalizer=Instance.new('EqualizerSoundEffect');equalizer.Name='RemoveMetallicTick';equalizer.HighGain=-36;equalizer.MidGain=-4;equalizer.LowGain=0;equalizer.Parent=sound
+ local limiter=Instance.new('CompressorSoundEffect');limiter.Name='SoftEnginePeaks';limiter.Threshold=-18;limiter.Ratio=5;limiter.Attack=.01;limiter.Release=.12;limiter.GainMakeup=0;limiter.Parent=sound
+ local loopStart
+ local function configureLoop()
+  local first,last=M.loopRange(sound.TimeLength)
+  if first then sound.PlaybackRegionsEnabled=true;sound.LoopRegion=NumberRange.new(first,last);loopStart=first end
+ end
  local live=true;local ready=false;local denied=false;local links={}
  local quietUntil=0;local muted=setmetatable({},{__mode='k'})
  local function quietCharacter()
@@ -6890,13 +6961,13 @@ function M.start(gui)
    for s,volume in pairs(muted)do if s.Parent and s.Volume==0 then s.Volume=volume end;muted[s]=nil end
   end
  end
- links[#links+1]=sound.Loaded:Connect(function()if live and not denied then ready=true end end)
+ links[#links+1]=sound.Loaded:Connect(function()if live and not denied then configureLoop();ready=true end end)
  task.spawn(function()
   local ok=pcall(function()Content:PreloadAsync({sound},function(_,status)
    if not live then return end
    if status==Enum.AssetFetchStatus.Failure or status==Enum.AssetFetchStatus.TimedOut then denied=true;ready=false;sound:Stop()end
   end)end)
-  if live then ready=not denied and ok and sound.IsLoaded end
+  if live then configureLoop();ready=not denied and ok and sound.IsLoaded end
  end)
  local elapsed=0
  links[#links+1]=Run.Heartbeat:Connect(function(dt)
@@ -6907,11 +6978,161 @@ function M.start(gui)
   local body=car:FindFirstChild('Body',true)or car.PrimaryPart
   local speed=body and body.AssemblyLinearVelocity.Magnitude or(car:GetAttribute('ArcadeSpeed')or 0)
   local volume,pitch=M.parameters(speed,car:GetAttribute('MaxSpeed')or 42,true)
-  if not sound.IsPlaying then sound:Play()end
+  if not sound.IsPlaying then if loopStart then sound.TimePosition=loopStart end;sound:Play()end
   sound.Volume=math.min(M.MAX_VOLUME,sound.Volume+(volume-sound.Volume)*(1-math.exp(-step*6)))
-  sound.PlaybackSpeed=pitch
+  sound.PlaybackSpeed=sound.PlaybackSpeed+(pitch-sound.PlaybackSpeed)*(1-math.exp(-step*4))
  end)
  gui.Destroying:Connect(function()for s,volume in pairs(muted)do if s.Parent and s.Volume==0 then s.Volume=volume end end;live=false;for _,c in ipairs(links)do c:Disconnect()end;sound:Stop();sound:Destroy()end)
+end
+return M
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_v66_UpgradePolicy"><Properties><string name="Name">UpgradePolicy</string><ProtectedString name="Source"><![CDATA[-- Benefit tracks are independent of payment currency. Existing saved counters stay intact.
+local Config=script.Parent.Config
+local Settings=require(Config.Settings);local Coin=require(Config.CoinUpgradeConfig);local Diamond=require(Config.UpgradeConfig)
+local M={SharedOrder={'security','shelves','speed'},SharedMax={security=5,shelves=4,speed=24}}
+local function integer(value)local n=tonumber(value)or 0;return n==n and n~=math.huge and n~=-math.huge and math.max(0,math.floor(n))or 0 end
+local function five(n)return math.max(5,math.ceil(n/5)*5)end
+function M.isShared(id)return M.SharedMax[id]~=nil end
+function M.total(data,id)return integer((data.upgrades or{})[id])+integer((data.coinUpgrades or{})[id])end
+function M.level(data,id,currency)
+ if M.isShared(id)then return M.total(data,id)end
+ return integer((data[currency=='coin'and'coinUpgrades'or'upgrades']or{})[id])
+end
+function M.capacity(data)return math.max(integer(data.shelfCapacity),12+3*M.total(data,'shelves'))end
+function M.speed(data,multiplier)
+ local raw=Settings.Drive.BaseSpeed+Settings.Drive.SpeedPerLevel*M.total(data or{},'speed')
+ return math.min(Settings.MaxCarSpeed,raw*math.max(1,multiplier or 1))
+end
+function M.choices(data,id)
+ local coin,gem=Coin.ById[id],Diamond.ById[id];if not gem then return {}end
+ local result={}
+ if M.isShared(id)then
+  local level=M.total(data,id);local maximum=M.SharedMax[id]
+  local ledger='payment'
+  if id=='speed'then ledger=integer((data.coinUpgrades or{}).speed)<=integer((data.upgrades or{}).speed)and'coinUpgrades'or'upgrades'end
+  result[1]={id='combined',level=level,max=maximum,ledger=ledger,
+   title=({security='Охрана +1 уровень',shelves='+3 места для доходных предметов',speed='Скорость +1'})[id]}
+  if level<maximum then
+   result[1].coinCost=Coin.cost(id,id=='speed'and math.min(level,coin.max-1)or level)
+   result[1].diamondCost=Diamond.cost(id,id=='speed'and 0 or level)
+  end
+ elseif coin then
+  for _,track in ipairs({'coin','diamond'})do
+   local def=track=='coin'and coin or gem;local ledger=track=='coin'and'coinUpgrades'or'upgrades';local level=integer((data[ledger]or{})[id])
+   local option={id=track,ledger=ledger,level=level,max=def.max}
+   option.title=id=='income'and(track=='coin'and'Доход +4% к базе'or'Доход +3% к базе')or(track=='coin'and'Доставка +3% к базе'or'Доставка +4% к базе')
+   if level<def.max then
+    if track=='coin'then
+     option.coinCost=Coin.cost(id,level)
+     option.diamondCost=five((id=='income'and 20 or 10)*(id=='income'and 1.2 or 1.55)^level)
+    else
+     option.diamondCost=Diamond.cost(id,level)
+     if id=='income'then option.coinCost=five((level==0 and 45 or coin.base*coin.growth^level)*.75)
+     else option.coinCost=five(coin.base*coin.growth^level*4/3)end
+    end
+   end
+   result[#result+1]=option
+  end
+ else
+  local level=integer((data.upgrades or{})[id]);result[1]={id='diamond',ledger='upgrades',level=level,max=gem.max,diamondCost=Diamond.cost(id,level),title=gem.description}
+ end
+ return result
+end
+function M.find(data,id,choice)
+ for _,option in ipairs(M.choices(data,id))do if option.id==choice then return option end end
+end
+return M
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_v66_BreezeAura"><Properties><string name="Name">BreezeAura</string><ProtectedString name="Source"><![CDATA[-- A small, self-contained wind halo: three tapered curves around the upper body.
+-- No particle plume, no trailing waist emitter, no per-frame instance allocation.
+local M={};local cache=setmetatable({},{__mode='k'})
+function M.arc(size,index,t)
+ local radius=math.max(size.X,size.Z)*.5+1.18+.05*math.sin(t*1.3+index)
+ local angle=t*.48+(index-1)*math.pi*2/3
+ local span=math.rad(100);local y=size.Y*(.11+.11*index)+.045*math.sin(t*1.8+index)
+ local function frame(theta)
+  local tangent=Vector3.new(-math.sin(theta),0,math.cos(theta))
+  return CFrame.fromMatrix(Vector3.new(radius*math.cos(theta),y,radius*math.sin(theta)),tangent,Vector3.yAxis,tangent:Cross(Vector3.yAxis))
+ end
+ return frame(angle),frame(angle+span),radius*4/3*math.tan(span/4)
+end
+local function pose(beam,host,index,t)
+ local a,b,curve=M.arc(host.Size,index,t)
+ beam.Attachment0.CFrame=a;beam.Attachment1.CFrame=b;beam.CurveSize0=curve;beam.CurveSize1=curve
+ beam.Width0=.115+.012*math.sin(t*1.4+index);beam.Width1=.025
+end
+function M.create(root,host,folder,def)
+ local anchors={}
+ for index=1,3 do
+  local a=Instance.new('Attachment');a.Name='BreezeArcStart'..index;a.Parent=host;anchors[#anchors+1]=a
+  local b=Instance.new('Attachment');b.Name='BreezeArcEnd'..index;b.Parent=host;anchors[#anchors+1]=b
+  local beam=Instance.new('Beam');beam.Name='WindArc'..index;beam.Enabled=true;beam:SetAttribute('WindIndex',index)
+  beam.Attachment0=a;beam.Attachment1=b;beam.FaceCamera=true;beam.Segments=18;beam.LightEmission=.18;beam.LightInfluence=.2
+  beam.Color=ColorSequence.new(def.color,Color3.fromRGB(232,244,248))
+  beam.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,.85),NumberSequenceKeypoint.new(.22,.23),NumberSequenceKeypoint.new(.70,.36),NumberSequenceKeypoint.new(1,1)})
+  pose(beam,host,index,0);beam.Parent=folder
+ end
+ folder:SetAttribute('AuraOrigin','WindOrbit');folder:SetAttribute('BeamCount',3);folder:SetAttribute('TrailCount',0);folder:SetAttribute('EmitterCount',0);folder:SetAttribute('AuraId',def.id)
+ folder.Destroying:Connect(function()cache[folder]=nil;for _,a in ipairs(anchors)do if a.Parent then a:Destroy()end end end)
+end
+function M.step(folder,t)
+ local state=cache[folder]
+ if not state or t>=state.refresh then
+  state={beams={},refresh=t+1}
+  for _,beam in ipairs(folder:GetChildren())do if beam:IsA('Beam')and beam.Attachment0 and beam.Attachment1 and beam.Attachment0.Parent then state.beams[#state.beams+1]=beam end end
+  if #state.beams~=3 then state.refresh=t+.1 end
+  cache[folder]=state
+ end
+ for _,beam in ipairs(state.beams)do
+  if beam.Parent and beam.Attachment0 and beam.Attachment1 and beam.Attachment0.Parent then pose(beam,beam.Attachment0.Parent,beam:GetAttribute('WindIndex')or 1,t)else state.refresh=0 end
+ end
+end
+return M
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_v66_UpgradeView"><Properties><string name="Name">UpgradeView</string><ProtectedString name="Source"><![CDATA[-- One card per upgrade type; each distinct benefit has both payment buttons.
+local W=require(script.Parent.MenuWidgets)
+local M={};local icons={income='coins',speed='car',botSpeed='car',security='security',shelves='shelves'}
+function M.render(parent,data,actions)
+ for _,row in ipairs(data.dualUpgrades or{})do
+  local choices={}
+  for _,option in ipairs(row.choices)do
+   local selected=option
+   choices[#choices+1]={title=('%s · %d/%d'):format(option.title,option.level,option.max),effect='После покупки: '..option.nextEffect,actions={
+    {text=option.coinCost and('УЛУЧШИТЬ · %s $'):format(W.fmt(option.coinCost))or'МАКСИМУМ',enabled=option.coinCost~=nil and(data.money or 0)>=option.coinCost,color=Color3.fromRGB(146,229,177),click=function()actions.choice(row.id,selected.id,'coin')end},
+    {text=option.diamondCost and('УЛУЧШИТЬ · %s 💎'):format(W.fmt(option.diamondCost))or'МАКСИМУМ',enabled=option.diamondCost~=nil and(data.diamonds or 0)>=option.diamondCost,color=Color3.fromRGB(129,218,250),click=function()actions.choice(row.id,selected.id,'diamond')end},
+   }}
+  end
+  local card=W.card(parent,{kind=icons[row.id],title=row.name,description=row.description,currentEffect='Сейчас: '..row.currentEffect,choices=choices,value=('УРОВЕНЬ %d / %d'):format(row.totalLevel,row.max),progress={row.totalLevel,row.max}})
+  card:SetAttribute('UpgradeId',row.id)
+ end
+end
+return M
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_v66_PoliceAudio"><Properties><string name="Name">PoliceAudio</string><ProtectedString name="Source"><![CDATA[-- One police siren only. No alarm bank or replacement clip is ever played.
+local M={ASSET='rbxassetid://156667202',MAX_VOLUME=.26}
+function M.volume(distance,active)
+ if not active then return 0 end
+ return .10+.16*(1-math.clamp((distance or 240)/300,0,1))
+end
+function M.start(gui)
+ local player=game:GetService('Players').LocalPlayer;local SoundService=game:GetService('SoundService')
+ local sound=Instance.new('Sound');sound.Name='Steal60PoliceSiren';sound.SoundId=M.ASSET;sound.Looped=true;sound.Volume=0;sound.Parent=SoundService
+ local live,ready,denied=true,false,false;local links={}
+ links[#links+1]=sound.Loaded:Connect(function()if live and not denied then ready=true end end)
+ task.spawn(function()
+  local ok=pcall(function()game:GetService('ContentProvider'):PreloadAsync({sound},function(_,status)
+   if status==Enum.AssetFetchStatus.Failure or status==Enum.AssetFetchStatus.TimedOut then denied=true;ready=false;sound:Stop()end
+  end)end)
+  if live then ready=ok and not denied and sound.IsLoaded end
+ end)
+ local elapsed=0
+ links[#links+1]=game:GetService('RunService').Heartbeat:Connect(function(dt)
+  elapsed+=dt;if elapsed<.05 then return end;local step=elapsed;elapsed=0
+  local root=player.Character and player.Character:FindFirstChild('HumanoidRootPart');local pos=player:GetAttribute('PolicePosition')
+  local active=ready and player:GetAttribute('PoliceActive')==true
+  local distance=root and pos and(root.Position-pos).Magnitude or 240
+  local target=M.volume(distance,active)
+  if active and not sound.IsPlaying then sound.Volume=0;sound:Play()end
+  sound.Volume=math.min(M.MAX_VOLUME,sound.Volume+(target-sound.Volume)*(1-math.exp(-step*7)))
+  if not active and sound.Volume<.003 then sound.Volume=0;sound:Stop()end
+ end)
+ gui.Destroying:Connect(function()live=false;for _,c in ipairs(links)do c:Disconnect()end;sound:Stop();sound:Destroy()end)
 end
 return M
 ]]></ProtectedString></Properties></Item></Item>
@@ -6955,6 +7176,7 @@ startOptional('InterfaceAccess',gui)
 startOptional('ShelfTypography',gui)
 startOptional('RoadsideFacing',gui)
 startOptional('EngineAudio',gui)
+startOptional('PoliceAudio',gui)
 startOptional('LeaderboardView',gui)
 startOptional('MusicDirector',gui)
 startOptional('LanguageController',gui)
@@ -7049,11 +7271,12 @@ end)
 ----------------------------------------------------------------------
 local TweenService = game:GetService("TweenService")
 local HackTap = remotes:WaitForChild("HackTap")
+local HackCancel=remotes:WaitForChild("HackCancel")
 local HackStep = remotes:WaitForChild("HackStep")
 local activeHackStep
 
 local function runMinigame(params)
-    if closeHack then closeHack() end
+    if closeHack then closeHack('replace')end
     local palettes={
         pins=Color3.fromRGB(73,232,165),
         dial=Color3.fromRGB(255,194,91),
@@ -7305,7 +7528,7 @@ local function runMinigame(params)
         game:GetService('GuiService').SelectedObject=nil
         root:Destroy()
     end
-    closeHack=close
+    local nextSubmitAt=0;local pendingAt=0;local lastSync=0
 
     local function redraw()
         theme=palettes[current.mode] or palettes.pins
@@ -7344,11 +7567,11 @@ local function runMinigame(params)
     end
     local function submit(actionName)
         if victoryShown then close();return end
-        if finished or waiting or workspace:GetServerTimeNow() < (current.startAt or 0) then return end
+        if finished or waiting or workspace:GetServerTimeNow()<math.max(current.startAt or 0,nextSubmitAt)then return end
         if current.mode=="memory"then
             if workspace:GetServerTimeNow()<(current.startAt or 0)+HackModes.memoryDuration(current.zone)then return end
             if not actionName or not actionName:match("^memory_[1234]$")then return end
-            waiting=true;HackTap:FireServer(actionName);return
+            waiting=true;pendingAt=workspace:GetServerTimeNow();nextSubmitAt=pendingAt+.20;HackTap:FireServer(actionName,current.sessionId);return
         end
         local isWire=current.mode=="wires"
         if isWire then
@@ -7358,13 +7581,15 @@ local function runMinigame(params)
         end
         waiting=true
         status.Text="ПРОВЕРКА..."
-        HackTap:FireServer(actionName)
+        pendingAt=workspace:GetServerTimeNow();nextSubmitAt=pendingAt+.20
+        HackTap:FireServer(actionName,current.sessionId)
     end
-    local function cancelAction()
+    local function cancelAction(reason)
         if finished then return end
-        HackTap:FireServer("cancel")
+        if reason~='replace'and not victoryShown then HackCancel:FireServer(current.sessionId);player:SetAttribute('HackActive',false)end
         close()
     end
+    closeHack=cancelAction
     for _,buttons in ipairs({wireButtons,memoryButtons})do
         for i,b in ipairs(buttons)do b.Selectable=true;b.NextSelectionLeft=buttons[(i-2)%#buttons+1];b.NextSelectionRight=buttons[i%#buttons+1]end
     end
@@ -7377,7 +7602,7 @@ local function runMinigame(params)
     end)
     cancel.Activated:Connect(cancelAction)
     activeHackStep=HackStep.OnClientEvent:Connect(function(state)
-        if finished or type(state)~="table" then return end
+        if finished or type(state)~="table"or(state.sessionId and current.sessionId and state.sessionId~=current.sessionId)then return end
         if state.state=="success" then
             victoryShown=true
             waiting=false
@@ -7388,6 +7613,8 @@ local function runMinigame(params)
             hint.Visible=false;eyebrow.Visible=false;status.Visible=false
             puzzle.Visible=false;progress.Visible=false;cancel.Visible=false;action.Visible=false
             task.delay(1,close)
+        elseif state.state=='wait'or state.state=='sync'then
+            current=state;waiting=false;nextSubmitAt=math.max(nextSubmitAt,state.retryAt or 0);redraw()
         elseif state.state=="memory_progress"then
             current.memoryIndex=state.memoryIndex;waiting=false
             status.Text=("КОД: %d / %d"):format((current.memoryIndex or 1)-1,#current.zone.sequence)
@@ -7412,7 +7639,7 @@ local function runMinigame(params)
     end)
     inputConn=UserInputService.InputBegan:Connect(function(input,processed)
         if finished then return end
-        if input.KeyCode==Enum.KeyCode.ButtonB then cancelAction();return end
+        if input.KeyCode==Enum.KeyCode.ButtonB or input.KeyCode==Enum.KeyCode.Escape then cancelAction();return end
         if victoryShown then
             if input.KeyCode==Enum.KeyCode.F or input.KeyCode==Enum.KeyCode.Escape or input.KeyCode==Enum.KeyCode.ButtonA then close() end
             return
@@ -7432,7 +7659,11 @@ local function runMinigame(params)
     end)
     renderConn=RunService.RenderStepped:Connect(function()
         if finished or victoryShown then return end
-        local t=workspace:GetServerTimeNow()-(current.startAt or 0)
+        local now=workspace:GetServerTimeNow()
+        if waiting and now-pendingAt>.9 and now-lastSync>1 then
+            lastSync=now;HackTap:FireServer('sync',current.sessionId)
+        end
+        local t=now-(current.startAt or 0)
         if t<0 then
             if not waiting then status.Text=string.format("ПОДГОТОВКА · %.1f сек",-t) end
             return
@@ -7444,7 +7675,7 @@ local function runMinigame(params)
             local help=not watching and(current.helpLevel or 0)>=3 and current.zone.sequence[current.memoryIndex or 1]
             for i,b in ipairs(memoryButtons)do
                 b.BackgroundColor3=((watching and cue==i)or help==i)and palettes.memory or Color3.fromRGB(62,55,81)
-                b.Active=not watching and not waiting
+                b.Active=not watching and not waiting and now>=nextSubmitAt
             end
             if not waiting then status.Text=watching and"ЗАПОМИНАЙ ПОРЯДОК..."or("ПОВТОРИ КОД: %d / %d"):format((current.memoryIndex or 1)-1,#current.zone.sequence)end
         elseif mode~="wires" then
@@ -8130,6 +8361,7 @@ function renderTab(tab)
     end
     MenuViews.render(tab,content,data,{
      player=player,
+     choice=function(id,variant,currency)remotes.BuyUpgradeChoice:FireServer(id,variant,currency);refresh()end,
      coin=function(id)remotes.BuyCoinUpgrade:FireServer(id);refresh()end,
      diamond=function(id)BuyUpgrade:FireServer(id);refresh()end,
      star=function(id)remotes.ManageWorkshop:FireServer('upgradeShelf',id);refresh()end,
@@ -9111,15 +9343,11 @@ local function drawParts(data)
  end
 end
 local function drawCoins(data)
- header.Text="МАСТЕР · УЛУЧШЕНИЯ ЗА $"
- subtitle.Text="Монеты $ "..fmt(data.money).." · обычная прокачка без доната"
- for _,up in ipairs(data.coinUpgrades or{})do
-  local maximum=up.level>=up.max or up.cost==nil;local price=up.cost or 0
-  makeCard(up.icon or"$",up.name,("Уровень %d/%d · %s"):format(up.level,up.max,up.detail or""),C(143,234,170),{{
-   text=maximum and"МАКС"or("УЛУЧШИТЬ\n"..fmt(price).." $"),enabled=not maximum and(data.money or 0)>=price,
-   func=function()buyCoin:FireServer(up.id);refreshAfter()end,
-  }},88)
- end
+ header.Text="МАСТЕР · УЛУЧШЕНИЯ"
+ subtitle.Text="$ "..fmt(data.money).." · 💎 "..fmt(data.diamonds).." · выбери валюту для улучшения"
+ require(RS.Shared.UpgradeView).render(scroll,data,{
+  choice=function(id,variant,currency)remotes.BuyUpgradeChoice:FireServer(id,variant,currency);refreshAfter()end,
+ })
 end
 local function drawDiamonds(data)
  header.Text="ВИП · АЛМАЗЫ"
@@ -9337,16 +9565,17 @@ local function mastery(category,data)
    if yes==true and def and def.category=="hero" then unlocked=true;break end
   end
  end
- local b=box(scroller,216,C(30,49,63))
+ local b=box(scroller,240,C(30,49,63))
  local title=hero and "МАСТЕРСТВО ГЕРОЯ" or "МАСТЕРСТВО ПИТОМЦА"
  text(b,title,UDim2.new(1,-25,0,24),UDim2.fromOffset(14,8),15,C(245,249,252),true)
- text(b,(level>=max and"Бонус: +%d п.п. / +%d п.п."or"Бонус: +%d п.п. / +%d п.п. · следующий +1 п.п."):format(level,max),
+ text(b,(level>=max and"Бонус: +%d%% / +%d%%"or"Бонус: +%d%% / +%d%% · следующий +1%%"):format(level,max),
   UDim2.new(1,-25,0,24),UDim2.fromOffset(14,29),13,C(126,244,190),true)
  if not unlocked then
   text(b,hero and "Сначала купи любой скин героя." or "Сначала открой питомца — один раз за монеты или алмазы.",
    UDim2.new(1,-25,0,32),UDim2.fromOffset(14,61),12,C(178,196,213))
   return
  end
+ if hero then text(b,'Мастерство действует и с твоим Roblox-аватаром.',UDim2.new(1,-28,0,30),UDim2.fromOffset(14,208),11,C(160,217,206))end
  local effects=(data.masteryEffects or{})[category]
  if effects then text(b,('Сейчас: %s\nДалее: %s'):format(effects.current,effects.next),UDim2.new(1,-28,0,104),UDim2.fromOffset(14,57),12,C(214,229,236))end
  if level>=max then
@@ -9357,19 +9586,19 @@ local function mastery(category,data)
  if hero then
   local gems=Config.heroUpgradeDiamonds(level)
   local coins=Config.heroUpgradeCoins(level)
-  button(b,("+1 п.п. · %s $"):format(fmt(coins)),UDim2.new(.5,-18,0,34),UDim2.fromOffset(startX,170),function()
+  button(b,("+1%% · %s $"):format(fmt(coins)),UDim2.new(.5,-18,0,34),UDim2.fromOffset(startX,170),function()
    send("upgradeHeroCoins","hero",nil)
   end,C(146,229,177),(tonumber(data.money) or 0)>=coins)
-  button(b,("+1 п.п. · %d 💎"):format(gems),UDim2.new(.5,-18,0,34),UDim2.new(.5,4,0,170),function()
+  button(b,("+1%% · %d 💎"):format(gems),UDim2.new(.5,-18,0,34),UDim2.new(.5,4,0,170),function()
    send("upgradeHeroDiamonds","hero",nil)
   end,C(129,218,250),(tonumber(data.diamonds) or 0)>=gems)
  else
   local coin=Config.petUpgradeCoins(level)
   local gem=Config.petUpgradeDiamonds(level)
-  button(b,("+1 п.п. · %s $"):format(fmt(coin)),UDim2.new(.5,-18,0,34),UDim2.fromOffset(startX,170),function()
+  button(b,("+1%% · %s $"):format(fmt(coin)),UDim2.new(.5,-18,0,34),UDim2.fromOffset(startX,170),function()
    send("upgradePetCoins","pet",nil)
   end,C(146,229,177),(tonumber(data.money) or 0)>=coin)
-  button(b,("+1 п.п. · %d 💎"):format(gem),UDim2.new(.5,-18,0,34),UDim2.new(.5,4,0,170),function()
+  button(b,("+1%% · %d 💎"):format(gem),UDim2.new(.5,-18,0,34),UDim2.new(.5,4,0,170),function()
    send("upgradePetDiamonds","pet",nil)
   end,C(129,218,250),(tonumber(data.diamonds) or 0)>=gem)
  end
@@ -9541,6 +9770,21 @@ local function aura3D(container,def)
  local view=Instance.new("Frame");view.Name="MovementTrailSwatch"
  view.Size=UDim2.fromOffset(176,192);view.Position=UDim2.fromOffset(9,9)
  view.BorderSizePixel=0;view.BackgroundColor3=C(17,29,43);view.Parent=container;corner(view,10)
+ if def.simple then
+  -- A readable schematic of the in-world wind halo, with front/back arc ordering.
+  local torso=Instance.new('Frame');torso.Size=UDim2.fromScale(.22,.28);torso.Position=UDim2.fromScale(.39,.25);torso.BackgroundColor3=C(122,146,158);torso.BorderSizePixel=0;torso.ZIndex=3;torso.Parent=view;corner(torso,8)
+  local head=Instance.new('Frame');head.Size=UDim2.fromScale(.14,.13);head.Position=UDim2.fromScale(.43,.10);head.BackgroundColor3=C(223,223,209);head.BorderSizePixel=0;head.ZIndex=3;head.Parent=view;corner(head,30)
+  for band=1,3 do for segment=0,21 do
+   local a=(band-1)*2*math.pi/3+segment*math.rad(100)/22;local b=a+math.rad(100)/22
+   local x,y=.5+.34*math.cos(a),.31+(band-2)*.085+.07*math.sin(a)
+   local dx,dy=.34*(math.cos(b)-math.cos(a)),.07*(math.sin(b)-math.sin(a))
+   local line=Instance.new('Frame');line.AnchorPoint=Vector2.new(0,.5);line.Position=UDim2.fromScale(x,y);line.Size=UDim2.new(math.sqrt(dx*dx+dy*dy),1,0,2)
+   line.Rotation=math.deg(math.atan2(dy,dx));line.BackgroundColor3=def.color;line.BackgroundTransparency=.16+.68*math.abs(segment-10.5)/10.5
+   line.BorderSizePixel=0;line.ZIndex=math.sin(a)>0 and 4 or 2;line.Parent=view
+  end end
+  text(view,'ВОЗДУШНЫЕ ДУГИ ВОКРУГ ГЕРОЯ',UDim2.new(1,-10,0,36),UDim2.new(0,5,.64,0),10,C(204,222,232),true)
+  return view
+ end
  for side=-1,1 do
   for i=0,15 do
    local piece=Instance.new("Frame");piece.BorderSizePixel=0;piece.BackgroundColor3=def.color
@@ -10796,9 +11040,14 @@ function Builder.build(index)
     end
 
 	-- перекрёсток
-	part(model, "Intersection", Vector3.new(T.IntersectionLength, 0.4, T.CrossRoadHalf * 2),
+	part(model, "Intersection", Vector3.new(T.IntersectionLength, 0.4, ROAD_FULL_HALF*2),
 		Vector3.new(x0 + T.IntersectionLength / 2, 0, 0), theme.road, Enum.Material.Asphalt)
-	for _, xc in ipairs({ x0 + 4, x1 - 4 }) do -- пешеходные переходы
+ part(model,'CrossStreet',Vector3.new(18,.4,T.CrossRoadHalf*2),Vector3.new((x0+x1)/2,0,0),theme.road,Enum.Material.Asphalt)
+ require(script.Parent.JunctionArt).decorate(model,index,x0,x1)
+ for _,side in ipairs({-1,1})do for dx=-7,7,3.5 do
+  part(decor,'SideStreetCrosswalk',Vector3.new(1.7,.05,3),Vector3.new((x0+x1)/2+dx,.22,side*34),WHITE,Enum.Material.SmoothPlastic,false)
+ end end
+ for _, xc in ipairs({ x0 + 4, x1 - 4 }) do -- пешеходные переходы
 		for z = -ROAD_HALF + 2, ROAD_HALF - 2, 4 do
 			part(decor, "Crosswalk", Vector3.new(3, 0.05, 2), Vector3.new(xc, 0.22, z), WHITE, Enum.Material.SmoothPlastic, false)
 		end
@@ -11966,7 +12215,7 @@ function Net.init()
  Security.init()
 	local folder = Instance.new("Folder")
 	folder.Name = "Remotes"
-	for _, name in ipairs({ "HackStart", "HackTap", "HackStep", "DriveInput", "DriveSnapshot", "RecoverCar", "Notify", "PinCar", "LootReveal", "BuyUpgrade", "CurrencyUpdate", "ShowTop100", "BuyCoinUpgrade", "ManageWorkshop", "OpenEconomyNPC", "BuyVIP", "CosmeticAction", "CosmeticUpdate", "TutorialAction", "TutorialUpdate", "SetLanguage", "SetAudio" }) do
+	for _, name in ipairs({ "HackStart", "HackTap", "HackCancel", "HackStep", "DriveInput", "DriveSnapshot", "RecoverCar", "Notify", "PinCar", "LootReveal", "BuyUpgrade", "BuyUpgradeChoice", "CurrencyUpdate", "ShowTop100", "BuyCoinUpgrade", "ManageWorkshop", "OpenEconomyNPC", "BuyVIP", "CosmeticAction", "CosmeticUpdate", "TutorialAction", "TutorialUpdate", "SetLanguage", "SetAudio" }) do
 		local e = Instance.new("RemoteEvent")
 		e.Name = name
 		e.Parent = folder
@@ -12013,6 +12262,7 @@ local CollectionService = game:GetService("CollectionService")
 local RS = game:GetService("ReplicatedStorage")
 local Shared = RS:WaitForChild("Shared")
 local Settings = require(Shared.Config.Settings)
+local UpgradePolicy=require(Shared.UpgradePolicy)
 local Layout = require(Shared.TrackLayout)
 local RoadSteering=require(Shared.RoadSteering)
 local Dynamics=require(Shared.DriveDynamics)
@@ -12137,9 +12387,7 @@ local function isRoadBlocked(current,candidate)
     return false
 end
 function DriveService.maxSpeedFor(data, player)
-    local lvl=((data and data.upgrades and data.upgrades.speed) or 0) + .4*((data and data.coinUpgrades and data.coinUpgrades.speed) or 0)
-    local raw=Settings.Drive.BaseSpeed+Settings.Drive.SpeedPerLevel*lvl
-    return math.min(Settings.MaxCarSpeed,raw*(player and Monetization.speedMultiplier(player) or 1))
+    return UpgradePolicy.speed(data,player and Monetization.speedMultiplier(player)or 1)
 end
 function DriveService.disable(car)
     if not car then return end
@@ -13010,6 +13258,7 @@ local HeistService = require(Services.HeistService)
 local Tutorial=require(Services.TutorialService)
 local HackService = {}
 local rng = Random.new()
+local nextSessionId=0
 local sessions = {} -- player -> live server-authoritative session
 local policePending = {} -- player -> prevent duplicate dispatch, fine and respawn
 
@@ -13145,7 +13394,7 @@ end
 local function sendStep(player, session, state, quality)
     if not player.Parent then return end
     Net.HackStep:FireClient(player, {
-        state = state,
+        state = state,sessionId=session.id,retryAt=math.max(session.roundStart,session.lastTap+.18),
         round = session.round,
         rounds = session.diff.rounds,
         period = session.diff.period,
@@ -13159,19 +13408,36 @@ local function sendStep(player, session, state, quality)
     })
 end
 
+local function finishSession(player,session)
+ if sessions[player]~=session then return false end
+ sessions[player]=nil;player:SetAttribute('HackActive',false)
+ if session.destroyConnection then session.destroyConnection:Disconnect();session.destroyConnection=nil end
+ if session.ancestryConnection then session.ancestryConnection:Disconnect();session.ancestryConnection=nil end
+ return true
+end
+local function cancelSession(player,token)
+ local session=sessions[player]
+ if session and token and session.id~=token then return end
+ if session then
+  finishSession(player,session)
+  local car=session.car
+  if car and car.Parent and car:GetAttribute('LockedBy')==player.UserId then ParkingService.unlock(car)end
+  Tutorial.event(player,'heist_failed')
+ else player:SetAttribute('HackActive',false)end
+ if player.Parent then Net.HackStep:FireClient(player,{state='cancelled',sessionId=session and session.id or token})end
+end
+
 local function failSession(player, session, why)
-    player:SetAttribute("HackActive",false)
-    if sessions[player] ~= session then return end
-    sessions[player] = nil
+    if not finishSession(player,session)then return end
     local car = session.car
     HeistService.onFailed(player)
     local data = DataService.get(player)
     Tutorial.event(player,"heist_failed")
-    Net.HackStep:FireClient(player, { state = "alarm", reason = why or "Сигнализация!" })
+    Net.HackStep:FireClient(player, {state="alarm",sessionId=session.id,reason=why or"Сигнализация!"})
     Net.notify(player, why or "Сигнализация! Повтори попытку позже.", "bad")
     flashAlarm(car, 3.5)
     task.delay(2.5, function()
-        if car and car.Parent then ParkingService.unlock(car) end
+        if car and car.Parent and car:GetAttribute('LockedBy')==player.UserId then ParkingService.unlock(car)end
     end)
     -- Failure during an active mini-game never summons police. Skill-level
     -- gating (before the mini-game) retains the original alarm/police mechanic.
@@ -13190,19 +13456,22 @@ local function startMinigame(player, car)
       local zone=zones[i];zone.w=math.min(.70,zone.w+assistance);zone.c=math.clamp(zone.c,zone.w/2+.02,1-zone.w/2-.02)
      end
     end
-    local session = {
+    nextSessionId+=1
+    local session = {id=nextSessionId,
         car = car, zones = zones, modes=modes, diff = diff, startedAt = os.clock(),
         round = 1, roundStart = workspace:GetServerTimeNow() + .85,
         strikes = 0, roundMisses = 0, sumQuality = 0, lastTap = 0,
     }
     sessions[player] = session
+    session.destroyConnection=car.Destroying:Connect(function()cancelSession(player,session.id)end)
+    session.ancestryConnection=car.AncestryChanged:Connect(function()if not car:IsDescendantOf(workspace)then cancelSession(player,session.id)end end)
     player:SetAttribute("HackActive",true)
     Tutorial.event(player,"hack_started")
 
     -- Starts helper return only once, at beginning of new target's hacking.
     SalonService.onHackStarted(player)
     Net.HackStart:FireClient(player, {
-        carName = car.Name,
+        carName = car.Name,sessionId=session.id,
         mode = modes[1],
         round = 1,
         rounds = diff.rounds,
@@ -13248,22 +13517,16 @@ local function onPrompt(player, car)
     else startMinigame(player,car)end
 end
 
-local function onTap(player, action)
+local function onTap(player, action, token)
     local memoryChoice=tonumber(type(action)=="string"and action:match("^memory_([1234])$")or nil)
     local wireChoice=tonumber(type(action)=="string" and action:match("^wire_([123])$") or nil)
-    if action ~= "tap" and action ~= "cancel" and not wireChoice and not memoryChoice then return end
+    if action ~= "tap" and action ~= "cancel" and action~="sync"and not wireChoice and not memoryChoice then return end
     local s = sessions[player]
-    if not s then return end
-    local car = s.car
-    if action == "cancel" then
-        sessions[player] = nil
-        player:SetAttribute("HackActive",false)
-        local data = DataService.get(player)
-        Tutorial.event(player,"heist_failed")
-        if car and car.Parent then ParkingService.unlock(car) end
-        Net.HackStep:FireClient(player, { state = "cancelled" })
-        return
-    end
+    if not s then cancelSession(player,token);return end
+    if token and token~=s.id then return end
+    local car=s.car
+    if action=='cancel'then cancelSession(player,token);return end
+    if action=='sync'then sendStep(player,s,'sync');return end
     if not car or not car.Parent or car:GetAttribute("LockedBy") ~= player.UserId then
         failSession(player, s, "Машина недоступна.")
         return
@@ -13278,10 +13541,10 @@ local function onTap(player, action)
     end
 
     local now = workspace:GetServerTimeNow()
-    if now < s.roundStart or now - s.lastTap < .17 then return end
+    if now<s.roundStart or now-s.lastTap<.17 then sendStep(player,s,'wait');return end
     s.lastTap = now
     local t = now - s.roundStart
-    if s.modes[s.round]=="memory"and t<HackModes.memoryDuration(s.zones[s.round])then return end
+    if s.modes[s.round]=="memory"and t<HackModes.memoryDuration(s.zones[s.round])then sendStep(player,s,"wait");return end
     local z = s.zones[s.round]
     -- Validate against SERVER time; clients never submit hit positions.
     -- On the fourth tap of a difficult round, built-in assistance guarantees
@@ -13309,10 +13572,9 @@ local function onTap(player, action)
         s.sumQuality += earnedQuality
         s.roundMisses = 0
         if s.round >= s.diff.rounds then
-            sessions[player] = nil
-            player:SetAttribute("HackActive",false)
+            finishSession(player,s)
             local quality = math.clamp(s.sumQuality / s.diff.rounds * (1 - .025 * math.min(s.strikes, 5)), 0, 1)
-            Net.HackStep:FireClient(player, { state="success", quality=quality })
+            Net.HackStep:FireClient(player, {state="success",sessionId=s.id,quality=quality})
             successFlow(player, car, quality, currentMode)
         else
             s.round += 1
@@ -13340,16 +13602,16 @@ end
 function HackService.init()
     ParkingService.onPromptTriggered(onPrompt)
     Net.HackTap.OnServerEvent:Connect(onTap)
+    Net.HackCancel.OnServerEvent:Connect(cancelSession)
+    local function bind(player)player.CharacterRemoving:Connect(function()cancelSession(player)end)end
+    Players.PlayerAdded:Connect(bind);for _,player in ipairs(Players:GetPlayers())do bind(player)end
     -- Only bounded HackTap commands are accepted; rewards remain server-authoritative.
     Players.PlayerRemoving:Connect(function(player)
         policePending[player] = nil
         lastMode[player] = nil
         modeCursor[player] = nil
-        local session = sessions[player]
-        if session then
-            sessions[player] = nil
-            if session.car and session.car.Parent then ParkingService.unlock(session.car) end
-        end
+        cancelSession(player)
+
     end)
 end
 return HackService
@@ -13716,6 +13978,7 @@ local STORAGE_MAX=48
 local function ensureShelfSlots(data)return Placement.arrange(data,Loot.ById)end
 
 local Balance=require(Shared.Config.EconomyBalance)
+local Policy=require(Shared.UpgradePolicy)
 local function computeIncome(data, player)
 	local base = 0
 	for _, item in ipairs(data.shelf) do
@@ -13744,18 +14007,18 @@ local function upgradeEffect(data,player,id)
  local rate=computeIncome(data,player)*3600
  if id=='doubleIncome'and(u.doubleIncome or 0)>0 and not Monetization.has(player,'doubleIncome')then rate*=2 end
  local effect
- if id=='income'then effect=('Бонус базового дохода +%d п.п.'):format(3*(u.income or 0)+4*(c.income or 0))
+ if id=='income'then effect=('Бонус базового дохода +%d%%'):format(3*(u.income or 0)+4*(c.income or 0))
  elseif id=='botSpeed'or id=='secondBot'then
   local Bonus=require(Shared.DeliveryBonus)
-  effect=('Доставка +%d п.п.; редкая+ +%d п.п.'):format(Bonus.points(data,'common',Monetization.has(player,'secondBot')),Bonus.points(data,'rare',Monetization.has(player,'secondBot')))
+  effect=('Доставка +%d%%; редкая+ +%d%%'):format(Bonus.points(data,'common',Monetization.has(player,'secondBot')),Bonus.points(data,'rare',Monetization.has(player,'secondBot')))
  elseif id=='speed'or id=='fastRide'then
-  local speed=math.min(Settings.MaxCarSpeed,(Settings.Drive.BaseSpeed+2.5*(u.speed or 0)+(c.speed or 0))*(((u.fastRide or 0)>0 or Monetization.has(player,'fastRide'))and 1.25 or 1))
+  local speed=Policy.speed(data,((u.fastRide or 0)>0 or Monetization.has(player,'fastRide'))and 1.25 or 1)
   effect=('Скорость %.1f студ/с'):format(speed)
  elseif id=='security'then
   local level=math.min(5,(u.security or 0)+(c.security or 0))
   effect=('Охрана %d/5; НПС %d%%; удержание %.1f с'):format(level,level*12,2+.5*level)
- elseif id=='shelves'then effect=('Мест на полках: %d'):format(12+3*((u.shelves or 0)+(c.shelves or 0)))
- elseif id=='masterThief'then effect=('Зона успеха +%d п.п.'):format((u.masterThief or 0)>0 and 8 or 0)
+ elseif id=='shelves'then effect=('Мест на полках: %d'):format(Policy.capacity(data))
+ elseif id=='masterThief'then effect=('Зона успеха +%d%%'):format((u.masterThief or 0)>0 and 8 or 0)
  elseif id=='autoCollect'then effect=(u.autoCollect or 0)>0 and'Автокасса: каждые 15 с'or'Автокасса: выключена'
  elseif id=='till48h'then effect=('Вместимость кассы: %d ч'):format((u.till48h or 0)>0 and 48 or Monetization.tillHours(player))
  elseif id=='doubleIncome'then effect=('Множитель дохода: x%d'):format((u.doubleIncome or 0)>0 and 2 or 1)
@@ -13764,12 +14027,31 @@ local function upgradeEffect(data,player,id)
 end
 local function upgradePreview(data,player,id,currency,maximum)
  local group=currency=='coin'and'coinUpgrades'or'upgrades'
- local current=upgradeEffect(data,player,id);local level=(data[group]or{})[id]or 0
- if level>=maximum or(id=='security'and((data.upgrades.security or 0)+((data.coinUpgrades or{}).security or 0))>=5)then return current,'Максимум'end
+ local current=upgradeEffect(data,player,id);local level=Policy.level(data,id,currency)
+ local option=Policy.isShared(id)and Policy.find(data,id,'combined')or nil
+ if option then maximum=option.max;level=option.level end
+ if level>=maximum then return current,'Максимум'end
+ if option and option.ledger~='payment'then group=option.ledger end
  local nextData=table.clone(data);nextData.upgrades=table.clone(data.upgrades);nextData.coinUpgrades=table.clone(data.coinUpgrades or{})
- nextData[group][id]=level+1
+ nextData[group][id]=(nextData[group][id]or 0)+1
+ if id=='shelves'then nextData.shelfCapacity=Policy.capacity(data)+3 end
  local following=upgradeEffect(nextData,player,id)
  return current,following
+end
+
+local function dualUpgradeRows(data,player)
+ local rows={}
+ for _,coin in ipairs(CoinUpgrade)do
+  local id=coin.id;local options={}
+  for _,option in ipairs(Policy.choices(data,id))do
+   local _,following=upgradePreview(data,player,id,option.id,option.max)
+   local capped=id=='speed'and DriveService.maxSpeedFor(data,player)>=Settings.MaxCarSpeed-.001
+   options[#options+1]={id=option.id,title=option.title,level=option.level,max=option.max,coinCost=not capped and option.coinCost or nil,diamondCost=not capped and option.diamondCost or nil,nextEffect=following}
+  end
+  rows[#rows+1]={id=id,name=coin.name,description=coin.detail,currentEffect=upgradeEffect(data,player,id),choices=options,
+   totalLevel=Policy.total(data,id),max=Policy.SharedMax[id]or(coin.max+Upgrade.ById[id].max)}
+ end
+ return rows
 end
 
 -- Money remains in the till indefinitely; ONLY further accumulation is capped.
@@ -14585,6 +14867,7 @@ local function menuData(player)
     end
     local upgrades = {}
     for _, def in ipairs(Upgrade) do
+        if CoinUpgrade.ById[def.id]then continue end
         local level = data.upgrades[def.id] or 0
         local currentEffect,nextEffect=upgradePreview(data,player,def.id,'diamond',def.max)
         local speedCap=(def.id=='speed'or def.id=='fastRide')and DriveService.maxSpeedFor(data,player)>=Settings.MaxCarSpeed-.001
@@ -14624,19 +14907,8 @@ local function menuData(player)
         vipActive = Monetization.vipStatus(player),
         vipCoinBonus = VIPConfig.BONUS_COINS_PCT,
         vipXPBonus = VIPConfig.BONUS_XP_PCT,
-        coinUpgrades=(function()
-            local list={}
-            for _,def in ipairs(CoinUpgrade) do
-                local level=math.clamp(math.floor(tonumber((data.coinUpgrades or {})[def.id]) or 0),0,def.max)
-                local total=def.id=="security" and math.min(5,level+math.floor(tonumber((data.upgrades or {}).security) or 0)) or level
-                local price=CoinUpgrade.cost(def.id,level);if def.id=='security'and total>=5 then price=nil end
-                local speedCap=def.id=='speed'and DriveService.maxSpeedFor(data,player)>=Settings.MaxCarSpeed-.001
-                if speedCap then price=nil end
-                local currentEffect,nextEffect=upgradePreview(data,player,def.id,'coin',def.max)
-                table.insert(list,{currentEffect=currentEffect,nextEffect=nextEffect,blockedReason=speedCap and'ДОСТИГНУТ ПРЕДЕЛ СКОРОСТИ'or nil,id=def.id,name=def.name,detail=def.detail,icon=def.icon,level=level,max=def.max,cost=price,coinLevel=level})
-            end
-            return list
-        end)(),
+        coinUpgrades={}, -- ordinary purchases live only in dualUpgrades, never duplicate cards
+        dualUpgrades=dualUpgradeRows(data,player),
         hackLevel = data.hackLevel,
         masterKeyTokens = data.masterKeyTokens or 0,
         upgrades = upgrades,
@@ -14645,8 +14917,8 @@ local function menuData(player)
             for _,category in ipairs({'hero','pet'})do
                 local key=category=='hero'and'heroSkinBonusLevel'or'petBonusLevel'
                 local nextData=table.clone(data);nextData[key]=math.min(category=='hero'and CosmeticConfig.HERO_MAX or CosmeticConfig.PET_MAX,(data[key]or 0)+1)
-                result[category]={current=('Бонус монет +%d п.п. · Доход в час: %s $'):format(CosmeticConfig.coinBonusPct(data),fmt(computeIncome(data,player)*3600)),
-                    next=('Бонус монет +%d п.п. · Доход в час: %s $'):format(CosmeticConfig.coinBonusPct(nextData),fmt(computeIncome(nextData,player)*3600))}
+                result[category]={current=('Бонус монет +%d%% · Доход в час: %s $'):format(CosmeticConfig.coinBonusPct(data),fmt(computeIncome(data,player)*3600)),
+                    next=('Бонус монет +%d%% · Доход в час: %s $'):format(CosmeticConfig.coinBonusPct(nextData),fmt(computeIncome(nextData,player)*3600))}
             end
             return result
         end)(),
@@ -15024,122 +15296,52 @@ return SalonService
         <Item class="ModuleScript" referent="RBX_NEW_UpgradeService">
           <Properties>
             <string name="Name">UpgradeService</string>
-            <ProtectedString name="Source"><![CDATA[-- Экономическая прокачка: проверка цены и лимита исключительно на сервере.
-local Data = require(script.Parent.DataService)
-local Net = require(script.Parent.Net)
-local Upgrade = require(game.ReplicatedStorage.Shared.Config.UpgradeConfig)
-local CoinUpgrade=require(game.ReplicatedStorage.Shared.Config.CoinUpgradeConfig)
-local Salon = require(script.Parent.SalonService)
-local Tutorial=require(script.Parent.TutorialService)
-local Drive=require(script.Parent.DriveService)
-local Settings=require(game.ReplicatedStorage.Shared.Config.Settings)
-local function speedCapped(data,player)
- return Drive.maxSpeedFor(data,player)>=Settings.MaxCarSpeed-.001
-end
-local UpgradeService = {}
-local cooldown = {diamond={},coin={}}
-local active={diamond={},coin={}}
-local function serialized(currency,handler)
- return function(player,id)
-  if active[currency][player]then return end
-  active[currency][player]=true
-  local ok,err=pcall(handler,player,id)
-  active[currency][player]=nil
-  if not ok then warn('[Steal60 upgrade] '..tostring(err))end
- end
-end
+            <ProtectedString name="Source"><![CDATA[-- Server chooses the benefit track, exact currency price, cap and persisted debit.
+local Data=require(script.Parent.DataService);local Net=require(script.Parent.Net)
+local Shared=game.ReplicatedStorage.Shared
+local Upgrade=require(Shared.Config.UpgradeConfig);local CoinUpgrade=require(Shared.Config.CoinUpgradeConfig)
+local Policy=require(Shared.UpgradePolicy);local Salon=require(script.Parent.SalonService)
+local Tutorial=require(script.Parent.TutorialService);local Drive=require(script.Parent.DriveService);local Settings=require(Shared.Config.Settings)
+local M={};local cooldown={coin={},diamond={}};local active={coin={},diamond={}}
 local function persistPurchase(player)
- if not Data.canSave(player)then return true end -- explicitly temporary Studio session
+ if not Data.canSave(player)then return true end
  local saved=Data.saveNow(player)
- if not saved then
-  Data.requestSave(player)
-  Net.notify(player,'Улучшение применено, но сохранение пока не подтверждено. Автосохранение повторит попытку.','info')
- end
+ if not saved then Data.requestSave(player);Net.notify(player,'Улучшение применено, но сохранение пока не подтверждено. Автосохранение повторит попытку.','info')end
  return saved
 end
-local function buy(player, id)
-    if typeof(id) ~= "string" then return end
-    if os.clock() - (cooldown.diamond[player] or -10) < 0.25 then return end
-    cooldown.diamond[player] = os.clock()
-    local def = Upgrade.ById[id]
-    local data = Data.get(player)
-    if not def or not data then return end
-    if(id=='speed'or id=='fastRide')and speedCapped(data,player)then
-        Net.notify(player,'Достигнут предел скорости. Эта покупка больше не даст прибавки.','info');return
-    end
-    local level = (data.upgrades[id] or 0)
-    local cost = Upgrade.cost(id, level)
-    if not cost then
-        Net.notify(player, "Улучшение уже достигло максимума.", "info")
-        return
-    end
-    if id=="security" and level+math.floor(tonumber((data.coinUpgrades or {}).security) or 0)>=5 then
-        Net.notify(player,"Охрана уже достигла 5/5 (монеты и алмазы суммируются).","info")
-        return
-    end
-    if not Data.spendDiamonds(player,cost) then
-        Net.notify(player,("Не хватает алмазов: нужно %d 💎. Открой МЕНЮ → Магазин."):format(cost),"bad")
-        return
-    end
-    data.upgrades[id] = level + 1
-    Tutorial.sync(player,true)
-    if id == "shelves" then
-        data.shelfCapacity = 12 + data.upgrades.shelves * 3 + ((data.coinUpgrades or {}).shelves or 0) * 3
-        Salon.refresh(player)
-    elseif id == "income" or id == "security" then
-        Salon.refresh(player)
-    end
-    if Net.CurrencyUpdate then Net.CurrencyUpdate:FireClient(player,data.diamonds) end
-    if not persistPurchase(player)then return end
-    Net.notify(player,("Улучшено: %s · %d уровень (−%d 💎)"):format(def.name,level+1,cost),"good")
+local function buy(player,id,choice,currency)
+ if type(id)~='string'or(type(choice)~='string')or not cooldown[currency]then return end
+ if active[currency][player]or os.clock()-(cooldown[currency][player]or-10)<.25 then return end
+ cooldown[currency][player]=os.clock();active[currency][player]=true
+ local ok,err=pcall(function()
+  local data=Data.get(player);local def=Upgrade.ById[id]
+  if not data or not def then return end
+  if(id=='speed'or id=='fastRide')and Drive.maxSpeedFor(data,player)>=Settings.MaxCarSpeed-.001 then Net.notify(player,'Достигнут предел скорости. Эта покупка больше не даст прибавки.','info');return end
+  local option=Policy.find(data,id,choice);if not option then return end
+  local cost;if currency=='coin'then cost=option.coinCost else cost=option.diamondCost end
+  if not cost or option.level>=option.max then Net.notify(player,'Улучшение уже достигло максимума.','info');return end
+  local spend=currency=='coin'and Data.spendMoney or Data.spendDiamonds
+  if not spend(player,cost)then Net.notify(player,currency=='coin'and('Нужно %d монет. Зарабатывай их угонами и в кассе.'):format(cost)or('Не хватает алмазов: нужно %d 💎. Открой МЕНЮ → Магазин.'):format(cost),'bad');return end
+  data.upgrades=data.upgrades or{};data.coinUpgrades=data.coinUpgrades or{}
+  if id=='shelves'then data.shelfCapacity=Policy.capacity(data)+3 end
+  local group=option.ledger=='payment'and(currency=='coin'and'coinUpgrades'or'upgrades')or option.ledger
+  data[group][id]=(data[group][id]or 0)+1
+  Tutorial.sync(player,true)
+  if id=='shelves'or id=='income'or id=='security'then Salon.refresh(player)end
+  if Net.CurrencyUpdate then Net.CurrencyUpdate:FireClient(player,data.diamonds)end
+  if persistPurchase(player)then Net.notify(player,('Улучшено: %s · %d уровень · −%d %s'):format(def.name,option.level+1,cost,currency=='coin'and'$'or'💎'),'good')end
+ end)
+ active[currency][player]=nil
+ if not ok then warn('[Steal60 upgrade] '..tostring(err))end
 end
-local function buyCoin(player, id)
-    if typeof(id)~="string" then return end
-    if os.clock()-(cooldown.coin[player] or -10)<.20 then return end
-    cooldown.coin[player]=os.clock()
-    local def=CoinUpgrade.ById[id]
-    local data=Data.get(player)
-    if not def or not data then return end
-    if(id=='speed'or id=='fastRide')and speedCapped(data,player)then
-        Net.notify(player,'Достигнут предел скорости. Эта покупка больше не даст прибавки.','info');return
-    end
-    data.coinUpgrades=data.coinUpgrades or {}
-    local lvl=math.clamp(math.floor(tonumber(data.coinUpgrades[id]) or 0),0,def.max)
-    local cost=CoinUpgrade.cost(id,lvl)
-    if not cost then Net.notify(player,"Улучшение уже максимально прокачано.","info") return end
-    if id=="security" and lvl+math.floor(tonumber(data.upgrades.security) or 0)>=5 then
-        Net.notify(player,"Охрана уже достигла общего максимума 5/5.","info")
-        return
-    end
-    if not Data.spendMoney(player,cost) then
-        Net.notify(player,("Нужно %d монет. Зарабатывай их угонами и в кассе."):format(cost),"bad")
-        return
-    end
-    data.coinUpgrades[id]=lvl+1
-    Tutorial.sync(player,true)
-    if id=="shelves" then
-        local premium=data.upgrades.shelves or 0
-        data.shelfCapacity=12+premium*3+(data.coinUpgrades.shelves or 0)*3
-    end
-    if id=="security" or id=="shelves" or id=="income" then Salon.refresh(player) end
-    local saved=persistPurchase(player)
-    if not saved then return end
-    if id=="security" then
-        local total=math.min(5,lvl+1+math.floor(tonumber((data.upgrades or {}).security) or 0))
-        Net.notify(player,("ОХРАНА УЛУЧШЕНА: %d/5 · против игроков только замедляет, НПС ловит чаще. −%d $"):format(total,cost),"good")
-        return
-    end
-    if Net.CurrencyUpdate then Net.CurrencyUpdate:FireClient(player,data.diamonds) end
-    Net.notify(player,("%s: %d/%d · потрачено %d $."):format(def.name,lvl+1,def.max,cost),"good")
+function M.init()
+ Net.BuyUpgradeChoice.OnServerEvent:Connect(buy)
+ -- Old clients retain the corresponding historical benefit track and validated price.
+ Net.BuyUpgrade.OnServerEvent:Connect(function(player,id)buy(player,id,Policy.isShared(id)and'combined'or'diamond','diamond')end)
+ Net.BuyCoinUpgrade.OnServerEvent:Connect(function(player,id)buy(player,id,Policy.isShared(id)and'combined'or'coin','coin')end)
+ game:GetService('Players').PlayerRemoving:Connect(function(player)for _,currency in ipairs({'coin','diamond'})do cooldown[currency][player]=nil;active[currency][player]=nil end end)
 end
-function UpgradeService.init()
-    Net.BuyUpgrade.OnServerEvent:Connect(serialized('diamond',buy))
-    Net.BuyCoinUpgrade.OnServerEvent:Connect(serialized('coin',buyCoin))
-    game:GetService("Players").PlayerRemoving:Connect(function(player)
-        cooldown.diamond[player]=nil;cooldown.coin[player]=nil;active.diamond[player]=nil;active.coin[player]=nil
-    end)
-end
-return UpgradeService
+return M
 ]]></ProtectedString>
           </Properties>
         </Item>
@@ -17127,7 +17329,7 @@ local function onAction(player,action,category,id,targetCarId)
   if not cost then Net.notify(player,"Герой: максимальное мастерство","info");return end
   if not charge("coins",cost) then return end
   data.heroSkinBonusLevel=oldLevel+1
-  message=("Герой: +%d п.п. к бонусу монет и кассы."):format(data.heroSkinBonusLevel)
+  message=("Герой: +%d%% к бонусу монет и кассы."):format(data.heroSkinBonusLevel)
   needsSave=true
  elseif action=="upgradeHeroDiamonds" then
   if category~="hero" then return end
@@ -17142,7 +17344,7 @@ local function onAction(player,action,category,id,targetCarId)
   if not cost then Net.notify(player,"Герой: максимальное мастерство.","info");return end
   if not charge("diamonds",cost) then return end
   data.heroSkinBonusLevel=oldLevel+1
-  message=("Герой: +%d п.п. к бонусу монет и кассы."):format(data.heroSkinBonusLevel)
+  message=("Герой: +%d%% к бонусу монет и кассы."):format(data.heroSkinBonusLevel)
   needsSave=true
  elseif action=="upgradePetCoins" or action=="upgradePetDiamonds" then
   if category~="pet" or data.petUnlocked~=true then
@@ -17154,7 +17356,7 @@ local function onAction(player,action,category,id,targetCarId)
   if not cost then Net.notify(player,"Питомец: максимальное мастерство.","info");return end
   if not charge(method,cost) then return end
   data.petBonusLevel=oldLevel+1
-  message=("Питомец: +%d п.п. к бонусу монет и кассы. Облики бесплатны."):format(data.petBonusLevel)
+  message=("Питомец: +%d%% к бонусу монет и кассы. Облики бесплатны."):format(data.petBonusLevel)
   needsSave=true
  elseif action=="buy" or action=="buyCoins" or action=="buyDiamonds" then
   if not def or category=="pet" then return end
@@ -17954,9 +18156,9 @@ local function coffee(rig)
  local at=hand.CFrame*CFrame.new(0,-.2,-.12)*CFrame.Angles(0,0,math.pi/2)
  prop(f,'PaperCup',Vector3.new(.36,.24,.24),at,Color3.fromRGB(226,205,174),hand,Enum.PartType.Cylinder)
  prop(f,'CoffeeLid',Vector3.new(.06,.27,.27),at*CFrame.new(.2,0,0),Color3.fromRGB(44,43,42),hand,Enum.PartType.Cylinder)
- local joint=rig:FindFirstChild('RightShoulder',true)or rig:FindFirstChild('Right Shoulder',true);local before=joint and joint.C0
- if joint then joint.C0=before*CFrame.Angles(-1.05,0,-.18)end
- return function()if joint and joint.Parent then joint.C0=before end;f:Destroy()end
+ local joint=rig:FindFirstChild('RightShoulder',true)or rig:FindFirstChild('Right Shoulder',true);local before=joint and joint:IsA('Motor6D')and joint.C0
+ if before then local posed=pcall(function()joint.C0=before*CFrame.Angles(-1.05,0,-.18)end);if not posed then before=nil end end
+ return function()if before and joint and joint.Parent then pcall(function()joint.C0=before end)end;f:Destroy()end
 end
 local function headphones(rig)
  local head=rig:FindFirstChild('Head');if not head then return end
@@ -18070,10 +18272,12 @@ local function finite(n)return type(n)=='number'and n==n and n~=math.huge and n~
 local function stringId(v,maximum)return type(v)=='string'and #v>0 and #v<=(maximum or 80)end
 local function model(v)return typeof(v)=='Instance'and v:IsA('Model')end
 local rules={
- HackTap={12,12,1,function(a)return stringId(a,16)and(a=='tap'or a=='cancel'or a:match('^wire_[123]$')or a:match('^memory_[1234]$'))end},
+ HackTap={12,12,2,function(a,token)return(token==nil or(finite(token)and token>0 and token%1==0))and stringId(a,16)and(a=='tap'or a=='cancel'or a=='sync'or a:match('^wire_[123]$')or a:match('^memory_[1234]$'))end},
  DriveInput={35,60,5,function(car,t,s,protocol,epoch)return model(car)and finite(t)and finite(s)and math.abs(t)<=1 and math.abs(s)<=1 and(protocol==0 or protocol==60)and finite(epoch)and epoch%1==0 end},
+ HackCancel={2,3,1,function(token)return finite(token)and token>0 and token%1==0 end},
  RecoverCar={1,2,1,model},PinCar={2,3,2,function(id,out)return stringId(id)and(out==nil or stringId(out))end},
  ManageWorkshop={3,3,2,function(action,id)return action=='upgradeShelf'and stringId(id,48)end},
+ BuyUpgradeChoice={4,4,3,function(id,choice,currency)return stringId(id,48)and(choice=='coin'or choice=='diamond'or choice=='combined')and(currency=='coin'or currency=='diamond')end},
  BuyUpgrade={4,4,1,stringId},BuyCoinUpgrade={4,4,1,stringId},BuyVIP={1.5,2,1,stringId},
  CosmeticAction={5,6,4,function(action,category,id,car)return stringId(action,32)and stringId(category,16)and(id==nil or stringId(id,48))and(car==nil or stringId(car))end},
  TutorialAction={3,4,2,function(action,id)return stringId(action,16)and(id==nil or stringId(id,32))end},
@@ -18125,7 +18329,8 @@ function M.wrap(name,handler)
   local rule=rules[name];if not rule or select('#',...)>rule[3]then return end
   if not M.allow(player,'all',100,140)or not M.allow(player,name,rule[1],rule[2])then return end
   if rule[4]and not rule[4](...)then return end
-  if name~='SetLanguage'and name~='SetAudio'and not(name=='TutorialAction'and select(1,...)=='request')then
+  local cleanup=name=='HackCancel'or(name=='HackTap'and(select(1,...)=='cancel'or select(1,...)=='sync'))
+  if not cleanup and name~='SetLanguage'and name~='SetAudio'and not(name=='TutorialAction'and select(1,...)=='request')then
    if player:GetAttribute('DataLoaded')~=true or player:GetAttribute('GameplayReady')~=true then return end
    if name~='DriveInput'and not M.movement(player)then return end
   end
@@ -18183,6 +18388,11 @@ function M.prompt(prompt,handler)
  connections[#connections+1]=prompt:GetPropertyChangedSignal('Enabled'):Connect(function()if not prompt.Enabled then table.clear(holds)end end)
  connections[#connections+1]=prompt.AncestryChanged:Connect(function()table.clear(holds)end)
  connections[#connections+1]=prompt.Destroying:Connect(function()for _,c in ipairs(connections)do c:Disconnect()end;table.clear(holds)end)
+ function connections:Disconnect()
+  for _,connection in ipairs(self)do connection:Disconnect()end
+  table.clear(holds)
+  for player,record in pairs(activeHolds)do if record.prompt==prompt then activeHolds[player]=nil end end
+ end
  return connections
 end
 function M.init()
@@ -18627,6 +18837,73 @@ function M.create(parent,at,police)
   if fallback.Parent then fallback:Destroy()end
  end)
  return fallback
+end
+return M
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_v66_JunctionArt"><Properties><string name="Name">JunctionArt</string><ProtectedString name="Source"><![CDATA[-- Four bounded pocket plazas occupy only unused corners, never either driving axis.
+local P=require(script.Parent.TrackParts)
+local Shared=game:GetService('ReplicatedStorage').Shared
+local Layout=require(Shared.TrackLayout);local Districts=require(Shared.Config.Districts)
+local M={};local C=Color3.fromRGB
+local accents={C(219,161,80),C(96,190,216),C(118,195,104),C(227,199,130),C(112,217,206)}
+function M.decorate(parent,index,x0,x1)
+ local theme=Layout.themeIndex(index);local accent=accents[theme]
+ local folder=Instance.new('Folder');folder.Name='JunctionPlazas';folder.Parent=parent
+ for _,edge in ipairs({-1,1})do for _,side in ipairs({-1,1})do
+  local cx=edge<0 and x0+5 or x1-5;local cz=side*57
+  local model=Instance.new('Model');model.Name='JunctionCorner_'..edge..'_'..side;model.Parent=folder
+  model:SetAttribute('FootprintCenter',Vector3.new(cx,0,cz));model:SetAttribute('FootprintSize',Vector3.new(8.6,0,34))
+  local function p(name,size,x,y,z,color,material,rotation)
+   return P.part(model,name,size,CFrame.new(cx+x,y,cz+z)*(rotation or CFrame.new()),color,material or Enum.Material.SmoothPlastic,false)
+  end
+  p('PocketPaving',Vector3.new(8.6,.24,34),0,.33,0,C(167,175,171),Enum.Material.Concrete)
+  for _,dx in ipairs({-4.1,4.1})do p('PlazaCurb',Vector3.new(.28,.48,34),dx,.46,0,C(205,209,195),Enum.Material.Concrete)end
+  for z=-15,15,5 do p('PaverJoint',Vector3.new(8,.02,.05),0,.47,z,C(115,133,131),Enum.Material.Concrete)end
+  for _,z in ipairs({-13,13})do
+   p('FlowerBed',Vector3.new(5.7,.55,3),0,.65,z,C(77,90,80),Enum.Material.Slate)
+   for j=-2,2 do local bush=p('JunctionShrub',Vector3.new(1.1,.9,1.5),j,.8,z,C(81,133,91));bush.Shape=Enum.PartType.Ball
+    p('FlowerCluster',Vector3.new(.3,.22,.3),j,1.32,z+(j%2==0 and .3 or-.3),accent)
+   end
+  end
+  local trunk=p('LandmarkTreeTrunk',Vector3.new(.44,5.2,.44),-1.4,3.05,7,C(112,84,57),Enum.Material.Wood)
+  if theme==5 then
+   for k=0,4 do p('PalmLeaf',Vector3.new(5.1,.22,1),-1.4,5.9,7,C(78,151,100),Enum.Material.Grass,CFrame.Angles(0,k*math.pi/2.5,.13))end
+  else
+   local leaf=p('JunctionTreeCanopy',Vector3.new(4.7,3.4,5),-1.4,5.8,7,theme==1 and C(112,139,90)or C(75,145,98),Enum.Material.Grass);leaf.Shape=Enum.PartType.Ball
+  end
+  for _,dx in ipairs({-2,2})do
+   p('BenchLeg',Vector3.new(.24,1.15,.24),dx,1.03,-8,C(49,64,67),Enum.Material.Metal)
+   p('BenchBackPost',Vector3.new(.24,2,.24),dx,1.46,-7.5,C(49,64,67),Enum.Material.Metal)
+  end
+  p('BenchSeat',Vector3.new(5.4,.20,1.4),0,1.57,-8,C(165,132,91),Enum.Material.WoodPlanks)
+  p('BenchBack',Vector3.new(5.4,.75,.15),0,2.16,-7.5,C(165,132,91),Enum.Material.WoodPlanks)
+  p('CornerLampPole',Vector3.new(.24,7.6,.24),2.5,4.15,10,C(50,68,72),Enum.Material.Metal)
+  p('CornerLampShade',Vector3.new(1.5,.18,1.4),2.5,8,10,C(70,90,92),Enum.Material.Metal)
+  p('CornerLampLens',Vector3.new(1.15,.12,1.1),2.5,7.85,10,C(255,236,181),Enum.Material.Neon)
+  for _,dx in ipairs({-2,2})do p('DirectionPost',Vector3.new(.20,3.9,.20),dx,2.4,-3,C(68,90,93),Enum.Material.Metal)end
+  local sign=p('JunctionWayfinding',Vector3.new(5.6,1.5,.16),0,4.35,-3,C(27,49,56),Enum.Material.Metal)
+  P.signFace(sign,Enum.NormalId.Front,('ПЕРЕКРЁСТОК %d'):format(index),C(221,242,221))
+  P.signFace(sign,Enum.NormalId.Back,Districts[theme].name,accent)
+  if theme==1 then
+   p('IndustrialPlanter',Vector3.new(4.6,1.3,3),.2,1.1,0,C(119,124,111),Enum.Material.DiamondPlate)
+   for j=-1,1 do p('PlanterGrass',Vector3.new(.3,1.7,.3),j,2.1,0,C(103,156,107),Enum.Material.Grass)end
+  elseif theme==2 then
+   p('CommunityInfoBoard',Vector3.new(4.4,3.2,.28),0,2.2,.4,C(59,108,130),Enum.Material.Metal)
+   for j=-1,1 do p('NoticeCard',Vector3.new(.9,1.4,.05),j,2.4,.23,C(228,224,204))end
+  elseif theme==3 then
+   p('GardenWellBase',Vector3.new(3.4,1.4,3.4),0,1.15,.8,C(155,155,130),Enum.Material.Cobblestone)
+   for _,dx in ipairs({-1.7,1.7})do p('WellPost',Vector3.new(.24,3.4,.24),dx,2.4,.8,C(132,99,65),Enum.Material.Wood)end
+   p('WellCanopy',Vector3.new(4.5,.3,4),0,4.15,.8,C(149,104,70),Enum.Material.WoodPlanks)
+  elseif theme==4 then
+   p('StoneFountainBasin',Vector3.new(4.6,.65,4.6),0,.95,.5,C(216,211,187),Enum.Material.Marble)
+   p('FountainWater',Vector3.new(4,.12,4),0,1.30,.5,C(100,187,202),Enum.Material.Glass).Transparency=.3
+   p('FountainColumn',Vector3.new(.6,2.4,.6),0,2.1,.5,C(217,213,197),Enum.Material.Marble)
+   p('FountainTopBowl',Vector3.new(2.8,.26,2.8),0,3.35,.5,C(217,213,197),Enum.Material.Marble)
+  else
+   p('CafeTable',Vector3.new(3,.22,3),0,1.8,.7,C(210,196,162),Enum.Material.Wood)
+   p('UmbrellaStem',Vector3.new(.18,4.3,.18),0,2.6,.7,C(210,206,189),Enum.Material.Metal)
+   p('UmbrellaCanopy',Vector3.new(6.2,.25,5.5),0,4.9,.7,accent,Enum.Material.Fabric)
+  end
+ end end
 end
 return M
 ]]></ProtectedString></Properties></Item></Item>

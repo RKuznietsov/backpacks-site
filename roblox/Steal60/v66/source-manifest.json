@@ -13,7 +13,7 @@
   },
   {
     "script": "AuraVisualLibrary",
-    "sha256": "0b5ee9d39826a5bd877f3221fa9c75984bf1dea23dbab33fd6d70314e7e00028",
+    "sha256": "76b0881fe786bb0c3a465f32c7a9f371641e00e7c29a526deb6716ada1db17df",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -40,6 +40,12 @@
     "sha256": "1bcbe664163fb23a2c59e39d00e996eb5d5c4fe70a92151e68e6802770ca3897",
     "v65_status": "unchanged",
     "initial_v66_status": "unchanged"
+  },
+  {
+    "script": "BreezeAura",
+    "sha256": "c6cbe7e9d3c60f50bc489021e9d0a3d48ad4a9f4cdb7fda685391cb61fdbafb8",
+    "v65_status": "added",
+    "initial_v66_status": "added"
   },
   {
     "script": "CarClasses",
@@ -103,7 +109,7 @@
   },
   {
     "script": "ClientMain",
-    "sha256": "7f746dcbe6b8ec1a8a2ebca28d55961f0f6fd4ed4c050be2ddf679d4f4eba1b3",
+    "sha256": "4f28d8e0d783724df0fa3172ec9ce6ef993bc6a78692a4108ae18aeb03ed8c32",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -115,7 +121,7 @@
   },
   {
     "script": "CoinUpgradeConfig",
-    "sha256": "ebe26c0b6a19a91b7fdd8854aa15c5378df6ca27a952d06e7c77a3b30f006226",
+    "sha256": "934045db5ef6c06ebb0a6aadb367c2ddbc983f8f596532154cd5c1da661b0a36",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -133,13 +139,13 @@
   },
   {
     "script": "CosmeticConfig",
-    "sha256": "6f228e9b23b4b45cff79aaf1f26af0a8cc3861131cb2f60db14a8c1bb919fa0e",
+    "sha256": "e8365ac9e622079e56dbaefc9dc6dda0a67e9b7c9f0261a92b9fc59f74179dcd",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
   {
     "script": "CosmeticHUD",
-    "sha256": "0201a54a7766445b2c2fcb8408cdcfc4c1c8eb65aaec49b350b02f593e291f92",
+    "sha256": "aaa9c967bff5798f45f0e986dda3f1376b54c18e34716bf54187e7019581dc97",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -151,7 +157,7 @@
   },
   {
     "script": "CosmeticService",
-    "sha256": "73036c1f550711f5968ea8a8725c37b5c8828d18b5f670c29ddc49b2270b5d2e",
+    "sha256": "1310a9e3189dfa2d3c205c0c1c4531ac791f9c0d8796d8e2627630a0d72dcb90",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -175,9 +181,9 @@
   },
   {
     "script": "DistrictBuilder",
-    "sha256": "8fe286f347d71ca94ef45d27382374f3c2a381bb5c46887e022e7ab1b027bac3",
+    "sha256": "edf788e7f295c46cf8ea14833d500361343d8adbcf328360db901008b2f1baa3",
     "v65_status": "modified",
-    "initial_v66_status": "unchanged"
+    "initial_v66_status": "modified"
   },
   {
     "script": "DistrictManager",
@@ -205,7 +211,7 @@
   },
   {
     "script": "DriveService",
-    "sha256": "9ccdb59d103899043e6cdb5f384097e3f5f9118500fb2d35579e851f2e411ecd",
+    "sha256": "24795549225ecd333628a8ffe9892df5f8f21e55099758f1b4d865ca26a0b3ab",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -229,7 +235,7 @@
   },
   {
     "script": "EconomyHUD",
-    "sha256": "d499c56c935ffa452067551da5063108094d351ced7c9889fd3218e3b1ed2c0c",
+    "sha256": "ac57ad527633480e478a46ea22e5e73340b24e35ea6f13ef0ea5b58038b4fa0f",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -241,7 +247,7 @@
   },
   {
     "script": "EngineAudio",
-    "sha256": "cab47517073b702f781b139453a2dc2882d10227395c79bb1cefa86fc42108a6",
+    "sha256": "1bba99e39b4b18f01250759535103f104a9411cfddbc750239269cbdaa94bfca",
     "v65_status": "added",
     "initial_v66_status": "added"
   },
@@ -283,7 +289,7 @@
   },
   {
     "script": "HackService",
-    "sha256": "6da450c9e48e6a1b66663a492fcdfec692d89c2d34844bd0a869bd097cf0fcdd",
+    "sha256": "9c9feda7b59bed9f0c18466a7b1bbe75b716ed77cba54dca3b3a61df899bc115",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -312,8 +318,14 @@
     "initial_v66_status": "added"
   },
   {
+    "script": "JunctionArt",
+    "sha256": "a54c2a7f0d21957228d63c83ba05b335a5db619a02b0b48874dc11bc5c40857d",
+    "v65_status": "added",
+    "initial_v66_status": "added"
+  },
+  {
     "script": "LanguageCatalog",
-    "sha256": "71e86d76e082045c6a770d9bbeeb36320ae3f75f69e4fecc6086830e72106dc2",
+    "sha256": "5cb6d4039e21d49516253df69a75f543dc1b0ea8214b07cb55e5d41cd492727f",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -355,15 +367,15 @@
   },
   {
     "script": "MenuViews",
-    "sha256": "fa396ad2a99f8dd0dd3fe8e72bfdbc051f1e766772e6bfbb4b8958b3c647a753",
+    "sha256": "a0ee1bc96a9c691b5c920e5655b6f3f28dca2b78a933b79219f03fe24e354fa3",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
   {
     "script": "MenuWidgets",
-    "sha256": "cac9c0e9f17749026b1f9f541680901e1c1dec233e99e05d45ed11eeb381b8d0",
+    "sha256": "942d0d8e808d845e0acccb095ba5f046693cf72eb944e18e099d985dade9a68c",
     "v65_status": "modified",
-    "initial_v66_status": "unchanged"
+    "initial_v66_status": "modified"
   },
   {
     "script": "Messages",
@@ -391,7 +403,7 @@
   },
   {
     "script": "MusicScore",
-    "sha256": "5aa2caaa0b96fbf0847524b516f082c4ab7387acaec2687995d025535f59e94b",
+    "sha256": "e59bae83449eab2e81535410d86f279a5a3f03e521f2a99428f0bc3619bc3365",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -409,7 +421,7 @@
   },
   {
     "script": "Net",
-    "sha256": "aae1e3e889aacdc00ce2de74f9d7b69dad13f24d57b41ae4e6795f34bb671a1c",
+    "sha256": "5c69baccd481614836e514ea8a3d058ab328ec4a83caf067063f8734e2ee0416",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -442,6 +454,12 @@
     "sha256": "e17e656f85818f8a34067b14ed572734f1f4bdd3559864cb77e3037374774283",
     "v65_status": "unchanged",
     "initial_v66_status": "unchanged"
+  },
+  {
+    "script": "PoliceAudio",
+    "sha256": "c9db92a44d84610d4109eceb3e386bf322e7a4f8fbff1bb5515509723abcb95e",
+    "v65_status": "added",
+    "initial_v66_status": "added"
   },
   {
     "script": "PoliceService",
@@ -535,7 +553,7 @@
   },
   {
     "script": "SalonService",
-    "sha256": "48aa7af965b611541a348b11ec1425b073661294c51f7b98908e387453a034e1",
+    "sha256": "bb6a9832bd8e0252f1f25e71240faf8d1626443bd228226f0523182037389729",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -547,15 +565,15 @@
   },
   {
     "script": "SecurityService",
-    "sha256": "da794259a2e1f1404f3ba5e2101898b890fcacbd985592b2deeb4a683a9a951d",
+    "sha256": "56d7d2d8f019c0f097d226dcc5c89f52853c8dd42b18386b6a2315c7eb6bc279",
     "v65_status": "modified",
-    "initial_v66_status": "unchanged"
+    "initial_v66_status": "modified"
   },
   {
     "script": "Settings",
-    "sha256": "4db7c9caef5f095ff4c0f6acc68d3cdfa48f442c3bb4b258b7f316a5ba2f5c9b",
-    "v65_status": "unchanged",
-    "initial_v66_status": "unchanged"
+    "sha256": "7066dfdca34fce40813136ba8f5713392e7ae278d7ed4ad239787ba2f37ec3ba",
+    "v65_status": "modified",
+    "initial_v66_status": "modified"
   },
   {
     "script": "ShelfPlacement",
@@ -577,9 +595,9 @@
   },
   {
     "script": "StreetLifeService",
-    "sha256": "0d1c681745149201a0f0ec071ad7b607cec21512c68e3cf6a0da019d8959c7f1",
-    "v65_status": "unchanged",
-    "initial_v66_status": "unchanged"
+    "sha256": "c0e25ec8e8cfdb5e56441b76a342f1aa75426d97e0a5dbf2718a6de1129ed328",
+    "v65_status": "modified",
+    "initial_v66_status": "modified"
   },
   {
     "script": "StudioTestProfile",
@@ -655,15 +673,27 @@
   },
   {
     "script": "UpgradeConfig",
-    "sha256": "6b165e342b6cd4c9bdf887f50f06fc469aa57fd4b5c852d3fd11feaa21684ecf",
+    "sha256": "4de8bb4905c0467fa6694baf3bc23cc47294d739b7cb8acf27825b30862d0b61",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
   {
+    "script": "UpgradePolicy",
+    "sha256": "c518b56502258f1a45c452195606394930e1fbbf90d3a9bfc06cfe51da9ade6d",
+    "v65_status": "added",
+    "initial_v66_status": "added"
+  },
+  {
     "script": "UpgradeService",
-    "sha256": "bb744fbb7c07509476c325d44d0a89c281764813b61cbab56b36123acb1b3f1b",
+    "sha256": "a97247ac3574f252c52384a922ee484e582983b87e41e62e9f084f2732b6fe5e",
     "v65_status": "modified",
     "initial_v66_status": "modified"
+  },
+  {
+    "script": "UpgradeView",
+    "sha256": "fc53dc7007bdf41db494b93c3a7bd27289e321bd895ce7cda6bf37ec72bcd1c2",
+    "v65_status": "added",
+    "initial_v66_status": "added"
   },
   {
     "script": "VIPConfig",

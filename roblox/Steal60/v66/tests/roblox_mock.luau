@@ -67,7 +67,7 @@ local Enum=setmetatable({},{__index=function(t,k)local e=setmetatable({},{__inde
 local task={spawn=function(fn,...)fn(...)end,wait=function()return .01 end,defer=function(fn)queue[#queue+1]=fn end,delay=function()end}
 local methods={};local instmt={};local Instance={}
 function Instance.new(class)
- return setmetatable({_kind='Instance',props={ClassName=class,Name=class,Size=V.new(1,1,1),CFrame=CF.new(),Text='',ActionText='',ObjectText='',Anchored=true,Transparency=0},children={},attrs={},changed={},attrSignals={},events={Loaded=signal(),Ended=signal(),InputBegan=signal(),DescendantAdded=signal(),Destroying=signal(),Activated=signal(),PlayerAdded=signal(),PlayerRemoving=signal(),Heartbeat=signal()}},instmt)
+ return setmetatable({_kind='Instance',props={ClassName=class,Name=class,Size=V.new(1,1,1),CFrame=CF.new(),Text='',ActionText='',ObjectText='',Anchored=true,Transparency=0},children={},attrs={},changed={},attrSignals={},events={CharacterRemoving=signal(),CharacterAdded=signal(),RenderStepped=signal(),AncestryChanged=signal(),PromptButtonHoldBegan=signal(),PromptButtonHoldEnded=signal(),Triggered=signal(),Loaded=signal(),Ended=signal(),InputBegan=signal(),DescendantAdded=signal(),Destroying=signal(),Activated=signal(),PlayerAdded=signal(),PlayerRemoving=signal(),Heartbeat=signal()}},instmt)
 end
 instmt.__index=function(o,k)
  if methods[k]then return methods[k]end
@@ -152,6 +152,11 @@ local function require(ref)
 end
 local checks=0
 local function check(condition,message)checks+=1;assert(condition,message)end
-local ColorSequence={new=function(...)return {...}end};local NumberSequence={new=function(...)return {...}end};local NumberRange={new=function(...)return {...}end}
+local ColorSequence={new=function(...)return {...}end};local NumberSequence={new=function(...)return {...}end};local NumberRange={new=function(a,b)return {Min=a,Max=b or a}end}
 
 local NumberSequenceKeypoint={new=function(t,v)return {Time=t,Value=v}end}
+
+local TweenInfo={new=function(...)return {...}end}
+services.TweenService={Create=function(_,object,info,properties)return{Play=function()for k,v in pairs(properties)do object[k]=v end end,Cancel=function()end}end}
+function services.UserInputService:GetLastInputType()return Enum.UserInputType.Keyboard end
+function services.RunService:IsStudio()return true end

@@ -25,34 +25,34 @@ check(Balance.masteryCost('pet',0)==75000 and Balance.masteryCost('pet',59)==880
 local profile={cosmeticsOwned={[worker.id]=true},cosmeticsEquipped={hero=worker.id},heroSkinBonusLevel=9}
 local total,hero,pet=Config.coinBonusPct(profile)
 check(total==9 and hero==9 and pet==0,'worker unlocks full shared hero mastery without diamonds')
--- Shoulder placement must also work on R6 and the root-only loading fallback.
+-- The complete wind halo animates at rest, stays outside the upper body and cleans up on R6/R15.
 for _,shape in ipairs({{name='UpperTorso',size=V.new(2,1.6,1)},{name='Torso',size=V.new(2,2,1)},{name='HumanoidRootPart',size=V.new(2,2,1)}})do
  local character=Instance.new('Model');local root=Instance.new('Part');root.Name='HumanoidRootPart';root.Size=V.new(2,2,1);root.Parent=character
  local host=root
  if shape.name~='HumanoidRootPart'then host=Instance.new('Part');host.Name=shape.name;host.Size=shape.size;host.Parent=character end
  local Visuals=require('AuraVisualLibrary');local aura=Visuals.create(root,Config.ById.aura_breeze_coin_v66)
- check(aura:GetAttribute('EmitterCount')==0 and not aura:FindFirstChild('AuraSpecialGeometry'),'coin wind uses no particle cloud or special geometry')
- local trails={};local attachments=0
- for _,o in ipairs(character:GetDescendants())do
-  if o:IsA('Attachment')then
-   attachments+=1
-   check(o.Parent==host and o.Position.Y>host.Size.Y*.25 and math.abs(o.Position.X)>host.Size.X*.5 and math.abs(o.Position.Z)<host.Size.Z*.5,'breeze originates beside upper shoulders, clear of waist and rear center')
-  elseif o:IsA('Trail')then
-   trails[#trails+1]=o
-   check(o.LightEmission==0 and o.Lifetime<.3 and o.MaxLength<=3,'wind fades quickly as a narrow short stroke')
-   o.Clear=function(self)self:SetAttribute('TestClears',(self:GetAttribute('TestClears')or 0)+1)end
-  elseif o:IsA('ParticleEmitter')then error('coin wind unexpectedly creates a particle plume')end
+ local count=#character:GetDescendants();local first=aura.WindArc1.Attachment0.CFrame.Position
+ for _,t in ipairs({0,.5,1,5,10})do
+  Visuals.step(root,t)
+  local beams=0
+  for _,o in ipairs(aura:GetChildren())do
+   check(not o:IsA('Trail')and not o:IsA('ParticleEmitter'),'wind halo creates no rear ribbon or smoke cloud')
+   if o:IsA('Beam')then
+    beams+=1;check(o.Enabled and o.Segments>=12 and o.LightEmission<.3,'smooth, modest curved beams remain visible at rest')
+    local p0=o.Attachment0.CFrame.Position;local p1=p0+o.Attachment0.CFrame.RightVector*o.CurveSize0
+    local p3=o.Attachment1.CFrame.Position;local p2=p3-o.Attachment1.CFrame.RightVector*o.CurveSize1
+    for j=0,10 do local f=j/10;local point=p0*(1-f)^3+p1*3*(1-f)^2*f+p2*3*(1-f)*f^2+p3*f^3
+     check(point.Y>0 and Vector3.new(point.X,0,point.Z).Magnitude>1.7,'entire curved wind arc clears the torso and lower body')
+    end
+   end
+  end
+  check(beams==3 and #character:GetDescendants()==count,'animation keeps a bounded three-arc construction')
  end
- check(#trails==2 and attachments==4,'left and right shoulder trails have complete attachment pairs')
- Visuals.step(root,0);root.Position=V.new(.4,0,0);Visuals.step(root,.1)
- for _,trail in ipairs(trails)do check(trail.Enabled,'wind appears while the character moves')end
- Visuals.step(root,.2)
- for _,trail in ipairs(trails)do check(not trail.Enabled,'wind stops when the character is still')end
- root.Position=V.new(100,0,0);Visuals.step(root,.3)
- for _,trail in ipairs(trails)do check(not trail.Enabled and trail:GetAttribute('TestClears')==1,'teleport clears long streaks')end
- local replacement=Visuals.create(root,Config.ById.aura_breeze_coin_v66)
- check(aura.Parent==nil and #host:GetChildren()==(host==root and 5 or 4),'re-equipping removes old shoulder attachments')
- replacement:Destroy();check(#host:GetChildren()==0 and #root:GetChildren()==0,'unequip removes the effect and all shoulder anchors');character:Destroy()
+ check((aura.WindArc1.Attachment0.CFrame.Position-first).Magnitude>.1,'halo rotates gently even without character movement')
+ Visuals.create(root,Config.ById.aura_breeze_coin_v66)
+ check(aura.Parent==nil,'changing the same aura destroys the old halo')
+ local replacement=root:FindFirstChild('Steal60CosmeticAura');replacement:Destroy()
+ check(#host:GetChildren()==0 and #root:GetChildren()==0,'unequip removes every external halo attachment');character:Destroy()
 end
 -- Native pet constructors establish geometry; no rendered head or actual seating is emulated.
 do
@@ -114,6 +114,7 @@ do
  check(saves[#saves].money==16000000 and saves[#saves].cosmeticsOwned[worker.id],'coin debit and worker ownership saved together immediately')
  act('buyCoins','hero',worker.id);check(d.money==16000000,'repeat worker purchase cannot charge twice')
  act('upgradeHeroCoins','hero');check(d.heroSkinBonusLevel==1 and d.money==15900000,'coin worker can upgrade hero skill without owning a diamond skin')
+ act('unequip','hero');local total,hero=Config.coinBonusPct(d);check(d.cosmeticsEquipped.hero==nil and total==1 and hero==1,'return to the own Roblox avatar keeps purchased hero mastery active')
  act('buyCoins','paint','paint_workgray_coin_v66','rusty_hatch')
  check(d.money==15150000 and d.carCosmetics.rusty_hatch.paint=='paint_workgray_coin_v66','coin paint is charged and applied to the owned car')
  act('buyCoins','aura','aura_breeze_coin_v66')

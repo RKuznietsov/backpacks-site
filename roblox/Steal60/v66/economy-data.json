@@ -1,6 +1,6 @@
 {
-  "final_xml_sha256": "34e4c5d6a1cf1e3b7a93608167c60a239d51a1d86ab18786522159013d3e17d7",
-  "method": "Actual EconomyBalance.masteryCost and CoinUpgradeConfig.cost from final XML evaluated in official Luau. Time estimates divide by a constant 500000 coins/hour; no travel, active rewards, reinvestment, offline limits or growth simulated.",
+  "final_xml_sha256": "b85c4190b0ff67419536f26ae10b354c3eab408138c2d99bfc258cfc05a0d413",
+  "method": "Actual final XML EconomyBalance, CoinUpgradeConfig, UpgradeConfig, UpgradePolicy and CosmeticConfig evaluated in official Luau. unified_upgrade_choices is the current shop; *_reference_tracks are the compatible saved-counter definitions, not an additional shop. Time estimates divide by a constant 500000 coins/hour; no travel, active rewards, reinvestment, offline limits or growth simulated.",
   "reference_coins_per_hour": 500000,
   "coin_cosmetics": {
     "hero_worker_coin_v66": 4000000,
@@ -119,7 +119,7 @@
       "first_nine_hours_at_reference_rate": 3.999996
     }
   },
-  "coin_upgrades": {
+  "coin_reference_tracks": {
     "income": {
       "prices": [
         45,
@@ -208,13 +208,514 @@
     "shelves": {
       "prices": [
         180000,
-        3240000
+        3240000,
+        6000000,
+        10000000
       ],
       "first": 180000,
-      "last": 3240000,
-      "total": 3420000,
-      "last_hours_at_reference_rate": 6.48
+      "last": 10000000,
+      "total": 19420000,
+      "last_hours_at_reference_rate": 20.0
     }
+  },
+  "diamond_reference_tracks": {
+    "speed": {
+      "prices": [
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20
+      ],
+      "first": 20,
+      "last": 20,
+      "total": 240,
+      "last_hours_at_reference_rate": 4e-05
+    },
+    "income": {
+      "prices": [
+        15,
+        20,
+        25,
+        30,
+        35,
+        40,
+        45,
+        55,
+        65,
+        80,
+        95,
+        115,
+        135,
+        165,
+        195
+      ],
+      "first": 15,
+      "last": 195,
+      "total": 1115,
+      "last_hours_at_reference_rate": 0.00039
+    },
+    "botSpeed": {
+      "prices": [
+        15,
+        25,
+        35,
+        55,
+        85,
+        130,
+        195,
+        305
+      ],
+      "first": 15,
+      "last": 305,
+      "total": 845,
+      "last_hours_at_reference_rate": 0.00061
+    },
+    "security": {
+      "prices": [
+        20,
+        30,
+        50,
+        85,
+        135
+      ],
+      "first": 20,
+      "last": 135,
+      "total": 320,
+      "last_hours_at_reference_rate": 0.00027
+    },
+    "shelves": {
+      "prices": [
+        25,
+        45,
+        75,
+        130
+      ],
+      "first": 25,
+      "last": 130,
+      "total": 275,
+      "last_hours_at_reference_rate": 0.00026
+    },
+    "till48h": {
+      "prices": [
+        95
+      ],
+      "first": 95,
+      "last": 95,
+      "total": 95,
+      "last_hours_at_reference_rate": 0.00019
+    },
+    "doubleIncome": {
+      "prices": [
+        300
+      ],
+      "first": 300,
+      "last": 300,
+      "total": 300,
+      "last_hours_at_reference_rate": 0.0006
+    },
+    "fastRide": {
+      "prices": [
+        95
+      ],
+      "first": 95,
+      "last": 95,
+      "total": 95,
+      "last_hours_at_reference_rate": 0.00019
+    },
+    "masterThief": {
+      "prices": [
+        130
+      ],
+      "first": 130,
+      "last": 130,
+      "total": 130,
+      "last_hours_at_reference_rate": 0.00026
+    },
+    "secondBot": {
+      "prices": [
+        100
+      ],
+      "first": 100,
+      "last": 100,
+      "total": 100,
+      "last_hours_at_reference_rate": 0.0002
+    },
+    "autoCollect": {
+      "prices": [
+        300
+      ],
+      "first": 300,
+      "last": 300,
+      "total": 300,
+      "last_hours_at_reference_rate": 0.0006
+    }
+  },
+  "unified_upgrade_choices": {
+    "income": {
+      "coin": {
+        "coin_prices": [
+          45,
+          140,
+          216,
+          335,
+          519,
+          805,
+          1248,
+          1934,
+          2998,
+          4648,
+          7204,
+          11166,
+          17307,
+          26826,
+          41580,
+          64449,
+          99896,
+          154839,
+          240001,
+          372002,
+          576602,
+          893734,
+          1385287,
+          2147195
+        ],
+        "diamond_prices": [
+          20,
+          25,
+          30,
+          35,
+          45,
+          50,
+          60,
+          75,
+          90,
+          105,
+          125,
+          150,
+          180,
+          215,
+          260,
+          310,
+          370,
+          445,
+          535,
+          640,
+          770,
+          925,
+          1105,
+          1325
+        ],
+        "levels": 24,
+        "coin_total": 6050976,
+        "diamond_total": 7890
+      },
+      "diamond": {
+        "coin_prices": [
+          35,
+          105,
+          165,
+          255,
+          390,
+          605,
+          940,
+          1455,
+          2250,
+          3490,
+          5405,
+          8375,
+          12985,
+          20120,
+          31190
+        ],
+        "diamond_prices": [
+          15,
+          20,
+          25,
+          30,
+          35,
+          40,
+          45,
+          55,
+          65,
+          80,
+          95,
+          115,
+          135,
+          165,
+          195
+        ],
+        "levels": 15,
+        "coin_total": 87765,
+        "diamond_total": 1115
+      }
+    },
+    "security": {
+      "combined": {
+        "coin_prices": [
+          2400,
+          19200,
+          153600,
+          1228800,
+          9830400
+        ],
+        "diamond_prices": [
+          20,
+          30,
+          50,
+          85,
+          135
+        ],
+        "levels": 5,
+        "coin_total": 11234400,
+        "diamond_total": 320
+      }
+    },
+    "speed": {
+      "combined": {
+        "coin_prices": [
+          4500,
+          8550,
+          16245,
+          30865,
+          58644,
+          111424,
+          211706,
+          402242,
+          764260,
+          1452095,
+          2758980,
+          5242062,
+          5242062,
+          5242062,
+          5242062,
+          5242062,
+          5242062,
+          5242062,
+          5242062,
+          5242062,
+          5242062,
+          5242062,
+          5242062,
+          5242062
+        ],
+        "diamond_prices": [
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20
+        ],
+        "levels": 24,
+        "coin_total": 73966317,
+        "diamond_total": 480
+      }
+    },
+    "botSpeed": {
+      "coin": {
+        "coin_prices": [
+          3000,
+          5700,
+          10830,
+          20577,
+          39096,
+          74283,
+          141138,
+          268162,
+          509507,
+          968063,
+          1839320,
+          3494708
+        ],
+        "diamond_prices": [
+          10,
+          20,
+          25,
+          40,
+          60,
+          90,
+          140,
+          215,
+          335,
+          520,
+          805,
+          1245
+        ],
+        "levels": 12,
+        "coin_total": 7374384,
+        "diamond_total": 3505
+      },
+      "diamond": {
+        "coin_prices": [
+          4000,
+          7600,
+          14440,
+          27440,
+          52130,
+          99045,
+          188185,
+          357550
+        ],
+        "diamond_prices": [
+          15,
+          25,
+          35,
+          55,
+          85,
+          130,
+          195,
+          305
+        ],
+        "levels": 8,
+        "coin_total": 750390,
+        "diamond_total": 845
+      }
+    },
+    "shelves": {
+      "combined": {
+        "coin_prices": [
+          180000,
+          3240000,
+          6000000,
+          10000000
+        ],
+        "diamond_prices": [
+          25,
+          45,
+          75,
+          130
+        ],
+        "levels": 4,
+        "coin_total": 19420000,
+        "diamond_total": 275
+      }
+    }
+  },
+  "diamond_cosmetics": {
+    "skin_sakura": 320,
+    "paint_bubblegum": 125,
+    "paint_soda": 125,
+    "paint_lemon": 125,
+    "skin_confetti": 185,
+    "paint_obsidian": 55,
+    "paint_cyan": 95,
+    "paint_magma": 120,
+    "paint_royal": 240,
+    "paint_nebula": 340,
+    "paint_emerald": 180,
+    "skin_racing": 160,
+    "skin_carbon": 260,
+    "skin_neon": 410,
+    "hero_premium_archon": 580,
+    "hero_premium_ronin": 670,
+    "hero_premium_seraph": 760,
+    "hero_premium_mech": 850,
+    "hero_premium_phoenix": 950,
+    "hero_urban": 95,
+    "hero_stealth": 165,
+    "hero_crimson": 250,
+    "hero_royal": 380,
+    "hero_collection_05": 110,
+    "hero_collection_06": 135,
+    "hero_collection_07": 155,
+    "hero_collection_08": 175,
+    "hero_collection_09": 195,
+    "hero_collection_10": 150,
+    "hero_collection_11": 170,
+    "hero_collection_12": 195,
+    "hero_collection_13": 215,
+    "hero_collection_14": 235,
+    "hero_collection_15": 190,
+    "hero_collection_16": 210,
+    "hero_collection_17": 230,
+    "hero_collection_18": 255,
+    "hero_collection_19": 275,
+    "hero_collection_20": 230,
+    "hero_collection_21": 250,
+    "hero_collection_22": 270,
+    "hero_collection_23": 290,
+    "hero_collection_24": 315,
+    "hero_collection_25": 270,
+    "hero_collection_26": 290,
+    "hero_collection_27": 310,
+    "hero_collection_28": 330,
+    "hero_collection_29": 350,
+    "hero_collection_30": 305,
+    "hero_collection_31": 330,
+    "hero_collection_32": 350,
+    "hero_collection_33": 370,
+    "hero_collection_34": 390,
+    "hero_collection_35": 345,
+    "hero_collection_36": 365,
+    "hero_collection_37": 390,
+    "hero_collection_38": 410,
+    "hero_collection_39": 430,
+    "hero_collection_40": 385,
+    "hero_collection_41": 405,
+    "hero_collection_42": 425,
+    "hero_collection_43": 450,
+    "hero_collection_44": 470,
+    "hero_collection_45": 425,
+    "hero_collection_46": 445,
+    "hero_collection_47": 465,
+    "hero_collection_48": 485,
+    "hero_collection_49": 510,
+    "hero_collection_50": 465,
+    "pet_orb": 115,
+    "pet_fox": 210,
+    "pet_bot": 300,
+    "pet_star": 490,
+    "pet_cloud": 0,
+    "pet_phoenix": 0,
+    "pet_ufo": 0,
+    "pet_cat": 0,
+    "pet_dog": 0,
+    "pet_turtle": 0,
+    "aura_mint": 85,
+    "aura_plasma": 160,
+    "aura_crimson": 235,
+    "aura_gold": 410,
+    "tune_spoiler": 165,
+    "tune_hood": 140,
+    "tune_wheels": 210,
+    "tune_neon": 120,
+    "tune_splitter": 110,
+    "tune_diffuser": 115,
+    "tune_skirts": 105,
+    "tune_roofscoop": 125,
+    "tune_exhaust": 135,
+    "tune_mirrors": 95,
+    "hero_catalog_street_v56": 240,
+    "hero_catalog_pirate_v56": 350,
+    "hero_catalog_wizard_v56": 430,
+    "hero_catalog_cone_v56": 180,
+    "hero_catalog_comic_v56": 290
   },
   "pet_license": {
     "coins": 5000000,

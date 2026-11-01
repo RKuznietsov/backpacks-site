@@ -1,6 +1,6 @@
 # Steal60 v66 · RU / EN
 
-Последняя доработка: рабочему добавлена каштановая причёска; «Лёгкий ветер» заменён двумя короткими тонкими следами по бокам плеч. Цены и купленные права сохранены.
+Последнее обновление: исправлено зависание мини-игры памяти и освобождение машины при закрытии. Обычные улучшения объединены: одна карточка, у каждой прибавки две кнопки оплаты. Короткие подписи «Доход +4% к базе» / «Доставка +3% к базе», текущий результат и доход в час. Мастерство купленного героя действует и со своим аватаром. [Все новые изменения](UPDATE.md).
 
 **Обновлено по скриншотам и новым замечаниям:** компактные полки, исправленное оформление лидерборда, руководство сверху, подробные дорожные события, машины 25–30 в районах 6+, тихий двигатель и питомцы сзади машины. Добавлены три покупки за монеты и новая кривая мастерства: [что изменено](VISUAL-UPDATE.md), [цены и расчёты](ECONOMY.md).
 
@@ -19,7 +19,7 @@
 3. В Explorer нажмите правой кнопкой на Workspace → **Insert from File…** и выберите скачанный `Steal60_v66.rbxmx` (либо перетащите файл в Studio). Появится `Steal60_v66_RU_EN`.
 4. Нажмите Play. В Output должна появиться строка `[Steal60 v66] Установлено…`. В рантайме контейнер распределяет модули по сервисам и удаляет себя; Main запускается последним.
 5. После Stop изменения рантайма откатываются Studio. Сохраните/публикуйте Place с контейнером установщика в режиме редактирования: он нужен для установки при следующих запусках. Не импортируйте второй контейнер поверх первого.
-6. В игре кнопка RU/EN переключает язык, кнопка с нотой открывает отдельную громкость музыки и выключатель. Прежние звуки тревоги/полиции удалены; тихий двигатель работает отдельно только за рулём. Настройки сохраняются вместе с профилем.
+6. В игре кнопка RU/EN переключает язык, кнопка с нотой открывает отдельную громкость музыки и выключатель. Полиция использует одну умеренную сирену без дополнительных пугающих звуков; тихий двигатель работает отдельно только за рулём. У двигателя оставлен прежний клип, добавлены подавление металлических щелчков, плавное изменение тона и внутренний участок повтора; реальное звучание требует прослушивания в Studio. Настройки сохраняются вместе с профилем.
 
 Для настоящих сохранений в Studio нужны опубликованный Experience и включённый **Enable Studio Access to API Services**. При недоступном DataStore сохраняется поведение v65: временный профиль только в Studio, с соответствующим сообщением в Output; это не проверка сохранения между сеансами.
 
@@ -27,7 +27,7 @@
 
 - Исходный текст отделён от последнего отображённого перевода; собственные отложенные сигналы не перезаписывают источник. Отслеживаются весь PlayerGui, подсказки и подгруженные вывески. Добавлен перевод составных строк эффектов.
 - Подсказки пешего/автомобильного управления находятся над MENU и видны только в обучении или справочнике. Справочник оставляет место нижней полосе; кнопка руководства находится справа сверху над RU/EN и музыкой.
-- Улучшения показывают текущий и следующий суммарный эффект и фактический доход кассы в час, рассчитанный серверной формулой. `botSpeed` сохранён как ключ покупки: монетный уровень даёт +3 п.п., алмазный +4 п.п. к выплате за доставку. `secondBot` даёт +15 п.п. для rare/epic/legendary, включая старое право владения. Возврат машины, помощник и уведомления сохранены; скорость возврата фиксирована на базовых 42 с ограничением максимальной скорости.
+- Улучшения показывают текущий и следующий суммарный эффект и фактический доход кассы в час, рассчитанный серверной формулой. `botSpeed` сохранён как ключ покупки: прежние ветки дают +3% или +4% к базовой выплате за доставку, каждую можно оплатить любой валютой. `secondBot` даёт +15% к базе для rare/epic/legendary, включая старое право владения. Возврат машины, помощник и уведомления сохранены; скорость возврата фиксирована на базовых 42 с ограничением максимальной скорости.
 - Сервер проверяет пересечение переднего бампера с конусом 30 раз/с; конус сразу смещается вперёд/в сторону и получает серверную скорость. Это не клиентский запрос награды/столкновения.
 - На полках убраны большие физические плашки: фон измеряется по тексту, шрифт фиксирован, доход/детали идут отдельными строками. Компактные Billboard-карточки видны до 28 studs; клиент исключает их экранные пересечения.
 - Громкость и выключение музыки сохраняются отдельно. Наземные питомцы опираются на заднюю площадку/грузовую платформу за головой водителя, летающие парят над крышей. Учтены геометрия поверхности и тюнинг; локальные опорные координаты кэшируются.
@@ -43,18 +43,20 @@
 
 ## Проверки и границы результата
 
-См. [сверку замечаний и новые цены](AUDIT-v64.md), [RESULTS.md](RESULTS.md) и [исходный журнал](tests/validation-output.txt). Компилировались **все 114 скриптов из конечного XML**, а сценарии выполнялись заново для этой сборки.
+См. [сверку замечаний и новые цены](AUDIT-v64.md), [RESULTS.md](RESULTS.md) и [исходный журнал](tests/validation-output.txt). Компилировались **все 119 скриптов из конечного XML**, а сценарии выполнялись заново для этой сборки.
 
 **Roblox Engine/Studio в облачной среде отсутствует.** Автоматические сценарии используют Luau и явно обозначенные тестовые двойники Roblox API. Они не подтверждают качество изображения, живую физику/репликацию, доступность аудио и внешних NPC-ассетов, настоящий DataStore или Marketplace. Перед публикацией игры выполните Studio-проверки из RESULTS.md. Ветка GitHub публикует установщик, но не публикует Roblox Experience.
 
 ## English
 
+Latest update: memory-puzzle deadlocks, cancellation, NPC cleanup errors and three invalid music IDs are fixed. Each ordinary upgrade benefit now has coin and diamond buttons on one card. Speed adds +1 for a fixed 20 diamonds per level; Auto Collect costs 300 diamonds. Unlocked hero mastery also works with the player’s own avatar. The basic aura uses three calm wind arcs, and district junctions have themed corner plazas. See [UPDATE.md](UPDATE.md).
+
 Delivery hotfix: the Main delivery-reward callback was accidentally removed during debug cleanup and has now been restored. Replace the old installer while Studio is stopped; do not reset your profile. A new integration test runs actual Main startup and the delivery/reward/tutorial chain.
 
 This is one bilingual installer rebuilt from the attached v65. Open [Steal60_v66.rbxmx](Steal60_v66.rbxmx) on GitHub and click **Download raw file**. Stop Studio, keep only one Steal60 installer container in Workspace, disable an already-installed old `ServerScriptService/Main`, and insert the downloaded file into Workspace using **Insert from File…**. Play to install; the new Main is enabled last. Keep the installer in the edit-time Place when saving/publishing because Play-time changes are reverted by Studio.
 
-RU/EN is an in-game toggle. The music-note button opens separately saved music volume/mute controls. Existing vehicle IDs, save-store names, purchased levels and v65 payment/recovery mechanisms are retained. Approved economic adjustments are listed in [AUDIT-v64.md](AUDIT-v64.md). Helper speed purchase keys become additive delivery payout bonuses (+3 pp coin level, +4 pp diamond level; secondBot +15 pp for rare+). Districts continue beyond five with streamed cleanup, seven ordinary level-25–30 cars and one intentionally harder police-trigger target. See the Russian change list above for all twelve requested changes.
+RU/EN is an in-game toggle. The music-note button opens separately saved music volume/mute controls. Existing vehicle IDs, save-store names, purchased levels and v65 payment/recovery mechanisms are retained. Approved economic adjustments are listed in [AUDIT-v64.md](AUDIT-v64.md). Helper speed purchase keys become additive delivery payout bonuses (+3% or +4% of base, either currency per benefit; secondBot +15% of base for rare+). Districts continue beyond five with streamed cleanup, seven ordinary level-25–30 cars and one intentionally harder police-trigger target. See the Russian change list above for all twelve requested changes.
 
 The latest screenshot update and coin progression prices are described in [VISUAL-UPDATE.md](VISUAL-UPDATE.md) and [ECONOMY.md](ECONOMY.md). A worker outfit costs 4M coins, plain paint 750K, a modest aura 1.5M and the pet license 5M. Walking pets sit at the rear of the car, behind the driver.
 
-The updated build adds immediate upgrade saves, separate currency cooldowns, a soft cap on base income before bonuses, lower ladder costs, American English, number inflection, adaptive modal scaling and native gamepad input. All 114 final XML scripts compile; current-run Luau tests cover the new logic with explicit Roblox API test doubles. **No actual Roblox Engine was available.** Studio visuals, physics, live DataStore and Marketplace integration remain unverified. [RESULTS.md](RESULTS.md) provides the evidence and Studio acceptance checklist.
+The updated build adds immediate upgrade saves, separate currency cooldowns, a soft cap on base income before bonuses, lower ladder costs, American English, number inflection, adaptive modal scaling and native gamepad input. All 119 final XML scripts compile; current-run Luau tests cover the new logic with explicit Roblox API test doubles. **No actual Roblox Engine was available.** Studio visuals, physics, live DataStore and Marketplace integration remain unverified. [RESULTS.md](RESULTS.md) provides the evidence and Studio acceptance checklist.

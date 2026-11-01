@@ -1,14 +1,62 @@
 {
   "baseline_initial_v66_commit": "58661d98ebe77fdb471166257641c2e5a8da2a79",
-  "final_xml_sha256": "34e4c5d6a1cf1e3b7a93608167c60a239d51a1d86ab18786522159013d3e17d7",
+  "final_xml_sha256": "b85c4190b0ff67419536f26ae10b354c3eab408138c2d99bfc258cfc05a0d413",
+  "current_price_scope": "new fields below refer to compatible saved-counter definitions. The current shop combines shared upgrades and offers both currencies per benefit; use unified_upgrade_choices and economy-data.json for actual full ladders.",
+  "unified_upgrade_choices": {
+    "income": {
+      "coin": {
+        "levels": 24,
+        "coin_total": 6050976,
+        "diamond_total": 7890
+      },
+      "diamond": {
+        "levels": 15,
+        "coin_total": 87765,
+        "diamond_total": 1115
+      }
+    },
+    "security": {
+      "combined": {
+        "levels": 5,
+        "coin_total": 11234400,
+        "diamond_total": 320
+      }
+    },
+    "speed": {
+      "combined": {
+        "levels": 24,
+        "coin_total": 73966317,
+        "diamond_total": 480
+      }
+    },
+    "botSpeed": {
+      "coin": {
+        "levels": 12,
+        "coin_total": 7374384,
+        "diamond_total": 3505
+      },
+      "diamond": {
+        "levels": 8,
+        "coin_total": 750390,
+        "diamond_total": 845
+      }
+    },
+    "shelves": {
+      "combined": {
+        "levels": 4,
+        "coin_total": 19420000,
+        "diamond_total": 275
+      }
+    }
+  },
   "diamond_income": {
     "old": {
       "total": 15379,
       "last": 5271
     },
     "new": {
-      "total": 1080,
-      "last": 193
+      "total": 1115,
+      "last": 195
     }
   },
   "coin_income": {
@@ -23,11 +71,11 @@
   },
   "all_diamond_upgrades": {
     "old": 19551,
-    "new": 5402
+    "new": 3815
   },
   "all_coin_upgrades": {
     "old": 780110645,
-    "new": 39141333
+    "new": 55141333
   },
   "coin_engine": {
     "old": {

@@ -43,7 +43,7 @@ for i=1,5 do check(themes[i],'all themes appear')end
 check(Layout.trackEnd()==math.huge,'no terminal cap')
 print('PASS: 10,000 district indices and five-theme selection')
 local Text=require('TextTranslator')
-local effect='Сейчас: Доставка +7 п.п.; редкая+ +22 п.п. · Доход в час: 300 $\nДалее: Доставка +10 п.п.; редкая+ +25 п.п. · Доход в час: 300 $'
+local effect='Сейчас: Доставка +7%; редкая+ +22% · Доход в час: 300 $\nДалее: Доставка +10%; редкая+ +25% · Доход в час: 300 $'
 local english=Text.translate(effect,'en')
 check(not english:find('Доставка',1,true)and not english:find('Доход',1,true),'formatted effect sub-lines translated')
 check(english:find('Current:',1,true)and english:find('Next:',1,true),'effect prefixes translated')
@@ -209,16 +209,16 @@ local function fmt(n)local s=tostring(math.floor(n));return(s:reverse():gsub('(%
 local current,following,rate=previewFor(fixture,'income','coin',24)
 local base=Loot[1].income*2500
 local expected=Balance.income(base,0,2,4,0,0,1)*3600
-check(current:find('Бонус базового дохода +18 п.п.',1,true)~=nil,'current coin+diamond total shown')
-check(following:find('Бонус базового дохода +22 п.п.',1,true)~=nil,'next combined income bonus')
+check(current:find('Бонус базового дохода +18%',1,true)~=nil,'current coin+diamond total shown')
+check(following:find('Бонус базового дохода +22%',1,true)~=nil,'next combined income bonus')
 check(following:find('Доход в час: '..fmt(expected)..' $',1,true)~=nil,'next actual nonlinear income shown')
 check(rate==Balance.income(base,0,2,3,0,0,1)*3600,'live and preview income use same formula')
 current,following=previewFor(fixture,'doubleIncome','diamond',1)
 check(following:find('Доход в час: '..fmt(rate*2)..' $',1,true)~=nil,'x2 purchase preview doubles actual hourly income')
 current,following=previewFor(fixture,'botSpeed','coin',12)
-check(current:find('Доставка +17 п.п.',1,true)and following:find('Доставка +20 п.п.',1,true),'helper current/next coin preview')
+check(current:find('Доставка +17%',1,true)and following:find('Доставка +20%',1,true),'helper current/next coin preview')
 current,following=previewFor(fixture,'botSpeed','diamond',8)
-check(following:find('Доставка +21 п.п.',1,true)~=nil,'helper diamond increment')
+check(following:find('Доставка +21%',1,true)~=nil,'helper diamond increment')
 fixture.upgrades.security=4
 current,following=previewFor(fixture,'security','coin',5)
 check(current:find('Охрана 5/5',1,true)and following=='Максимум','combined security cap preview')
@@ -264,7 +264,7 @@ end
 local Diamond=require('UpgradeConfig');local Coin=require('CoinUpgradeConfig')
 local function ladder(config,id)local total=0;local last;for level=0,config.ById[id].max-1 do last=config.cost(id,level);total+=last end;return total,last end
 local dTotal,dLast=ladder(Diamond,'income');local cTotal,cLast=ladder(Coin,'income')
-check(dTotal==1080 and dLast==193,'rebalanced diamond income ladder')
+check(dTotal==1115 and dLast==195,'rebalanced diamond income ladder')
 check(cTotal==6050976 and cLast==2147195,'rebalanced coin income ladder')
 check(Diamond.cost('doubleIncome',0)==300,'moderately repriced permanent x2')
 local XP=require('ProgressionConfig')
@@ -281,9 +281,9 @@ do
  spendMoney=function(actor,cost)local data=profiles[actor];if data.money<cost then return false end;data.money-=cost;return true end,
  saveNow=function(actor)saves[#saves+1]=deepCopy(profiles[actor]);return not actor:GetAttribute('SimulateSaveFailure')end,
  requestSave=function()requests+=1 end}
- modules.Net={BuyUpgrade={OnServerEvent=diamondEvent},BuyCoinUpgrade={OnServerEvent=coinEvent},CurrencyUpdate={FireClient=function()end},notify=function(_,text,kind)notices[#notices+1]={text=text,kind=kind}end}
+ modules.Net={BuyUpgradeChoice={OnServerEvent=signal()},BuyUpgrade={OnServerEvent=diamondEvent},BuyCoinUpgrade={OnServerEvent=coinEvent},CurrencyUpdate={FireClient=function()end},notify=function(_,text,kind)notices[#notices+1]={text=text,kind=kind}end}
  modules.SalonService={refresh=function()end};modules.TutorialService={sync=function()end}
- modules.DriveService={maxSpeedFor=function(data)return math.min(84,42+(data.upgrades.speed or 0)*2.5+(data.coinUpgrades.speed or 0))end}
+ modules.DriveService={maxSpeedFor=function(data)return require('UpgradePolicy').speed(data,(data.upgrades.fastRide or 0)>0 and 1.25 or 1)end}
  game.ReplicatedStorage=services.ReplicatedStorage
  require('UpgradeService').init()
  local function actor(failing)
@@ -293,14 +293,14 @@ do
  end
  local a=actor(false);diamondEvent:Fire(a,'speed');coinEvent:Fire(a,'income')
  check(#saves==2,'both currencies save immediately with separate cooldowns')
- check(saves[1].upgrades.speed==1 and saves[1].diamonds==9988,'diamond level and debit persisted together')
+ check(require('UpgradePolicy').total(saves[1],'speed')==1 and saves[1].diamonds==9980,'diamond level and debit persisted together')
  check(saves[2].coinUpgrades.income==1 and saves[2].money==99955,'coin level and debit persisted together')
  for i=1,100 do diamondEvent:Fire(a,'speed');coinEvent:Fire(a,'income')end
- check(#saves==2 and profiles[a].upgrades.speed==1,'upgrade spam blocked')
+ check(#saves==2 and require('UpgradePolicy').total(profiles[a],'speed')==1,'upgrade spam blocked')
  local failed=actor(true);diamondEvent:Fire(failed,'income')
  check(profiles[failed].diamonds==9985 and profiles[failed].upgrades.income==1,'uncertain persistence keeps paired debit/level, no unsafe rollback')
  check(requests==1 and notices[#notices].kind=='info','failed immediate save schedules retry without announcing confirmed success')
- local capped=actor(false);profiles[capped].upgrades.speed=12;profiles[capped].coinUpgrades.speed=12
+ local capped=actor(false);profiles[capped].upgrades.speed=40;profiles[capped].coinUpgrades.speed=12
  local before=profiles[capped].diamonds;local previousSaves=#saves
  diamondEvent:Fire(capped,'fastRide');coinEvent:Fire(capped,'speed')
  check(#saves==previousSaves and profiles[capped].diamonds==before,'speed cap prevents useless paid upgrades')

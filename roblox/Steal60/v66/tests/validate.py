@@ -39,11 +39,12 @@ assert 'local TARGET_PROTECTION = 2 * 60' in sources['SalonService']
 assert 'local THEFT_COOLDOWN = 5 * 60' in sources['SalonService']
 assert 'Net.notifyKey(player' in sources['DriveService']
 # All new sources are installed at their expected paths.
-for name in ['DeliveryBonus','EndlessParking','PetMount','ShelfTypography','Grammar','Messages','ProgressionConfig','InterfaceAccess']+([]if a.integration_only else ['LeaderboardView','RoadEventSchedule','RoadsideFacing','EngineAudio']):
+for name in ['DeliveryBonus','EndlessParking','PetMount','ShelfTypography','Grammar','Messages','ProgressionConfig','InterfaceAccess']+([]if a.integration_only else ['LeaderboardView','RoadEventSchedule','RoadsideFacing','EngineAudio','UpgradePolicy','BreezeAura','UpgradeView','PoliceAudio']):
  assert parents[name]=='Shared'
 assert parents['RoadsideArt']=='Services'
 if not a.integration_only:
  assert parents['RoadsideCharacters']=='Services'
+ assert parents['JunctionArt']=='Services'
  assert 'createRoadEvent(s,Schedule.kind(index,cycle))' in sources['RoadChallengeService']
  assert 'Policy.normalRequirement(rng,' in sources['ParkingService']
  assert 'data.masteryEffects' in sources['CosmeticHUD']
@@ -78,28 +79,36 @@ with tempfile.TemporaryDirectory(prefix='steal60-v66-')as temp:
   parts.append(f'moduleRef({json.dumps(name)},{parent})\n')
  for name,source in sources.items():
   parts.append(f'loaders[{json.dumps(name)}]=function()\nlocal script=refs[{json.dumps(name)}]\n{source}\nend\n')
- if a.baseline:
-  allowed={'UpgradeConfig':{'income':{'growth':1.20},'doubleIncome':{'base':300}},'CoinUpgradeConfig':{'income':{'growth':1.55},'speed':{'growth':1.9},'botSpeed':{'growth':1.9}}}
+ if a.baseline and not a.integration_only:
+  allowed={'UpgradeConfig':{'income':{'growth':1.20},'doubleIncome':{'base':300},'speed':{'base':20,'growth':1},'autoCollect':{'base':300},'shelves':{'max':4}},'CoinUpgradeConfig':{'income':{'growth':1.55},'speed':{'growth':1.9},'botSpeed':{'growth':1.9},'shelves':{'max':4}}}
+  def lua_object(v):return '{'+','.join('['+json.dumps(k)+']='+lua_object(x)for k,x in v.items())+'}'if isinstance(v,dict)else str(v)
   for name in ['UpgradeConfig','CoinUpgradeConfig']:
-   changes=json.dumps(allowed[name],separators=(',',':')).replace('"growth":','growth=').replace('"base":','base=').replace('"income":','income=').replace('"doubleIncome":','doubleIncome=').replace('"speed":','speed=').replace('"botSpeed":','botSpeed=')
-   parts.append(f'local previous=(function()\n{old[name]}\nend)();local current=require({json.dumps(name)});local changes={changes}\nfor _,u in ipairs(previous)do local v=current.ById[u.id];check(v~=nil,"upgrade ID retained");for _,k in ipairs({{"base","growth","max"}})do local expected=(changes[u.id]or{{}})[k]or u[k];check(v[k]==expected,"only authorized price/cap changes")end;if not changes[u.id]then for level=0,u.max-1 do check(previous.cost(u.id,level)==current.cost(u.id,level),"unaffected prices unchanged")end end end\n')
+   changes=lua_object(allowed[name]);diamond='true'if name=='UpgradeConfig'else'false'
+   parts.append(f'local previous=(function()\n{old[name]}\nend)();local current=require({json.dumps(name)});local changes={changes}\nfor _,u in ipairs(previous)do local v=current.ById[u.id];check(v~=nil,"upgrade ID retained");for _,k in ipairs({{"base","growth","max"}})do local expected=(changes[u.id]or{{}})[k]or u[k];check(v[k]==expected,"only authorized price/cap changes")end;for level=0,v.max-1 do local price;if {diamond} then price=math.ceil(v.base*v.growth^level/5)*5 elseif u.id=="shelves"then price=({{180000,3240000,6000000,10000000}})[level+1]elseif u.id=="income"and level==0 then price=45 else price=math.floor(v.base*v.growth^level+.5)end;check(current.cost(u.id,level)==price,"authorized five-diamond rounding and coin ladders")end end\n')
   parts.append(f'local oldProducts=(function()\n{old["MonetizationConfig"]}\nend)();local newProducts=require("MonetizationConfig")\nfor _,u in ipairs(oldProducts.Products)do local v=newProducts.ProductById[u.id];check(v.assetId==u.assetId and v.recommendedRobux==u.recommendedRobux,"product IDs and recommended Robux prices retained");check(v.diamonds==u.diamonds*.9,"diamond packs adjusted by exactly ten percent")end\n')
- if a.baseline:
-  parts.append('local oldCosmetics=(function()\nlocal script=refs.CosmeticConfig\n'+old['CosmeticConfig']+'\nend)();local current=require("CosmeticConfig")\nfor _,def in ipairs(oldCosmetics.List)do local now=current.ById[def.id];check(now~=nil and now.price==def.price and now.priceCoins==def.priceCoins,"old cosmetic IDs and item prices retained")end\ncheck(current.PET_LICENSE_DIAMONDS==oldCosmetics.PET_LICENSE_DIAMONDS and current.HERO_MAX==oldCosmetics.HERO_MAX and current.PET_MAX==oldCosmetics.PET_MAX,"pet diamond license and shared mastery caps retained")\n')
+ if a.baseline and not a.integration_only:
+  parts.append('local oldCosmetics=(function()\nlocal script=refs.CosmeticConfig\n'+old['CosmeticConfig']+'\nend)();local current=require("CosmeticConfig")\nfor _,def in ipairs(oldCosmetics.List)do local now=current.ById[def.id];check(now~=nil and now.price==(def.price and math.ceil(def.price/5)*5)and now.priceCoins==def.priceCoins,"old cosmetic IDs retained and only diamond prices rounded up to five")end\ncheck(current.PET_LICENSE_DIAMONDS==oldCosmetics.PET_LICENSE_DIAMONDS and current.HERO_MAX==oldCosmetics.HERO_MAX and current.PET_MAX==oldCosmetics.PET_MAX,"pet diamond license and shared mastery caps retained")\n')
+ speed=sources['DriveService'];start=speed.index('function DriveService.maxSpeedFor(');end=speed.index('function DriveService.disable(',start)
+ parts.append("local function actualMaxSpeed(data,multiplier)\nlocal DriveService={};local UpgradePolicy=require('UpgradePolicy');local Monetization={speedMultiplier=function()return multiplier or 1 end}\n"+speed[start:end]+"\nreturn DriveService.maxSpeedFor(data,player)end\n")
+ client=sources['ClientMain'];start=client.index('local function runMinigame(');end=client.index('HackStart.OnClientEvent:Connect(runMinigame)',start)
+ parts.append("local function makeHackClient(gui,HackTap,HackStep,HackCancel)\nlocal player=Players.LocalPlayer;local Shared=shared;local UserInputService=services.UserInputService;local RunService=services.RunService;local HackModes=require('HackModes');local HackMath=require('HackMath');local UIIcons=require('UIIcons');local activeHackStep;local closeHack\nlocal function corner(p,r)local c=Instance.new('UICorner');c.CornerRadius=UDim.new(0,r);c.Parent=p end\n"+client[start:end]+"\nreturn runMinigame,function()if closeHack then closeHack()end end end\n")
+ street=sources['StreetLifeService'];start=street.index('local function prop(');end=street.index('local function headphones(',start)
+ parts.append('local function makeStreetCoffee(rig)\n'+street[start:end]+'\nreturn coffee(rig)end\n')
  # Exercise the actual server bumper function without loading unrelated server services.
  drive=sources['DriveService'];start=drive.index('local function knockCones');end=drive.index('local function isRoadBlocked',start)
  parts.append('local function horizontal(v)local flat=Vector3.new(v.X,0,v.Z);return flat.Magnitude>.01 and flat.Unit or Vector3.xAxis end\nlocal coneCache={}\n'+drive[start:end])
  salon=sources['SalonService'];start=salon.index('local Balance=require');end=salon.index('-- Money remains in the till',start)
  parts.append('''local function previewFor(data,id,currency,maximum)
  local Shared=shared;local Settings=require('Settings');local Loot=require('Loot');local Rarity=require('Rarity');local VARIANT_MULT={}
- local CosmeticConfig=require('CosmeticConfig')
+ local CosmeticConfig=require('CosmeticConfig');local CoinUpgrade=require('CoinUpgradeConfig');local Upgrade=require('UpgradeConfig')
+ local DriveService={maxSpeedFor=function(d)return require('UpgradePolicy').speed(d,(d.upgrades.fastRide or 0)>0 and 1.25 or 1)end}
  local function displayList()return {}end
  local function partIncomeBoost()return 0 end
  local function fmt(n)local s=tostring(math.floor(n));local out=s:reverse():gsub('(%d%d%d)','%1 '):reverse();return(out:gsub('^ ',''))end
  local Monetization={has=function(_,key)return(data.upgrades[key]or 0)>0 end,tillHours=function()return(data.upgrades.till48h or 0)>0 and 48 or 12 end,incomeMultiplier=function()return(data.upgrades.doubleIncome or 0)>0 and 2 or 1 end}
  '''+salon[start:end]+'''
  local current,following=upgradePreview(data,player,id,currency,maximum)
- return current,following,computeIncome(data,player)*3600
+ return current,following,computeIncome(data,player)*3600,dualUpgradeRows(data,player)
  end
  ''')
  manager=sources['DistrictManager'];start=manager.index('local function neededSet()');end=manager.index('-- API',start)
@@ -136,6 +145,8 @@ with tempfile.TemporaryDirectory(prefix='steal60-v66-')as temp:
   parts.append((HERE/'scenarios.luau').read_text())
   parts.append(';\n(function()\n'+(HERE/'visual_regressions.luau').read_text()+'\nend)()')
   parts.append(';\n(function()\n'+(HERE/'economy_cosmetics.luau').read_text()+'\nend)()')
+  parts.append(';\n(function()\n'+(HERE/'upgrade_choices.luau').read_text()+'\nend)()')
+  parts.append(';\n(function()\n'+(HERE/'runtime_regressions.luau').read_text()+'\nend)()')
  parts.append((HERE/'delivery_integration.luau').read_text())
  parts.append("print('FINAL COMBINED ASSERTIONS: '..checks)")
  bundle=temp/'run.luau';bundle.write_text('\n'.join(parts))
