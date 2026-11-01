@@ -1,6 +1,6 @@
 # Steal60 v66 · RU / EN
 
-Последнее обновление: одинаковые видимые торговцы во всех салонах, сохранение прокрутки после покупок во всех трёх магазинах, 1 $ за каждый сбитый конус с тихим звуком и всплывающим долларом. В районах 6+ крупный баннер «В разработке» появляется на 1,5 секунды каждые 10 секунд. [Подробности](SHOP-UPDATE.md).
+Последнее обновление: «+1 $» следует за машиной и остаётся на экране на скорости; конусы сбиваются передом, задом и боками, включая лёгкое касание. Высокие боковые границы прозрачные, за трассой — море с рябью и мягкой дымкой до горизонта. [Подробности](OCEAN-UPDATE.md).
 
 Предыдущие исправления памяти, ошибок Output и двухвалютного магазина сохранены. [Подробности](UPDATE.md).
 
@@ -47,7 +47,7 @@
 
 ## Проверки и границы результата
 
-См. [сверку замечаний и новые цены](AUDIT-v64.md), [RESULTS.md](RESULTS.md) и [исходный журнал](tests/validation-output.txt). Компилировались **все 123 скрипта из конечного XML**, а сценарии выполнялись заново для этой сборки.
+См. [сверку замечаний и новые цены](AUDIT-v64.md), [RESULTS.md](RESULTS.md) и [исходный журнал](tests/validation-output.txt). Компилировались **все 124 скрипта из конечного XML**, а сценарии выполнялись заново для этой сборки.
 
 **Roblox Engine/Studio в облачной среде отсутствует.** Автоматические сценарии используют Luau и явно обозначенные тестовые двойники Roblox API. Они не подтверждают качество изображения, живую физику/репликацию, доступность аудио и внешних NPC-ассетов, настоящий DataStore или Marketplace. Перед публикацией игры выполните Studio-проверки из RESULTS.md. Ветка GitHub публикует установщик, но не публикует Roblox Experience.
 
@@ -63,4 +63,4 @@ RU/EN is an in-game toggle. The music-note button opens separately saved music v
 
 The latest screenshot update and coin progression prices are described in [VISUAL-UPDATE.md](VISUAL-UPDATE.md) and [ECONOMY.md](ECONOMY.md). A worker outfit costs 4M coins, plain paint 750K, a modest aura 1.5M and the pet license 5M. Walking pets sit at the rear of the car, behind the driver.
 
-The updated build adds immediate upgrade saves, separate currency cooldowns, a soft cap on base income before bonuses, lower ladder costs, American English, number inflection, adaptive modal scaling and native gamepad input. All 123 final XML scripts compile; current-run Luau tests cover the new logic with explicit Roblox API test doubles. **No actual Roblox Engine was available.** Studio visuals, physics, live DataStore and Marketplace integration remain unverified. [RESULTS.md](RESULTS.md) provides the evidence and Studio acceptance checklist.
+The updated build adds immediate upgrade saves, separate currency cooldowns, a soft cap on base income before bonuses, lower ladder costs, American English, number inflection, adaptive modal scaling and native gamepad input. All 124 final XML scripts compile; current-run Luau tests cover the new logic with explicit Roblox API test doubles. **No actual Roblox Engine was available.** Studio visuals, physics, live DataStore and Marketplace integration remain unverified. [RESULTS.md](RESULTS.md) provides the evidence and Studio acceptance checklist.

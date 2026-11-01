@@ -64,9 +64,9 @@ for _,apiVersion in ipairs({'legacy GetControls','current Enabled-only'})do
  modules.PlayerModule=nil;modules.DriveState=nil;modules.DrivePresentation=nil;modules.DriveService=nil
  modules.MonetizationService={speedMultiplier=function()return 1 end}
  local inputEvent,recoverEvent=signal(),signal();local correction=signal();local corrections=0
- local wallet={money=100};local rewards=0;local lastReward
+ local wallet={money=100};local rewards=0;local lastReward;local lastRewardCar
  modules.DataService=makeConeWallet(wallet)
- modules.Net={ConeReward={FireClient=function(_,who,position)check(who==player,'only the verified driver receives cone feedback');rewards+=1;lastReward=position end},DriveInput={OnServerEvent=inputEvent},RecoverCar={OnServerEvent=recoverEvent},DriveSnapshot={FireClient=function(_,_,car,cf,epoch)corrections+=1;correction:Fire(car,cf,epoch)end},notify=function()end,notifyKey=function()end}
+ modules.Net={ConeReward={FireClient=function(_,who,position,vehicle)check(who==player,'only the verified driver receives cone feedback');rewards+=1;lastReward=position;lastRewardCar=vehicle end},DriveInput={OnServerEvent=inputEvent},RecoverCar={OnServerEvent=recoverEvent},DriveSnapshot={FireClient=function(_,_,car,cf,epoch)corrections+=1;correction:Fire(car,cf,epoch)end},notify=function()end,notifyKey=function()end}
  local createdRemotes={};local previousRemoteMethods={}
  local Security=require('SecurityService')
  for name,event in pairs({DriveInput=inputEvent,RecoverCar=recoverEvent})do
@@ -121,16 +121,27 @@ for _,apiVersion in ipairs({'legacy GetControls','current Enabled-only'})do
  check((front.Transform.UpVector-rear.Transform.UpVector).Magnitude>.01,'front wheel steering is layered on top of wheel rolling')
  check(car.DriveRig.DriveHeading.RigidityEnabled and car.DriveRig.DriveHeading.Responsiveness==200,'upright heading constraint follows steering without a soft yaw lag')
  local cones={}
- local function cone()
+ local function cone(offset)
   local p=Instance.new('Part');p.Name='RewardTestCone';p.Anchored=true;p.Size=V.new(1,2,1);p.AssemblyMass=.8
-  p.Position=body.Position+body.CFrame.RightVector*((car:GetAttribute('DesignLength')or body.Size.X/.84)*.5+.2);p.Parent=workspace
+  p.Position=body.Position+(offset or body.CFrame.RightVector*((car:GetAttribute('DesignLength')or body.Size.X/.84)*.5+.2));p.Parent=workspace
   services.CollectionService:AddTag(p,'S60KnockdownCone');cones[#cones+1]=p;return p
  end
  local firstCone=cone();local hit=firstCone.Position;advance(.1)
  check(not firstCone.Anchored and wallet.money==101 and rewards==1 and(lastReward-hit).Magnitude<.001,'actual verified ride + bumper sweep + DataService.addMoney pays exactly $1 at the impact position')
+ check(lastRewardCar==car,'server confirmation identifies the exact rewarded car for the following animation')
  advance(.1);check(wallet.money==101 and rewards==1,'the same fallen cone cannot pay again on the next physics step')
  local secondCone,thirdCone=cone(),cone();advance(.1)
  check(not secondCone.Anchored and not thirdCone.Anchored and wallet.money==103 and rewards==3 and wallet.earned==3 and wallet.saves==3,'each separate cone pays its own dollar and uses ordinary earnings/save accounting')
+ for _,p in ipairs({firstCone,secondCone,thirdCone})do services.CollectionService:RemoveTag(p,'S60KnockdownCone');p:Destroy()end
+ local nose=body.CFrame.RightVector;local side=V.new(-nose.Z,0,nose.X)
+ local flank=cone(side*((car:GetAttribute('DesignWidth')or body.Size.Z/.73)*.5+.2)-nose*1.5);advance(.1)
+ check(not flank.Anchored and wallet.money==104 and flank.AssemblyLinearVelocity:Dot(side)>0,'actual server ride pays for contact with the rear half of a side panel')
+ services.CollectionService:RemoveTag(flank,'S60KnockdownCone');flank:Destroy()
+ joystick=V.new(0,0,1);for _=1,4 do advance(.08)end
+ check(body.AssemblyLinearVelocity:Dot(nose)<-1,'the integration scenario is actually reversing before the rear collision')
+ local rearCone=cone(-nose*((car:GetAttribute('DesignLength')or body.Size.X/.84)*.5+.2));advance(.1)
+ check(not rearCone.Anchored and wallet.money==105 and rewards==5 and rearCone.AssemblyLinearVelocity:Dot(nose)<0,'reverse gear knocks the rear cone backward and awards its own dollar')
+ services.CollectionService:RemoveTag(rearCone,'S60KnockdownCone');rearCone:Destroy();joystick=V.new(.5,0,-.75)
  heightAnchor.Parent=nil;advance(.1)
  check(not car:GetAttribute('ClientDriveOwner')and body.NetworkOwner==nil,'a disappearing constraint revokes ownership and resumes the server writer')
  heightAnchor.Parent=plane;advance(.1);advance(.1)
@@ -139,13 +150,13 @@ for _,apiVersion in ipairs({'legacy GetControls','current Enabled-only'})do
  player:SetAttribute('Steal60DevelopmentNotice',false);advance(.1);check(control.Visible,'recovery reappears after the temporary banner')
  joystick=V.zero;for _=1,5 do advance(.08)end
  check(body.AssemblyLinearVelocity.Magnitude<.001,'releasing the standard stick stops ordinary-speed coasting promptly')
- local stoppedCone=cone();advance(.1);check(stoppedCone.Anchored and wallet.money==103,'a stationary vehicle earns no cone reward')
+ local stoppedCone=cone();advance(.1);check(stoppedCone.Anchored and wallet.money==105,'a stationary vehicle earns no cone reward')
  local outsider=Instance.new('Player');outsider.UserId=999;outsider.Parent=Players
  inputEvent:Fire(outsider,car,1,1,60,epoch);inputEvent:Fire(player,car,1,1,60,epoch+100)
  advance(.16);check(body.AssemblyLinearVelocity.Magnitude<.001,'wrong owner and stale rig epoch cannot drive the car')
  local safe=body.CFrame;body.Position=V.new(90000,body.Position.Y,0)
  check(Drive.validatePosition(car,player)==false and(body.Position-safe.Position).Magnitude<.001 and corrections>0,'real server movement budget still rolls back an invalid vehicle position')
- check(wallet.money==103,'foreign input/stale epoch/invalid position never mint extra cone dollars')
+ check(wallet.money==105,'foreign input/stale epoch/invalid position never mint extra cone dollars')
  seat.Occupant=nil;hum.Sit=false;hum.SeatPart=nil;advance(.16)
  check(car:GetAttribute('DriverSeatedId')==nil and not require('DriveState').current(player),'leaving clears the verified-seat marker and driving input')
  for _,p in ipairs(cones)do services.CollectionService:RemoveTag(p,'S60KnockdownCone');p:Destroy()end

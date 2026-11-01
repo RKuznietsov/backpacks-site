@@ -127,6 +127,14 @@ function methods:GetBoundingBox()
 end
 function methods:PivotTo(cf)local delta=cf*self:GetPivot():Inverse();for _,p in ipairs(self:GetDescendants())do if p:IsA('BasePart')then p.CFrame=delta*p.CFrame end end;self.WorldPivot=cf end
 function methods:FindFirstChildOfClass(c)return self:FindFirstChildWhichIsA(c,false)end
+function methods:WorldToViewportPoint(point)
+ local p=self.CFrame:PointToObjectSpace(point);local size=self.ViewportSize;local depth=-p.Z
+ local divisor=math.abs(depth)>.0001 and depth or .0001
+ local tangent=math.tan(math.rad(self.FieldOfView or 70)/2)
+ local x=size.X*.5+p.X*size.Y/(2*tangent*divisor)
+ local y=size.Y*.5-p.Y*size.Y/(2*tangent*divisor)
+ return V.new(x,y,depth),depth>0 and x>=0 and x<=size.X and y>=0 and y<=size.Y
+end
 function methods:FindFirstChildWhichIsA(c,recurse)for _,p in ipairs(recurse and self:GetDescendants()or self.children)do if p:IsA(c)then return p end end end
 function methods:IsDescendantOf(parent)local at=self.Parent;while at do if at==parent then return true end;at=at.Parent end;return false end
 local Random={}

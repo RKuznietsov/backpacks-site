@@ -39,7 +39,7 @@ assert 'local TARGET_PROTECTION = 2 * 60' in sources['SalonService']
 assert 'local THEFT_COOLDOWN = 5 * 60' in sources['SalonService']
 assert 'Net.notifyKey(player' in sources['DriveService']
 # All new sources are installed at their expected paths.
-for name in ['DeliveryBonus','EndlessParking','PetMount','ShelfTypography','Grammar','Messages','ProgressionConfig','InterfaceAccess']+([]if a.integration_only else ['LeaderboardView','RoadEventSchedule','RoadsideFacing','EngineAudio','UpgradePolicy','BreezeAura','UpgradeView','PoliceAudio','VehicleLabels','ScrollKeeper','ConeFeedback']):
+for name in ['DeliveryBonus','EndlessParking','PetMount','ShelfTypography','Grammar','Messages','ProgressionConfig','InterfaceAccess']+([]if a.integration_only else ['LeaderboardView','RoadEventSchedule','RoadsideFacing','EngineAudio','UpgradePolicy','BreezeAura','UpgradeView','PoliceAudio','VehicleLabels','ScrollKeeper','ConeFeedback','OceanBackdrop']):
  assert parents[name]=='Shared'
 assert parents['RoadsideArt']=='Services'
 if not a.integration_only:
@@ -108,7 +108,7 @@ with tempfile.TemporaryDirectory(prefix='steal60-v66-')as temp:
  street=sources['StreetLifeService'];start=street.index('local function prop(');end=street.index('local function headphones(',start)
  parts.append('local function makeStreetCoffee(rig)\n'+street[start:end]+'\nreturn coffee(rig)end\n')
  # Exercise the actual server bumper function without loading unrelated server services.
- drive=sources['DriveService'];start=drive.index('local function knockCones');end=drive.index('local function isRoadBlocked',start)
+ drive=sources['DriveService'];start=drive.index('local function coneContact');end=drive.index('local function isRoadBlocked',start)
  parts.append('local function horizontal(v)local flat=Vector3.new(v.X,0,v.Z);return flat.Magnitude>.01 and flat.Unit or Vector3.xAxis end\nlocal coneCache={}\n'+drive[start:end])
  salon=sources['SalonService'];start=salon.index('local Balance=require');end=salon.index('-- Money remains in the till',start)
  parts.append('''local function previewFor(data,id,currency,maximum)
@@ -158,6 +158,7 @@ with tempfile.TemporaryDirectory(prefix='steal60-v66-')as temp:
  parts.append('local function makeConeWallet(wallet)\nlocal Durable={MAX=1e15};local DataService={get=function()return wallet end,requestSave=function()wallet.saves=(wallet.saves or 0)+1 end,recordEarnings=function(_,amount)wallet.earned=(wallet.earned or 0)+amount end}\n'+data[start:end]+'\nreturn DataService end\n')
  if not a.integration_only:
   parts.append(';\n(function()\n'+(HERE/'scenarios.luau').read_text()+'\nend)()')
+  parts.append(';\n(function()\n'+(HERE/'cone_contacts.luau').read_text()+'\nend)()')
   parts.append(';\n(function()\n'+(HERE/'visual_regressions.luau').read_text()+'\nend)()')
   parts.append(';\n(function()\n'+(HERE/'economy_cosmetics.luau').read_text()+'\nend)()')
   parts.append(';\n(function()\n'+(HERE/'upgrade_choices.luau').read_text()+'\nend)()')
@@ -165,6 +166,7 @@ with tempfile.TemporaryDirectory(prefix='steal60-v66-')as temp:
   parts.append(';\n(function()\n'+(HERE/'mobile_driving.luau').read_text()+'\nend)()')
   parts.append(';\n(function()\n'+(HERE/'vehicle_labels.luau').read_text()+'\nend)()')
   parts.append(';\n(function()\n'+(HERE/'shop_cones.luau').read_text()+'\nend)()')
+  parts.append(';\n(function()\n'+(HERE/'ocean_rewards.luau').read_text()+'\nend)()')
   parts.append(';\n(function()\n'+(HERE/'menu_regressions.luau').read_text()+'\nend)()')
   parts.append(';\n(function()\n'+(HERE/'atelier_regressions.luau').read_text()+'\nend)()')
   parts.append(';\n(function()\n'+(HERE/'avatar_preview.luau').read_text()+'\nend)()')

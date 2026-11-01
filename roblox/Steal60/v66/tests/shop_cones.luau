@@ -123,33 +123,51 @@ end
 print('PASS: actual main/economy/atelier repaints retain scroll for 20 repeated upgrades, explicit automatic-canvas clamp reproduction, temporary data failure retention, tab reset, content shrink and coalesced refresh (layout API double)')
 
 do
- local oldDelay=task.delay;local timers={};task.delay=function(_,fn)timers[#timers+1]=fn end
+ local oldDelay,oldClock,oldCamera=task.delay,testClock,workspace.CurrentCamera;testClock=8000
+ local timers={};task.delay=function(_,fn)timers[#timers+1]=fn end
  local oldPreload=services.ContentProvider.PreloadAsync;local soundReady=true
  function services.ContentProvider:PreloadAsync(sounds,callback)for _,s in ipairs(sounds)do s.IsLoaded=soundReady;callback(s.SoundId,soundReady and Enum.AssetFetchStatus.Success or Enum.AssetFetchStatus.Failure)end end
- local screen=Instance.new('ScreenGui');screen.Parent=playerGui;local event=signal()
+ local car=Instance.new('Model');car.Parent=workspace;car:SetAttribute('DriverId',player.UserId);car:SetAttribute('DriveEpoch',77)
+ local body=Instance.new('Part');body.Name='Body';body.Position=V.new(450,2,0);body.Parent=car;car.PrimaryPart=body
+ local camera=Instance.new('Camera');camera.ViewportSize=Vector2.new(1280,720);workspace.CurrentCamera=camera
+ local function follow()camera.CFrame=CF.lookAt(body.Position+V.new(0,15,-25),body.Position)end;follow()
+ local screen=Instance.new('ScreenGui');screen.AbsoluteSize=Vector2.new(1280,720);screen.Parent=playerGui;local event=signal()
  require('ConeFeedback').start(screen,{OnClientEvent=event})
  local sound=services.SoundService:FindFirstChild('Steal60ConeCoin')
- event:Fire(V.new(450,2,3));local popup=playerGui:FindFirstChild('Steal60ConeReward')
- check(popup and popup.RewardAmount.Text=='+1 $'and popup.StudsOffsetWorldSpace.Y==6,'server-confirmed cone hit commands a rising dollar above its world position')
- check(sound.IsPlaying and sound.Volume==.10 and not sound.Looped,'coin feedback uses one quiet one-shot sound')
- check(not popup.Adornee.CanCollide and popup.Adornee.Transparency==1,'local popup anchor cannot affect driving or physics')
- local amount=0;for _,item in ipairs(playerGui:GetChildren())do if item.Name=='Steal60ConeReward'then amount+=1 end end
- event:Fire('forged');local after=0;for _,item in ipairs(playerGui:GetChildren())do if item.Name=='Steal60ConeReward'then after+=1 end end
- check(after==amount,'invalid popup payloads are ignored')
- for i=1,20 do event:Fire(V.new(450+i,2,3))end
- amount=0;for _,item in ipairs(playerGui:GetChildren())do if item.Name=='Steal60ConeReward'then amount+=1 end end
- check(amount==16,'a dense row of cones has a bounded popup count')
+ event:Fire(body.Position,car)
+ local popup=screen:FindFirstChild('Steal60ConeReward',true)or playerGui:FindFirstChild('Steal60ConeReward')
+ check(popup and(popup:IsA('TextLabel')and popup.Text or popup.RewardAmount.Text)=='+1 $','server-confirmed cone hit produces its dollar amount')
+ check(sound.IsPlaying and sound.Volume==.10 and not sound.Looped,'coin feedback retains one quiet one-shot sound')
+ local function screenPoint()
+  if popup:IsA('TextLabel')then return Vector2.new(popup.Position.X.Offset,popup.Position.Y.Offset)end
+  local p=camera:WorldToViewportPoint(popup.Adornee.Position+popup.StudsOffsetWorldSpace);return Vector2.new(p.X,p.Y)
+ end
+ local startY=screenPoint().Y
+ for i=1,6 do
+  testClock=8000+i*.1;body.Position=V.new(450+84*i*.1,2,0);follow();services.RunService.RenderStepped:Fire(.1)
+  local p=screenPoint()
+  check(p.X>=60 and p.X<=1220 and p.Y>=38 and p.Y<=682,'top-speed income stays on-screen while the car leaves the cone behind')
+  check(math.abs(p.X-640)<.001,'reward follows the exact car rather than its old impact position')
+ end
+ check(screenPoint().Y<startY-30,'the car-following dollar visibly rises during its lifetime')
+ body.Parent=nil;services.RunService.RenderStepped:Fire(.05)
+ check(popup.Parent and screenPoint().X>=60,'temporarily missing car geometry keeps the short-lived reward visible')
+ body.Parent=car
+ local function count()local n=0;for _,item in ipairs(playerGui:GetDescendants())do if item.Name=='Steal60ConeReward'then n+=1 end end;return n end
+ local amount=count();event:Fire('forged');check(count()==amount,'invalid popup payloads are ignored')
+ for i=1,20 do event:Fire(V.new(450+i,2,3),car)end
+ check(count()==16,'a dense row of cones has a bounded popup count')
  for _,fn in ipairs(timers)do fn()end
- check(not playerGui:FindFirstChild('Steal60ConeReward')and not workspace:FindFirstChild('Steal60ConeRewardAnchor'),'expiry clears every local popup and anchor')
+ check(count()==0 and not workspace:FindFirstChild('Steal60ConeRewardAnchor'),'expiry removes popups without leaving 3D impact anchors')
  screen:Destroy();check(not sound.Parent,'GUI destruction stops and removes the coin sound')
- soundReady=false;screen=Instance.new('ScreenGui');screen.Parent=playerGui;event=signal();require('ConeFeedback').start(screen,{OnClientEvent=event})
- event:Fire(V.new(450,2,3));sound=services.SoundService:FindFirstChild('Steal60ConeCoin')
- check(not sound.IsPlaying and playerGui:FindFirstChild('Steal60ConeReward'),'unavailable audio leaves the reward popup working without substitute sounds')
- screen:Destroy();services.ContentProvider.PreloadAsync=oldPreload;task.delay=oldDelay
+ soundReady=false;screen=Instance.new('ScreenGui');screen.AbsoluteSize=Vector2.new(1280,720);screen.Parent=playerGui;event=signal();require('ConeFeedback').start(screen,{OnClientEvent=event})
+ event:Fire(body.Position,car);sound=services.SoundService:FindFirstChild('Steal60ConeCoin')
+ check(not sound.IsPlaying and count()==1,'unavailable audio leaves the reward popup working without substitute sounds')
+ screen:Destroy();car:Destroy();camera:Destroy();workspace.CurrentCamera=oldCamera;services.ContentProvider.PreloadAsync=oldPreload;task.delay=oldDelay;testClock=oldClock
  local accepted=0;require('SecurityService').wrap('ConeReward',function()accepted+=1 end)(player,V.new(450,2,3))
  check(accepted==0,'the server-only feedback remote has no accepted client minting command')
 end
-print('PASS: cone feedback world position/rise/fade commands, quiet sound gating, popup bounds/expiry/GUI cleanup and rejected client minting (no audio audition/rendering)')
+print('PASS: confirmed cone income follows its car at 84 studs/sec, stays on-screen, rises, survives missing geometry and retains bounded quiet sound/expiry/cleanup (camera/GUI doubles; no audio audition/rendering)')
 
 do
  local Layout=require('HUDLayout');local Track=require('TrackLayout');local oldStarted=Layout.started;Layout.started=nil

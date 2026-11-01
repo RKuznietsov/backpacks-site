@@ -1,10 +1,10 @@
-Final XML SHA-256: 993c23ad18d0445551980103524333dd8d71e1d9598df16e03798acaa146d181
-XML instances: 134 script sources: 123
+Final XML SHA-256: 8b5cb43e2cbb5de149c2d5c3c3e689b14893f526f3aba5d4684139d53236d0ee
+XML instances: 135 script sources: 124
 Baseline SHA-256: c9f96485fd61b68ae4d576ed57f9fb9287015692969f7c8a9878c8c81c65102f
 PASS: v65 durable storage, payment processing, skill predicate and catalog sources byte-identical
 PASS: installer paths, infinite bounds, audio ingress and reset configuration
 PASS: 1332 unique translations, format tokens, American English and no numeric require/loadstring
-Compiled 19 KLOC into 1185 KB bytecode (read 0.00s, parse 0.02s, compile 0.03s)
+Compiled 19 KLOC into 1194 KB bytecode (read 0.00s, parse 0.02s, compile 0.03s)
 PASS: purchase compatibility, delivery effects, skill policy, personal reset
 PASS: 10,000 district indices and five-theme selection
 PASS: RU/EN immediate + deferred events, dynamic text, streamed prompts/signs
@@ -24,6 +24,7 @@ PASS: Russian inflection, English singulars, American English and unified glossa
 PASS: adaptive-scale geometry, analog control mapping and notification keys (no hardware rendering)
 PASS: actual pet-license sanitization; 10 pets, 61 hero entries, 5 auras; separate paid mastery
 AUDIT FINAL ASSERTIONS: 324822
+PASS: actual full-car cone sweep at five headings, reverse bumper, both complete flanks, lateral motion, fast tunneling, gentle touch, duplicate claim and near/height/stationary rejection (assembly doubles)
 PASS: compact measured shelf labels, overlap rules, unobscured leaderboard geometry, columns and literal Unicode names
 PASS: balanced early police/repair scheduling, grounded district signs, per-viewer facing and dressed rounded/R15 actor paths
 PASS: quiet driver-only engine lifecycle, police/death sound suppression and actual handbook-header construction; rendering/assets still require Studio
@@ -33,7 +34,7 @@ PASS: coin cosmetics, quadratic mastery pacing, modest aura and all walking pet 
 PASS: real CosmeticService purchases/save snapshots, coin-only rejection, worker skill, paint/aura equip, license, mastery costs and duplicate/insufficient-funds guards
 PASS: +1 speed, five-diamond prices, own-avatar mastery, distinct benefits with both currencies, one-card UI and mixed/shared upgrade saves
 [mock warn]	[Steal60 hack] Helper return failed; active puzzle remains available
-[mock warn]	[Steal60 hack] Vehicle handoff failed: /tmp/steal60-v66-y87lc0l5/run.luau:23807: injected rig construction failure
+[mock warn]	[Steal60 hack] Vehicle handoff failed: /tmp/steal60-v66-tmq_vkje/run.luau:23983: injected rig construction failure
 PASS: real client/server pins, memory, wires and dial; lost commands and terminal outcomes, deduplication, rig/helper failures, timeout/lease/GUI cleanup; NPC cleanup contracts and bounded siren
 [Steal60/Drive v66] Native joystick, verified first seating and server validation
 [Steal60/Drive v66] Native joystick, verified first seating and server validation
@@ -41,13 +42,16 @@ PASS: 150-car grounding, both PlayerModule API shapes, first-seat joystick with 
 PASS: actual factory atomic/tag setup and pool reuse, two client contexts, late label attributes/body/anchor repair, camera-independent range, special banner retention, RU/EN and label cleanup (API doubles; no native streaming/rendering)
 PASS: immediate server-created dressed vendors in three salons, one delayed template request per role, deterministic clones, API-failure fallback, atomic models, feet placement and removed-salon cleanup (API doubles)
 PASS: actual main/economy/atelier repaints retain scroll for 20 repeated upgrades, explicit automatic-canvas clamp reproduction, temporary data failure retention, tab reset, content shrink and coalesced refresh (layout API double)
-PASS: cone feedback world position/rise/fade commands, quiet sound gating, popup bounds/expiry/GUI cleanup and rejected client minting (no audio audition/rendering)
+PASS: confirmed cone income follows its car at 84 studs/sec, stays on-screen, rises, survives missing geometry and retains bounded quiet sound/expiry/cleanup (camera/GUI doubles; no audio audition/rendering)
 PASS: actual large development banner at district 6+, 1.5-second duration, ten-second repetition, cross-district cadence and exit suppression (GUI/time doubles)
+PASS: car-relative reward placement stays within five canvas sizes, DPI/inset variants, off-screen/behind-camera points and every rise/lane phase (projection geometry only)
+PASS: bounded 25-tile ocean and 56 subtle crests, native part size/collision limits, one thousand district moves with 4096-stud horizon coverage, animated ripples and full cleanup (no water shader/rendering)
+PASS: actual core and five district builds retain 48/90-stud boundaries while hiding side/start walls and outer rails; maritime haze keeps streaming distances unchanged (geometry/property doubles)
 PASS: full upgrade/shop and read-only tabs render under native color contracts; five modal types stay inside the actual GUI canvas under DPI/insets/resizing, without scale feedback
 PASS: actual atelier categories, first coin worker, responsive one-to-four-column grid, card/button bounds and mastery shortcut; 3D previews/async loops explicitly doubled
 PASS: actual preview posing for R6, modern AnimationConstraint, attachment-only and streamed rigs; missing/embedded/tiny heads, accessory repositioning, idempotency and full-head portrait frustum (synthetic rigs)
 [Steal60] Main запущен
 [Steal60/Delivery] Сдача автомобиля без водителя: рамка парковки, остановка 0.65 сек
 PASS: actual Main + DeliveryService + HeistService + TutorialService + loot/catalog logic: four deliveries (seated and exited), rewards, XP/level, shelves, helper, lesson, replay and invalid-delivery rejection
-FINAL COMBINED ASSERTIONS: 337072
+FINAL COMBINED ASSERTIONS: 364744
 NOT RUN: Roblox Engine/Studio rendering, physics, live DataStore and Marketplace integration.

@@ -7496,11 +7496,24 @@ function M.begin(scroll,key)
  end
 end
 return M
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_v66_ConeFeedback"><Properties><string name="Name">ConeFeedback</string><ProtectedString name="Source"><![CDATA[-- Only server-confirmed cone hits reach this visual/audio controller.
-local M={ASSET='rbxassetid://138097048',VOLUME=.10,LIFETIME=1.05}
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_v66_ConeFeedback"><Properties><string name="Name">ConeFeedback</string><ProtectedString name="Source"><![CDATA[-- Server-confirmed income follows the car in screen space. A fast drive cannot
+-- leave the dollar behind at the cone, or move it beyond the screen edge.
+local M={ASSET='rbxassetid://138097048',VOLUME=.10,LIFETIME=1.2}
+local lanes={0,-1,1}
+function M.position(point,viewport,canvas,progress,lane)
+ local x,y=.5,.66
+ if point and point.Z>0 and viewport.X>0 and viewport.Y>0 then x=point.X/viewport.X;y=point.Y/viewport.Y end
+ local spread=math.min(88,canvas.X*.20)
+ local marginX=math.min(60,canvas.X*.25);local marginY=math.min(38,canvas.Y*.18)
+ return Vector2.new(math.clamp(x*canvas.X+(lane or 0)*spread,marginX,canvas.X-marginX),
+  math.clamp(y*canvas.Y-50-92*progress,marginY,canvas.Y-marginY))
+end
 function M.start(gui,remote)
- local Sound=game:GetService('SoundService');local Tween=game:GetService('TweenService')
- local player=game:GetService('Players').LocalPlayer;local popups={};local links={};local live=true;local ready=false;local denied=false;local lastSound=-math.huge
+ local Sound=game:GetService('SoundService');local Run=game:GetService('RunService')
+ local State=require(script.Parent.DriveState)
+ local player=game:GetService('Players').LocalPlayer;local popups={};local links={};local live=true;local ready=false;local denied=false;local lastSound=-math.huge;local sequence=0
+ local overlay=Instance.new('Frame');overlay.Name='Steal60ConeRewards';overlay.Size=UDim2.fromScale(1,1)
+ overlay.BackgroundTransparency=1;overlay.Active=false;overlay.ZIndex=150;overlay.Parent=gui
  local sound=Instance.new('Sound');sound.Name='Steal60ConeCoin';sound.SoundId=M.ASSET;sound.Volume=M.VOLUME;sound.Looped=false;sound.Parent=Sound
  links[#links+1]=sound.Loaded:Connect(function()if live and not denied then ready=true end end)
  task.spawn(function()
@@ -7510,29 +7523,117 @@ function M.start(gui,remote)
   if live then ready=ok and not denied and sound.IsLoaded end
  end)
  local function remove(entry)
-  if entry.billboard then entry.billboard:Destroy();entry.billboard=nil end
-  if entry.anchor then entry.anchor:Destroy();entry.anchor=nil end
+  if entry.label then entry.label:Destroy();entry.label=nil end
   local i=table.find(popups,entry);if i then table.remove(popups,i)end
  end
- links[#links+1]=remote.OnClientEvent:Connect(function(position)
+ local function render(entry)
+  local text=entry.label;if not text then return end
+  local camera=workspace.CurrentCamera;local viewport=camera and camera.ViewportSize or Vector2.new(1280,720)
+  local canvas=overlay.AbsoluteSize
+  if canvas.X<=0 or canvas.Y<=0 then canvas=gui.AbsoluteSize end
+  if canvas.X<=0 or canvas.Y<=0 then canvas=viewport end
+  local car=entry.car
+  if not car then car=State.current(player);entry.car=car;entry.epoch=car and car:GetAttribute('DriveEpoch')end
+  local body=car and car.Parent and car:GetAttribute('DriveEpoch')==entry.epoch and(car:FindFirstChild('Body',true)or car.PrimaryPart)
+  if body and body:IsDescendantOf(car)and body:IsDescendantOf(workspace)and camera then
+   entry.point=camera:WorldToViewportPoint(body.Position)
+  end
+  local age=math.max(0,os.clock()-entry.at);local progress=math.clamp(age/M.LIFETIME,0,1)
+  local point=M.position(entry.point,viewport,canvas,progress,entry.lane)
+  text.Position=UDim2.fromOffset(point.X,point.Y)
+  text.TextTransparency=math.clamp((age-.65)/.55,0,1)
+  text.TextStrokeTransparency=.15+.85*text.TextTransparency
+ end
+ links[#links+1]=Run.RenderStepped:Connect(function()
+  for i=#popups,1,-1 do local entry=popups[i]
+   if os.clock()-entry.at>=M.LIFETIME then remove(entry)else render(entry)end
+  end
+ end)
+ links[#links+1]=remote.OnClientEvent:Connect(function(position,car)
   if not live or typeof(position)~='Vector3'or position.X~=position.X or position.Y~=position.Y or position.Z~=position.Z or position.Magnitude>10000000 then return end
   if #popups>=16 then remove(popups[1])end
-  local anchor=Instance.new('Part');anchor.Name='Steal60ConeRewardAnchor';anchor.Size=Vector3.new(.1,.1,.1)
-  anchor.Anchored=true;anchor.Transparency=1;anchor.CanCollide=false;anchor.CanTouch=false;anchor.CanQuery=false;anchor.CFrame=CFrame.new(position);anchor.Parent=workspace
-  local bb=Instance.new('BillboardGui');bb.Name='Steal60ConeReward';bb.Adornee=anchor;bb.AlwaysOnTop=true
-  bb.Size=UDim2.fromOffset(96,44);bb.StudsOffsetWorldSpace=Vector3.new(0,2,0);bb.MaxDistance=160;bb.Parent=player:WaitForChild('PlayerGui')
-  local text=Instance.new('TextLabel');text.Name='RewardAmount';text.Size=UDim2.fromScale(1,1);text.BackgroundTransparency=1
-  text.Text='+1 $';text.Font=Enum.Font.GothamBlack;text.TextSize=30;text.TextColor3=Color3.fromRGB(253,224,116)
-  text.TextStrokeColor3=Color3.fromRGB(32,52,36);text.TextStrokeTransparency=.15;text.Parent=bb
-  local entry={anchor=anchor,billboard=bb};popups[#popups+1]=entry
-  Tween:Create(bb,TweenInfo.new(M.LIFETIME,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{StudsOffsetWorldSpace=Vector3.new(0,6,0)}):Play()
-  Tween:Create(text,TweenInfo.new(.55,Enum.EasingStyle.Quad,Enum.EasingDirection.In,0,false,.5),{TextTransparency=1,TextStrokeTransparency=1}):Play()
+  if typeof(car)~='Instance'or not car:IsA('Model')or car:GetAttribute('DriverId')~=player.UserId then car=State.current(player)end
+  sequence+=1
+  local text=Instance.new('TextLabel');text.Name='Steal60ConeReward';text.AnchorPoint=Vector2.new(.5,.5)
+  text.Size=UDim2.fromOffset(112,56);text.BackgroundTransparency=1;text.Active=false;text.ZIndex=151
+  text.Text='+1 $';text.Font=Enum.Font.GothamBlack;text.TextSize=36;text.TextColor3=Color3.fromRGB(253,224,116)
+  text.TextStrokeColor3=Color3.fromRGB(32,52,36);text.TextStrokeTransparency=.15;text.Parent=overlay
+  local entry={label=text,car=car,epoch=car and car:GetAttribute('DriveEpoch'),at=os.clock(),lane=lanes[(sequence-1)%3+1]};popups[#popups+1]=entry
+  render(entry)
   if ready and os.clock()-lastSound>=.08 then lastSound=os.clock();sound.TimePosition=0;sound:Play()end
   task.delay(M.LIFETIME,function()remove(entry)end)
  end)
  gui.Destroying:Connect(function()
   live=false;for _,link in ipairs(links)do link:Disconnect()end
-  while #popups>0 do remove(popups[1])end;sound:Stop();sound:Destroy()
+  while #popups>0 do remove(popups[1])end;overlay:Destroy();sound:Stop();sound:Destroy()
+ end)
+end
+return M
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_v66_OceanBackdrop"><Properties><string name="Name">OceanBackdrop</string><ProtectedString name="Source"><![CDATA[-- A bounded local ocean follows the view along the endless road. Tiles extend
+-- far past the map fog; no growing server terrain or collision geometry is added.
+local M={TILE_SIZE=2048,RADIUS=2,LEVEL=-2.35}
+local started=setmetatable({},{__mode='k'})
+local C=Color3.fromRGB
+function M.start(gui)
+ if started[gui]then return end;started[gui]=true
+ local Run=game:GetService('RunService');local Settings=require(script.Parent.Config.Settings)
+ local player=game:GetService('Players').LocalPlayer
+ local folder=Instance.new('Folder');folder.Name='Steal60OceanBackdrop';folder.Parent=workspace
+ local tiles,crests={},{};local links={};local alive=true;local centerX,centerZ;local crestColumn;local elapsed=0
+ local function part(name,size,color,material)
+  local p=Instance.new('Part');p.Name=name;p.Size=size;p.Color=color;p.Material=material
+  p.Anchored=true;p.CanCollide=false;p.CanTouch=false;p.CanQuery=false;p.CastShadow=false;p.Parent=folder
+  return p
+ end
+ for x=-M.RADIUS,M.RADIUS do for z=-M.RADIUS,M.RADIUS do
+  local tile=part('OceanSurface',Vector3.new(M.TILE_SIZE,.25,M.TILE_SIZE),C(48,126,150),Enum.Material.Foil)
+  tile.Reflectance=.12;tiles[#tiles+1]={part=tile,x=x,z=z}
+ end end
+ for _,side in ipairs({-1,1})do for row=0,3 do for column=-3,3 do
+  local crest=part('OceanRipple',Vector3.new(.035,18,1.1),C(162,222,228),Enum.Material.SmoothPlastic)
+  crest.Shape=Enum.PartType.Cylinder;crest.Transparency=.9;crest.Reflectance=.06
+  crests[#crests+1]={part=crest,side=side,row=row,column=column}
+ end end end
+ local function viewPosition()
+  local camera=workspace.CurrentCamera;if camera then return camera.CFrame.Position end
+  local root=player.Character and player.Character:FindFirstChild('HumanoidRootPart');return root and root.Position or Vector3.zero
+ end
+ local function update()
+  local position=viewPosition()
+  local x=math.floor(position.X/M.TILE_SIZE+.5);local z=math.floor(position.Z/M.TILE_SIZE+.5)
+  if x~=centerX or z~=centerZ then
+   centerX,centerZ=x,z
+   for _,entry in ipairs(tiles)do
+    entry.part.CFrame=CFrame.new((x+entry.x)*M.TILE_SIZE,M.LEVEL-.125,(z+entry.z)*M.TILE_SIZE)
+   end
+  end
+  local column=math.floor(position.X/128)
+  if column~=crestColumn then
+   crestColumn=column
+   for _,entry in ipairs(crests)do
+    local cell=column+entry.column
+    local seed=math.sin(cell*12.9898+entry.row*78.233+entry.side*19.19)*43758.5453;seed-=math.floor(seed)
+    entry.x=cell*128+seed*70;entry.seed=seed
+    entry.z=Settings.Track.GroundHalfWidth+18+entry.row*115+seed*38
+    entry.part.Size=Vector3.new(.035,10+seed*18,.7+seed*.8)
+   end
+  end
+  local now=os.clock()
+  for _,entry in ipairs(crests)do
+   local phase=(now*.045+entry.seed)%1
+   local pulse=math.sin(phase*math.pi)
+   entry.part.Transparency=.98-.20*pulse
+   entry.part.CFrame=CFrame.new(entry.x+phase*4,M.LEVEL+.025+math.sin(now*.6+entry.seed*6)*.012,
+    entry.side*(entry.z-phase*9))*CFrame.Angles(0,entry.side*.09,math.pi/2)
+  end
+ end
+ update()
+ links[#links+1]=Run.Heartbeat:Connect(function(dt)
+  if not alive then return end;elapsed+=dt;if elapsed<.1 then return end;elapsed=0;update()
+ end)
+ gui.Destroying:Connect(function()
+  alive=false;for _,link in ipairs(links)do link:Disconnect()end
+  folder:Destroy();started[gui]=nil
  end)
 end
 return M
@@ -7583,6 +7684,7 @@ startOptional('MusicDirector',gui)
 startOptional('LanguageController',gui)
 startOptional('VehicleLabels',gui)
 startOptional('ConeFeedback',gui,ReplicatedStorage:WaitForChild('Remotes'):WaitForChild('ConeReward'))
+startOptional('OceanBackdrop',gui)
 startOptional('ClientPerformance')
 startOptional('MarqueeController')
 local DriveState=require(Shared:WaitForChild('DriveState'))
@@ -11468,10 +11570,10 @@ function Builder.build(index)
         local z = side * (GROUND_HALF - 4)
         local wall = part(model,"SideMapBoundary",Vector3.new(x2-x0,48,4),
             Vector3.new((x0+x2)/2,24,z),Color3.fromRGB(95,120,138),Enum.Material.SmoothPlastic)
-        wall.Transparency=.62
+        wall.Transparency=1;wall.CanCollide=true
         wall.CastShadow=false
         part(decor,"BorderNeonRail",Vector3.new(x2-x0,.6,1),
-            Vector3.new((x0+x2)/2,3.7,z-side),Color3.fromRGB(98,216,223),Enum.Material.Neon,false)
+            Vector3.new((x0+x2)/2,3.7,z-side),Color3.fromRGB(98,216,223),Enum.Material.Neon,false).Transparency=1
     end
 
 	-- перекрёсток
@@ -11623,13 +11725,14 @@ function TrackBuilder.init()
         local edgeZ = side * (T.GroundHalfWidth - 4)
         local wall = P.part(core, "SideMapBoundary", Vector3.new(len, 48, 4),
             Vector3.new(cx, 24, edgeZ), Color3.fromRGB(95, 120, 138), Enum.Material.SmoothPlastic)
-        wall.Transparency = .62
+        wall.Transparency = 1;wall.CanCollide=true
         wall.CastShadow = false
         P.part(core, "BorderNeonRail", Vector3.new(len, .6, 1.0),
-            Vector3.new(cx, 3.7, edgeZ - side * 1.0), Color3.fromRGB(98, 216, 223), Enum.Material.Neon, false)
+            Vector3.new(cx, 3.7, edgeZ - side * 1.0), Color3.fromRGB(98, 216, 223), Enum.Material.Neon, false).Transparency=1
     end
-    P.part(core, "StartMapBoundary", Vector3.new(4, 48, T.GroundHalfWidth * 2),
-        Vector3.new(x0-4,24,0),Color3.fromRGB(96,120,139), Enum.Material.SmoothPlastic).Transparency=.65
+    local startBoundary=P.part(core, "StartMapBoundary", Vector3.new(4, 48, T.GroundHalfWidth * 2),
+        Vector3.new(x0-4,24,0),Color3.fromRGB(96,120,139), Enum.Material.SmoothPlastic)
+    startBoundary.Transparency=1;startBoundary.CastShadow=false;startBoundary.CanCollide=true
 
     -- PERMANENT map edges independent of streamed districts. Long Roblox Parts
     -- are split into 650-stud sections; safety floor catches accidental falls.
@@ -12774,51 +12877,60 @@ local function sweptBlock(fromPos,toPos,obstacle)
     return tMin<=1 and tMax>=0
 end
 
--- Light temporary cones are toppled by a nearby moving car instead of forming a wall.
-local function knockCones(fromPos,toPos,forward,speed,halfLength,halfWidth,player)
-    if math.abs(speed)<7 then return end
-    local segment=Vector3.new(toPos.X-fromPos.X,0,toPos.Z-fromPos.Z)
-    for _,cone in ipairs(coneCache) do
-        local point=Vector3.new(cone.Position.X,0,cone.Position.Z)
-        local direction=horizontal(forward)
-        local from=Vector3.new(fromPos.X,0,fromPos.Z)+direction*halfLength
-        point=point-direction*.35
-        local alpha=segment.Magnitude>.001 and math.clamp((point-from):Dot(segment)/(segment.Magnitude^2),0,1)or 0
-        local nearest=from+segment*alpha
-        if cone:IsA("BasePart") and cone.Parent and cone.Anchored and
-            math.abs((point-nearest):Dot(direction))<1.6 and
-            math.abs((point-nearest):Dot(Vector3.new(-direction.Z,0,direction.X)))<halfWidth+.85 and
-            math.abs(cone.Position.Y-toPos.Y)<5 then
-            -- One launch per cone, rate-limited by changing Anchored immediately.
-            local original=cone.CFrame;local token=(cone:GetAttribute("KnockdownSerial")or 0)+1;cone:SetAttribute("KnockdownSerial",token)
-            cone.Anchored=false
-            -- Only the validated, occupied server ride reaches this branch. Each
-            -- newly toppled cone pays exactly one dollar, without income multipliers.
-            if player and player.Parent and player:GetAttribute('DataLoaded')==true and player:GetAttribute('GameplayReady')==true then
-                if require(script.Parent.DataService).addMoney(player,1,true)then Net.ConeReward:FireClient(player,original.Position)end
-            end
-            pcall(function()cone:SetNetworkOwner(nil)end)
-            cone.CanCollide=true
-            cone.CanTouch=true
-            local mass=math.max(.1,cone.AssemblyMass)
-            local lateral=Vector3.new(-direction.Z,0,direction.X)
-            local side=(point-nearest):Dot(lateral)>=0 and 1 or -1
-            local impact=math.clamp(math.abs(speed),7,84)
-            -- Move the welded assembly clear of the bumper immediately; physics continues server-side.
-            cone.CFrame=cone.CFrame+direction*2.2+lateral*side*1.6+Vector3.new(0,.8,0)
-            cone.AssemblyLinearVelocity=direction*(38+impact*.72)+lateral*side*(24+impact*.22)+Vector3.new(0,22+impact*.18,0)
-            cone.AssemblyAngularVelocity=Vector3.new(8+impact*.12,side*12,side*(15+impact*.24))
-            local sparks=cone:FindFirstChild("ImpactSparks");if sparks then sparks:Emit(math.floor(8+impact*.15))end
-            task.delay(3.5,function()
-                if cone.Parent and cone:GetAttribute("KnockdownSerial")==token then
-                    cone.Anchored=true
-                    cone.CFrame=original;cone.AssemblyLinearVelocity=Vector3.zero;cone.AssemblyAngularVelocity=Vector3.zero
-                    cone.CanCollide=false
-                    cone.CanTouch=false
-                end
-            end)
-        end
+-- Sweep the whole oriented footprint, including the rear and both sides.
+local function coneContact(from,to,point,direction,halfLength,halfWidth,radius)
+ local lateral=Vector3.new(-direction.Z,0,direction.X)
+ local relative=point-from;local delta=to-from;local lo,hi=0,1
+ local f,df=relative:Dot(direction),-delta:Dot(direction)
+ local extent=halfLength+radius
+ if math.abs(df)<.00001 then if math.abs(f)>extent then return end
+ else
+  local x,y=(-extent-f)/df,(extent-f)/df;if x>y then x,y=y,x end
+  lo=math.max(lo,x);hi=math.min(hi,y);if lo>hi then return end
+ end
+ local r,dr=relative:Dot(lateral),-delta:Dot(lateral);extent=halfWidth+radius
+ if math.abs(dr)<.00001 then if math.abs(r)>extent then return end
+ else
+  local x,y=(-extent-r)/dr,(extent-r)/dr;if x>y then x,y=y,x end
+  lo=math.max(lo,x);hi=math.min(hi,y);if lo>hi then return end
+ end
+ return math.clamp(lo,0,1)
+end
+local function knockCones(fromPos,toPos,forward,speed,halfLength,halfWidth,player,car,velocity)
+ if math.abs(speed)<.5 then return end
+ local from=Vector3.new(fromPos.X,0,fromPos.Z);local to=Vector3.new(toPos.X,0,toPos.Z);local segment=to-from
+ local direction=horizontal(forward);local lateral=Vector3.new(-direction.Z,0,direction.X)
+ local motion=typeof(velocity)=='Vector3'and Vector3.new(velocity.X,0,velocity.Z)or segment
+ motion=motion.Magnitude>.001 and motion.Unit or direction*(speed<0 and -1 or 1)
+ for _,cone in ipairs(coneCache)do
+  if not cone:IsA('BasePart')or not cone.Parent or not cone.Anchored or math.abs(cone.Position.Y-toPos.Y)>=5 then continue end
+  local point=Vector3.new(cone.Position.X,0,cone.Position.Z)
+  local radius=math.clamp(math.max(cone.Size.X,cone.Size.Z)*.5,.35,1.2)
+  local alpha=coneContact(from,to,point,direction,halfLength,halfWidth,radius)
+  if alpha then
+   local relative=point-(from+segment*alpha);local side=relative:Dot(lateral)>=0 and 1 or -1
+   local normal
+   if math.abs(relative:Dot(lateral))/(halfWidth+radius)>=math.abs(relative:Dot(direction))/(halfLength+radius)then normal=lateral*side
+   else normal=direction*(relative:Dot(direction)>=0 and 1 or -1)end
+   -- Changing Anchored claims the cone before any second vehicle can earn it.
+   local original=cone.CFrame;local token=(cone:GetAttribute('KnockdownSerial')or 0)+1;cone:SetAttribute('KnockdownSerial',token);cone.Anchored=false
+   if player and player.Parent and player:GetAttribute('DataLoaded')==true and player:GetAttribute('GameplayReady')==true then
+    if require(script.Parent.DataService).addMoney(player,1,true)then Net.ConeReward:FireClient(player,original.Position,car)end
+   end
+   pcall(function()cone:SetNetworkOwner(nil)end);cone.CanCollide=true;cone.CanTouch=true
+   local impact=math.clamp(math.abs(speed),.5,84)
+   cone.CFrame=cone.CFrame+motion*1.5+normal*.8+lateral*side*1.3+Vector3.new(0,.8,0)
+   cone.AssemblyLinearVelocity=motion*(18+impact*.6)+normal*(12+impact*.4)+lateral*side*(10+impact*.4)+Vector3.new(0,16+impact*.16,0)
+   cone.AssemblyAngularVelocity=Vector3.new(8+impact*.12,side*12,side*(15+impact*.24))
+   local sparks=cone:FindFirstChild('ImpactSparks');if sparks then sparks:Emit(math.floor(8+impact*.15))end
+   task.delay(3.5,function()
+    if cone.Parent and cone:GetAttribute('KnockdownSerial')==token then
+     cone.Anchored=true;cone.CFrame=original;cone.AssemblyLinearVelocity=Vector3.zero;cone.AssemblyAngularVelocity=Vector3.zero
+     cone.CanCollide=false;cone.CanTouch=false
     end
+   end)
+  end
+ end
 end
 
 local function isRoadBlocked(current,candidate)
@@ -13186,8 +13298,9 @@ function DriveService.init()
             if s.coneClock>=1/30 then
                 s.coneClock=0
                 local velocity=s.body.AssemblyLinearVelocity;local forward=s.body.CFrame.RightVector
-                if valid and velocity:Dot(forward)>5 then
-                    knockCones(s.lastConePos,position,forward,velocity.Magnitude,(car:GetAttribute('DesignLength')or s.body.Size.X/.84)*.5,(car:GetAttribute('DesignWidth')or s.body.Size.Z/.73)*.5,owner)
+                local travel=Vector3.new(velocity.X,0,velocity.Z)
+                if valid and travel.Magnitude>=.5 then
+                    knockCones(s.lastConePos,position,forward,velocity.Magnitude,(car:GetAttribute('DesignLength')or s.body.Size.X/.84)*.5,(car:GetAttribute('DesignWidth')or s.body.Size.Z/.73)*.5,owner,car,travel)
                 end
                 s.lastConePos=position
             end
@@ -16181,13 +16294,13 @@ function Art.setupLighting()
     Lighting.EnvironmentSpecularScale=.96
     Lighting.Ambient=C(138,144,152)
     Lighting.OutdoorAmbient=C(176,180,184)
-    Lighting.FogColor=C(170,180,192)
+    Lighting.FogColor=C(169,201,212)
     Lighting.FogStart=300
     Lighting.FogEnd=1080
     Lighting.ShadowSoftness=.42
     local at=Lighting:FindFirstChild("S60_Atmosphere") or Instance.new("Atmosphere")
     at.Name="S60_Atmosphere";at.Density=.15;at.Offset=.04;at.Haze=1.06;at.Glare=.11
-    at.Color=C(206,213,224);at.Decay=C(243,191,151);at.Parent=Lighting
+    at.Color=C(202,224,230);at.Decay=C(240,204,172);at.Parent=Lighting
     local cc=Lighting:FindFirstChild("S60_ColorGrade") or Instance.new("ColorCorrectionEffect")
     cc.Name="S60_ColorGrade";cc.Brightness=.01;cc.Contrast=.045;cc.Saturation=.02
     cc.TintColor=C(255,247,238);cc.Parent=Lighting

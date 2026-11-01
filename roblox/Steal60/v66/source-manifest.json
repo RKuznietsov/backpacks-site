@@ -109,7 +109,7 @@
   },
   {
     "script": "ClientMain",
-    "sha256": "906ee92de1765317d915eea763c55641114f478e102e867898887f66b790e061",
+    "sha256": "7ac241e3b46ff667be96c0ab1fcebb7807b84491affe83ff096bcea3d1411757",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -139,7 +139,7 @@
   },
   {
     "script": "ConeFeedback",
-    "sha256": "127ad7e5b53d91b767c9976c3ba69f3721a6ad68b905e2eeb1d4d8899070907a",
+    "sha256": "a27c727f1ec79d3d10cba3815bc318a575b6d1f1c69d1a53f0a642fd577052b3",
     "v65_status": "added",
     "initial_v66_status": "added"
   },
@@ -187,7 +187,7 @@
   },
   {
     "script": "DistrictBuilder",
-    "sha256": "edf788e7f295c46cf8ea14833d500361343d8adbcf328360db901008b2f1baa3",
+    "sha256": "66278785578a16ecdff771ec3137b1aca2bb290483777d8cc55adf98ccacf974",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -217,7 +217,7 @@
   },
   {
     "script": "DriveService",
-    "sha256": "ba0961e6dba7fa215424b0c8b893ac5a1d3c9f4f1efaac702a8919bed09ed8a0",
+    "sha256": "cd833ebdecf2c053bdbdce5f3e0618a3173fbd663564c5865ffd015669087b60",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -432,6 +432,12 @@
     "initial_v66_status": "modified"
   },
   {
+    "script": "OceanBackdrop",
+    "sha256": "73e13ab8fff5d333ad60f1cc79283a669245b943d3b8ea94709a9c0632bf0588",
+    "v65_status": "added",
+    "initial_v66_status": "added"
+  },
+  {
     "script": "OwnerService",
     "sha256": "149bbfe0142c6025e95ed28a807d1608e750c93b6a69359719b4e0bee056dfaf",
     "v65_status": "modified",
@@ -637,9 +643,9 @@
   },
   {
     "script": "TrackBuilder",
-    "sha256": "a024c66d223d4a97296a7ab9e708504a89d6124f3965838d67a720505bb4d35a",
+    "sha256": "0094f7823ccf01dc35ab29305df29677d5f08fb7564422d1be3eab33aee035a9",
     "v65_status": "modified",
-    "initial_v66_status": "unchanged"
+    "initial_v66_status": "modified"
   },
   {
     "script": "TrackLayout",
@@ -733,7 +739,7 @@
   },
   {
     "script": "WorldArtDirector",
-    "sha256": "9787ed3f517e1ca6a20c254a1729c68ada5da6a76454f6d2ef9aa3ef940035d3",
+    "sha256": "10d98b1d62c0a52720b40904769fd21ac6378a3c1adb5490fda31a60e6cccbf2",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   }
