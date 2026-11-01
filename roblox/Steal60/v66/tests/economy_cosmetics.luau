@@ -32,26 +32,29 @@ for _,shape in ipairs({{name='UpperTorso',size=V.new(2,1.6,1)},{name='Torso',siz
  if shape.name~='HumanoidRootPart'then host=Instance.new('Part');host.Name=shape.name;host.Size=shape.size;host.Parent=character end
  local Visuals=require('AuraVisualLibrary');local aura=Visuals.create(root,Config.ById.aura_breeze_coin_v66)
  local count=#character:GetDescendants();local first=aura:FindFirstChild('WindCurl_-1_1').Attachment0.CFrame.Position
+ local shoulder=aura:FindFirstChild('ShoulderWindWake');check(shoulder and math.abs(shoulder.Attachment1.Position.X-shoulder.Attachment0.Position.X)>=2,'wind has the broad shoulder wake silhouette used by the other auras')
+ check(shoulder.Transparency.Keypoints[1].Value<=.5 and shoulder.Transparency.Keypoints[2].Value<=.65,'main wake retains at least half initial opacity instead of becoming nearly invisible')
+ check(aura:FindFirstChild('WindCurl_-1_1').Width0>=.5 and aura:FindFirstChild('WindCurl_-1_1').Transparency.Keypoints[2].Value<=.55,'wind curls are wider and clearly less faded than the previous effect')
  for _,t in ipairs({0,.5,1,5,10})do
   Visuals.step(root,t)
   local beams,trails=0,0
   for _,o in ipairs(aura:GetChildren())do
    check(not o:IsA('ParticleEmitter'),'wind has no concentrated waist smoke emitter')
    if o:IsA('Beam')then
-    beams+=1;check(o.Enabled and o.Segments>=12 and o.LightEmission<.1 and o.Texture:find('smoke_main',1,true),'wind curls use soft low-glow texture at rest')
-    for _,key in ipairs(o.Transparency.Keypoints)do check(key.Value>=.79,'wind curls are substantially more transparent than paid aura trails')end
+    beams+=1;check(o.Enabled and o.Segments>=12 and o.LightEmission>=.25 and o.LightEmission<.5 and o.Texture:find('smoke_main',1,true),'wind curls use a visible soft texture at rest')
+    for _,key in ipairs(o.Transparency.Keypoints)do check(key.Value>=.44,'wind curls keep a translucent surface')end
     local p0=o.Attachment0.CFrame.Position;local p1=p0+o.Attachment0.CFrame.RightVector*o.CurveSize0
     local p3=o.Attachment1.CFrame.Position;local p2=p3-o.Attachment1.CFrame.RightVector*o.CurveSize1
     for j=0,10 do local f=j/10;local point=p0*(1-f)^3+p1*3*(1-f)^2*f+p2*3*(1-f)*f^2+p3*f^3
      check(point.Y>0 and math.abs(point.X)>host.Size.X*.5+.12,'rising wind curls stay outside the torso, above the waist')
     end
    elseif o:IsA('Trail')then
-    trails+=1;check(not o.Enabled and o.Lifetime<1 and o.MaxLength<=12,'wind wake is short and disabled at rest')
+    trails+=1;check(not o.Enabled and o.Lifetime<=1.2 and o.MaxLength<=22,'wind wake matches other ribbon auras and is disabled at rest')
     check(o.Attachment0.Position.Y>0 and o.Attachment1.Position.Y>0,'wake anchors are at the upper back, not the waist')
-    for _,key in ipairs(o.Transparency.Keypoints)do check(key.Value>=.84,'wind wakes remain translucent')end
+    for _,key in ipairs(o.Transparency.Keypoints)do check(key.Value>=.42,'wind wakes remain translucent')end
    end
   end
-  check(beams==8 and trails==2 and #character:GetDescendants()==count,'animation keeps a bounded eight-segment/two-ribbon construction')
+  check(beams==8 and trails==3 and #character:GetDescendants()==count,'animation keeps a bounded eight-segment/three-ribbon construction')
  end
  check((aura:FindFirstChild('WindCurl_-1_1').Attachment0.CFrame.Position-first).Magnitude>.1,'wind curls animate even without character movement')
  root.Position=V.new(3,0,0);Visuals.step(root,10.1)

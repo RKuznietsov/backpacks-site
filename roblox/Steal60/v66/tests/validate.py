@@ -48,7 +48,7 @@ if not a.integration_only:
  assert 'createRoadEvent(s,Schedule.kind(index,cycle))' in sources['RoadChallengeService']
  assert 'Policy.normalRequirement(rng,' in sources['ParkingService']
  assert 'data.masteryEffects' in sources['CosmeticHUD']
- assert sources['CosmeticHUD'].index('itemCard(Config.ById[Config.COIN_HERO_ID],data)') < sources['CosmeticHUD'].index('local ownAvatar=')
+ assert "gridItem(Config.ById[Config.COIN_HERO_ID])" in sources['CosmeticHUD']
 print('PASS: installer paths, infinite bounds, audio ingress and reset configuration',flush=True)
 
 catalog={}
@@ -92,6 +92,8 @@ with tempfile.TemporaryDirectory(prefix='steal60-v66-')as temp:
  parts.append("local function actualMaxSpeed(data,multiplier)\nlocal DriveService={};local UpgradePolicy=require('UpgradePolicy');local Monetization={speedMultiplier=function()return multiplier or 1 end}\n"+speed[start:end]+"\nreturn DriveService.maxSpeedFor(data,player)end\n")
  client=sources['ClientMain'];start=client.index('local function runMinigame(');end=client.index('HackStart.OnClientEvent:Connect(runMinigame)',start)
  parts.append("local function makeHackClient(gui,HackTap,HackStep,HackCancel)\nlocal player=Players.LocalPlayer;local Shared=shared;local UserInputService=services.UserInputService;local RunService=services.RunService;local HackModes=require('HackModes');local HackMath=require('HackMath');local UIIcons=require('UIIcons');local activeHackStep;local closeHack\nlocal function corner(p,r)local c=Instance.new('UICorner');c.CornerRadius=UDim.new(0,r);c.Parent=p end\n"+client[start:end]+"\nreturn runMinigame,function()if closeHack then closeHack()end end end\n")
+ cosmetic=sources['CosmeticHUD'];prefix=cosmetic[:cosmetic.index('catalogPreviews:GetAttributeChangedSignal("Revision")')]
+ parts.append("local function makeCosmeticUI(root)\nlocal script={Parent=root}\n"+prefix+"\nlocal function placeholder(parent)local f=Instance.new('Frame');f.Parent=parent;return f end\nadd3DPreview=placeholder;petPreview=placeholder;previewCar=placeholder\nreturn panel,scroller,function(category,width)panel.Visible=false;panel.AbsoluteSize=Vector2.new(width,650);scroller.AbsoluteSize=Vector2.new(width-32,500);state=category;panel.Visible=true;render()end\nend\n")
  street=sources['StreetLifeService'];start=street.index('local function prop(');end=street.index('local function headphones(',start)
  parts.append('local function makeStreetCoffee(rig)\n'+street[start:end]+'\nreturn coffee(rig)end\n')
  # Exercise the actual server bumper function without loading unrelated server services.
@@ -148,6 +150,7 @@ with tempfile.TemporaryDirectory(prefix='steal60-v66-')as temp:
   parts.append(';\n(function()\n'+(HERE/'upgrade_choices.luau').read_text()+'\nend)()')
   parts.append(';\n(function()\n'+(HERE/'runtime_regressions.luau').read_text()+'\nend)()')
   parts.append(';\n(function()\n'+(HERE/'menu_regressions.luau').read_text()+'\nend)()')
+  parts.append(';\n(function()\n'+(HERE/'atelier_regressions.luau').read_text()+'\nend)()')
  parts.append((HERE/'delivery_integration.luau').read_text())
  parts.append("print('FINAL COMBINED ASSERTIONS: '..checks)")
  bundle=temp/'run.luau';bundle.write_text('\n'.join(parts))

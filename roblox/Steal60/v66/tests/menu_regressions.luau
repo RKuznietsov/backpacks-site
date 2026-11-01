@@ -44,6 +44,8 @@ do
  local Access=require('InterfaceAccess');local previous=workspace.CurrentCamera
  local screen=Instance.new('ScreenGui');screen.AbsoluteSize=Vector2.new(1340,680);screen.Parent=playerGui
  local camera=Instance.new('Camera');camera.ViewportSize=Vector2.new(1675,900);workspace.CurrentCamera=camera
+ local language=Instance.new('TextButton');language.Name='LanguageToggle';language.Position=UDim2.new(1,-66,0,44);language.Size=UDim2.fromOffset(44,44);language.Parent=screen
+ local music=Instance.new('TextButton');music.Name='MusicToggle';music.Position=UDim2.new(1,-14,0,44);music.Size=UDim2.fromOffset(44,44);music.Parent=screen
  Access.start(screen)
  local fixtures={
   {name='MainMenu',width=.92,height=.86,minW=310,minH=290,maxW=920,maxH=760},
@@ -64,14 +66,22 @@ do
   for index,frame in ipairs(frames)do local f=fixtures[index];local scale=frame:FindFirstChild('Steal60AdaptiveScale')
    check(frame.Position.X.Offset==0 and frame.Position.Y.Offset==0 and frame.Position.X.Scale==.5,'modal position uses the GUI canvas instead of scaled absolute pixels')
    local baseW=math.clamp(width*f.width+(f.fixedW or 0),f.minW,f.maxW);local baseH=math.clamp(height*f.height+(f.fixedH or f.offset or 0),f.minH,f.maxH)
+   if Access.expanded(f.name)then baseW=width-24;baseH=height-Access.collectionTop(width,height)-12 end
    local cx=frame.Position.X.Scale*width;local cy=frame.Position.Y.Scale*height
-   local top=width<1160 and 100 or 10;local bottom=f.name=='Steal60Handbook'and 124 or 24
+   local top=Access.expanded(f.name)and Access.collectionTop(width,height)or(width<1160 and 100 or 10);local bottom=Access.expanded(f.name)and 12 or(f.name=='Steal60Handbook'and 124 or 24)
+   if Access.expanded(f.name)then
+    check(scale.Scale==1 and frame.Size.X.Scale==1 and frame.Size.X.Offset==-24,'selection windows fill the canvas without scaling up their text')
+    if width>=700 then check(baseW>=width*.94 and baseH>=height*.94,'desktop selection window covers almost the whole usable screen')end
+   end
    check(cx-baseW*scale.Scale/2>=11.9 and cx+baseW*scale.Scale/2<=width-11.9,'modal fits horizontally including minimum-size constraints')
    check(cy-baseH*scale.Scale/2>=top-.1 and cy+baseH*scale.Scale/2<=height-bottom+.1,'modal stays above the lower edge and outside reserved controls')
    local stable=scale.Scale;frame.AbsoluteSize=Vector2.new(9000,9000);services.RunService.Heartbeat:Fire(.3)
    check(math.abs(scale.Scale-stable)<.00001,'reflow does not feed rendered scale back into its own size calculation')
   end
+  check(language.Position.Y.Offset+(language.Size.Y.Offset or 44)<=Access.collectionTop(width,height)or width>=700,'compact header controls stay above the expanded window')
  end
+ for _,frame in ipairs(frames)do frame.Visible=false end
+ check(language.Position.Y.Offset==44 and language.Position.X.Offset==-66 and music.Position.X.Offset==-14,'language and music restore their original positions after the menu closes')
  screen:Destroy();camera:Destroy();workspace.CurrentCamera=previous
 end
 print('PASS: full upgrade/shop and read-only tabs render under native color contracts; five modal types stay inside the actual GUI canvas under DPI/insets/resizing, without scale feedback')

@@ -43,7 +43,7 @@
   },
   {
     "script": "BreezeAura",
-    "sha256": "d00e9738f031c60f76b3574d1df8e5a7e79b8cc2242d7df063eb7b3ef56d228f",
+    "sha256": "8e942cfa768e8ed1cf87f99d50c5dbc13f1ce541127eb3a6b39d037eddc85856",
     "v65_status": "added",
     "initial_v66_status": "added"
   },
@@ -109,7 +109,7 @@
   },
   {
     "script": "ClientMain",
-    "sha256": "4f28d8e0d783724df0fa3172ec9ce6ef993bc6a78692a4108ae18aeb03ed8c32",
+    "sha256": "67fc1fe6a4af8285110e4eb61e2486aec2689c25e819f5f9f3b925caa27ef325",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -139,13 +139,13 @@
   },
   {
     "script": "CosmeticConfig",
-    "sha256": "7ac47c78d60e60e0633f9cd9e25d7749c93867d62a457887bf858b2f3ad824c7",
+    "sha256": "bec698c36a607b354c41926a35de1492e1e8295d716bcc097159f46b388e58ed",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
   {
     "script": "CosmeticHUD",
-    "sha256": "a5acaf90882bcc04ed523c128a390ab6324f01f9d4de01b5a6381aebb65f2f28",
+    "sha256": "af69f0b513035e90816a9b8d125658a74260ea0b01bf87ba4a761f4af33afc1e",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -235,7 +235,7 @@
   },
   {
     "script": "EconomyHUD",
-    "sha256": "ac57ad527633480e478a46ea22e5e73340b24e35ea6f13ef0ea5b58038b4fa0f",
+    "sha256": "8755ffd98c7bab4a7c82876af311d9a031d84f4babbad9907b755e34c753bbd8",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -313,7 +313,7 @@
   },
   {
     "script": "InterfaceAccess",
-    "sha256": "76dbeed19af81782ad4a44dac802b74c411c91628fdfb8be1170833867b57ab7",
+    "sha256": "fb2c77e1b66b4529076bd123ab79453dd30aba24f52084bfb6915fd9eec9d5c8",
     "v65_status": "added",
     "initial_v66_status": "added"
   },
@@ -325,7 +325,7 @@
   },
   {
     "script": "LanguageCatalog",
-    "sha256": "6fb9a1ec82518f8824367e35b9b9585a4f1bdf4feabe082fc64d79054a07c845",
+    "sha256": "477b5d26731e59086a6412e82f067a867ed3fcd1c8a3d710805acb30e62e67ba",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },

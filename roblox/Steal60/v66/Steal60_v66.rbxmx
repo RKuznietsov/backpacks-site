@@ -915,7 +915,7 @@ M.COIN_HERO_ID='hero_worker_coin_v66'
 M.List={
  {id='hero_worker_coin_v66',category='hero',name='ОБЫЧНЫЙ РАБОЧИЙ',description='Простая серая рабочая рубашка, тёмные брюки, каштановая причёска и открытое лицо. Мастерство героя доступно за монеты.',priceCoins=4000000,currency='coins',color=C(116,127,132),catalogLook='worker',featuredCoins=true},
  {id='paint_workgray_coin_v66',category='paint',name='Рабочий серый',description='Спокойный серый кузов без узоров и свечения.',priceCoins=750000,currency='coins',color=C(122,134,142),material='SmoothPlastic',style='solid'},
- {id='aura_breeze_coin_v66',category='aura',name='Лёгкий ветер',description='Прозрачные воздушные шлейфы и мягкие завихрения у плеч.',priceCoins=1500000,currency='coins',color=C(165,188,200),simple=true},
+ {id='aura_breeze_coin_v66',category='aura',name='Лёгкий ветер',description='Полупрозрачный воздушный шлейф и мягкие завихрения у плеч.',priceCoins=1500000,currency='coins',color=C(137,207,230),simple=true},
  {id="skin_sakura",category="skin",name="Сакура-дрифт",description="Объёмные лепестки сакуры и сливочные цветы на кузове",price=320,color=C(255,146,189),style="sakura"},
  {id="paint_bubblegum",category="paint",name="Клубничный пломбир",description="Клубничный кузов и сливочная крыша",price=125,color=C(255,139,182),accent=C(255,244,218),material="SmoothPlastic",style="twoTone"},
  {id="paint_soda",category="paint",name="Мятная газировка",description="Мятный кузов и ванильная отделка",price=125,color=C(108,230,191),accent=C(255,241,208),material="SmoothPlastic",style="twoTone"},
@@ -6401,6 +6401,11 @@ return {
  ["✓ УСПЕХ! СЛЕДУЮЩИЙ ЭТАП %d/%d"]="✓ SUCCESS! NEXT STAGE %d/%d",
     ["Прозрачные воздушные шлейфы и мягкие завихрения у плеч."] = "Translucent wind ribbons and soft shoulder swirls.",
     ["ПРОЗРАЧНЫЕ ШЛЕЙФЫ И ЗАВИХРЕНИЯ"] = "TRANSLUCENT WIND RIBBONS AND SWIRLS",
+    ["Полупрозрачный воздушный шлейф и мягкие завихрения у плеч."] = "A translucent wind wake with soft shoulder swirls.",
+    ["АТЕЛЬЕ 60 · ОБРАЗЫ И ОФОРМЛЕНИЕ"] = "ATELIER 60 · OUTFITS AND CUSTOMIZATION",
+    ["МАСТЕРСТВО ГЕРОЯ ↓"] = "HERO MASTERY ↓",
+    ["МАСТЕРСТВО ПИТОМЦА ↓"] = "PET MASTERY ↓",
+    ["Примерь ауру на 20 секунд и пройдись. У ветра — воздушный шлейф и завихрения, у остальных — свои эффекты."] = "Try an aura for 20 seconds and walk around. Wind has a flowing wake and swirls; other auras have their own effects.",
 }
 ]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_STEAL60_V64_LanguageController"><Properties><string name="Name">LanguageController</string><ProtectedString name="Source"><![CDATA[-- Local text binding keeps each player's world signs in their own language.
 local M={}
@@ -6781,6 +6786,10 @@ return M
 ]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_v66_InterfaceAccess"><Properties><string name="Name">InterfaceAccess</string><ProtectedString name="Source"><![CDATA[-- Native GUI selection and bounded modal scaling; no gameplay permissions live here.
 local M={}
 local targets={MainMenu=true,CosmeticShopV44=true,Steal60NPCShopV35=true,Steal60Handbook=true,HackVarietyV26=true}
+local expanded={MainMenu=true,CosmeticShopV44=true,Steal60NPCShopV35=true}
+function M.expanded(name)return expanded[name]==true end
+function M.catalogColumns(width)return width>=2240 and 4 or width>=1680 and 3 or width>=1040 and 2 or 1 end
+function M.collectionTop(width,height)return width<700 and math.min(100,math.floor(height*.22))or 12 end
 function M.scaleFor(width,height,baseWidth,baseHeight,reserve)
  if baseWidth<=0 or baseHeight<=0 then return 1 end
  local preferred=width>=1600 and height>=900 and 1.15 or 1
@@ -6801,6 +6810,18 @@ function M.logicalSize(frame,available)
  return Vector2.new(math.max(1,width),math.max(1,height))
 end
 function M.resizeModal(frame,scale,available)
+ if expanded[frame.Name]then
+  local top=M.collectionTop(available.X,available.Y)
+  local limit=frame:FindFirstChildOfClass('UISizeConstraint')
+  if limit then limit.MinSize=Vector2.new(0,0);limit.MaxSize=Vector2.new(100000,100000)end
+  frame.AnchorPoint=Vector2.new(.5,.5)
+  frame.Size=UDim2.new(1,-24,1,-top-12)
+  frame.Position=UDim2.fromScale(.5,(top+available.Y-12)*.5/available.Y)
+  local title=frame:FindFirstChild('ModalTitle')or frame:FindFirstChild('ShopHeader')
+  if title then title.Size=UDim2.new(1,available.X<700 and-70 or-210,0,38);title.TextSize=available.X<700 and 16 or 20 end
+  scale.Scale=1
+  return
+ end
  local size=M.logicalSize(frame,available)
  local header=available.X<1160 and 100 or 10
  local bottom=frame.Name=='Steal60Handbook'and 124 or 24
@@ -6823,7 +6844,20 @@ function M.focus(frame,preferred)
 end
 function M.start(gui)
  local frames=setmetatable({},{__mode='k'});local links={};local live=true
+ local headerButtons={}
  local function listen(signal,fn)local c=signal:Connect(fn);links[#links+1]=c end
+ local function header()
+  local active
+  for frame in pairs(frames)do if frame.Parent and frame.Visible and expanded[frame.Name]then active=frame;break end end
+  local canvas=active and active.Parent.AbsoluteSize
+  for button,original in pairs(headerButtons)do if button.Parent then
+   if canvas and canvas.X>=700 then
+    button.Position=UDim2.new(1,button.Name=='LanguageToggle'and-120 or-68,0,22)
+   elseif canvas then
+    button.Position=UDim2.new(original.X.Scale,original.X.Offset,0,M.collectionTop(canvas.X,canvas.Y)-44)
+   else button.Position=original end
+  else headerButtons[button]=nil end end
+ end
  local function resize(frame,scale)
   local parent=frame.Parent;local available=parent and parent.AbsoluteSize
   if not available or available.X<=0 or available.Y<=0 then
@@ -6833,14 +6867,15 @@ function M.start(gui)
  end
  local function watch(object)
   if object:IsA('GuiButton')then
+   if object.Name=='LanguageToggle'or object.Name=='MusicToggle'then headerButtons[object]=object.Position;header()end
    object.Selectable=object.Active
    return
   end
   if not object:IsA('Frame')or not targets[object.Name]or frames[object]then return end
   local scale=Instance.new('UIScale');scale.Name='Steal60AdaptiveScale';scale.Scale=1;scale.Parent=object;frames[object]=scale
-  local visible=object:GetPropertyChangedSignal('Visible'):Connect(function()if object.Visible then resize(object,scale);task.defer(function()if live and object.Parent then M.focus(object)end end)end end)
+  local visible=object:GetPropertyChangedSignal('Visible'):Connect(function()if object.Visible then resize(object,scale);task.defer(function()if live and object.Parent then M.focus(object)end end)end;header()end)
   object.Destroying:Connect(function()visible:Disconnect();frames[object]=nil end)
-  if object.Visible then resize(object,scale);task.defer(function()if live and object.Parent then M.focus(object)end end)end
+  if object.Visible then resize(object,scale);header();task.defer(function()if live and object.Parent then M.focus(object)end end)end
  end
  listen(gui.DescendantAdded,watch);for _,object in ipairs(gui:GetDescendants())do watch(object)end
  local elapsed=0
@@ -6849,6 +6884,7 @@ function M.start(gui)
   for frame,scale in pairs(frames)do if frame.Parent and frame.Visible then
    resize(frame,scale)
   end end
+  header()
  end)
  gui.Destroying:Connect(function()live=false;for _,c in ipairs(links)do c:Disconnect()end end)
 end
@@ -7088,6 +7124,17 @@ function M.create(root,host,folder,def)
  local function attach(name,position)
   local a=Instance.new('Attachment');a.Name=name;a.Position=position or Vector3.zero;a.Parent=host;anchors[#anchors+1]=a;return a
  end
+ local function ribbon(name,top,bottom,lifetime)
+  local trail=Instance.new('Trail');trail.Name=name
+  trail.Attachment0=attach(name..'Top',top)
+  trail.Attachment1=attach(name..'Bottom',bottom)
+  trail.Enabled=false;trail.FaceCamera=true;trail.Lifetime=lifetime;trail.MinLength=.04;trail.MaxLength=22
+  trail.Texture=TEXTURE;trail.TextureMode=Enum.TextureMode.Stretch;trail.LightEmission=.32;trail.LightInfluence=.15
+  trail.Color=ColorSequence.new(def.color,Color3.fromRGB(228,246,255))
+  trail.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,.42),NumberSequenceKeypoint.new(.45,.60),NumberSequenceKeypoint.new(1,1)})
+  trail.WidthScale=NumberSequence.new({NumberSequenceKeypoint.new(0,1.1),NumberSequenceKeypoint.new(.4,.8),NumberSequenceKeypoint.new(1,0)})
+  trail.Parent=folder
+ end
  for _,side in ipairs({-1,1})do
   local points={}
   for node=0,M.SEGMENTS do points[node]=attach('BreezeCurl_'..side..'_'..node)end
@@ -7095,25 +7142,20 @@ function M.create(root,host,folder,def)
    local beam=Instance.new('Beam');beam.Name='WindCurl_'..side..'_'..segment
    beam:SetAttribute('WindSide',side);beam:SetAttribute('WindSegment',segment)
    beam.Attachment0=points[segment-1];beam.Attachment1=points[segment];beam.Enabled=true;beam.FaceCamera=true;beam.Segments=14
-   beam.Width0=.33*(1-(segment-1)*.13);beam.Width1=.33*(1-segment*.13)
+   beam.Width0=.60*(1-(segment-1)*.13);beam.Width1=.60*(1-segment*.13)
    beam.Texture=TEXTURE;beam.TextureMode=Enum.TextureMode.Wrap;beam.TextureLength=1.8;beam.TextureSpeed=.22
-   beam.LightEmission=.08;beam.LightInfluence=.6;beam.Color=ColorSequence.new(def.color,Color3.fromRGB(228,240,244))
-   local fade=.80+(segment-1)*.035
+   beam.LightEmission=.32;beam.LightInfluence=.15;beam.Color=ColorSequence.new(def.color,Color3.fromRGB(228,246,255))
+   local fade=.45+(segment-1)*.045
    beam.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,segment==1 and 1 or fade),NumberSequenceKeypoint.new(.28,fade),NumberSequenceKeypoint.new(.72,fade+.02),NumberSequenceKeypoint.new(1,segment==M.SEGMENTS and 1 or fade+.035)})
    pose(beam,host,0);beam.Parent=folder
   end
   local x=side*(host.Size.X*.5+.12);local z=host.Size.Z*.5+.28
-  local trail=Instance.new('Trail');trail.Name='WindWake_'..side
-  trail.Attachment0=attach('BreezeWakeTop_'..side,Vector3.new(x,host.Size.Y*.40,z))
-  trail.Attachment1=attach('BreezeWakeBottom_'..side,Vector3.new(x+side*.22,host.Size.Y*.09,z+.14))
-  trail.Enabled=false;trail.FaceCamera=true;trail.Lifetime=.75;trail.MinLength=.06;trail.MaxLength=12
-  trail.Texture=TEXTURE;trail.TextureMode=Enum.TextureMode.Stretch;trail.LightEmission=.08;trail.LightInfluence=.6
-  trail.Color=ColorSequence.new(def.color,Color3.fromRGB(228,240,244))
-  trail.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,.84),NumberSequenceKeypoint.new(.45,.90),NumberSequenceKeypoint.new(1,1)})
-  trail.WidthScale=NumberSequence.new({NumberSequenceKeypoint.new(0,.85),NumberSequenceKeypoint.new(.4,.65),NumberSequenceKeypoint.new(1,0)})
-  trail.Parent=folder
+  ribbon('WindWake_'..side,Vector3.new(x,host.Size.Y*.40,z),Vector3.new(x+side*.22,host.Size.Y*.09,z+.14),1)
  end
- folder:SetAttribute('AuraOrigin','WindSwirls');folder:SetAttribute('BeamCount',2*M.SEGMENTS);folder:SetAttribute('TrailCount',2);folder:SetAttribute('EmitterCount',0);folder:SetAttribute('AuraId',def.id)
+ -- The same broad shoulder wake silhouette as the other auras, at about half opacity.
+ local half=math.clamp(host.Size.X*.56,.65,1.1);local high=host.Size.Y*.35;local back=host.Size.Z*.5+.24
+ ribbon('ShoulderWindWake',Vector3.new(-half,high,back),Vector3.new(half,high,back),1.15)
+ folder:SetAttribute('AuraOrigin','WindSwirls');folder:SetAttribute('BeamCount',2*M.SEGMENTS);folder:SetAttribute('TrailCount',3);folder:SetAttribute('EmitterCount',0);folder:SetAttribute('AuraId',def.id)
  folder.Destroying:Connect(function()cache[folder]=nil;for _,a in ipairs(anchors)do if a.Parent then a:Destroy()end end end)
 end
 function M.step(folder,t)
@@ -7126,7 +7168,7 @@ function M.step(folder,t)
    if object:IsA('Beam')and object.Attachment0 and object.Attachment1 and object.Attachment0.Parent then state.beams[#state.beams+1]=object
    elseif object:IsA('Trail')then state.trails[#state.trails+1]=object end
   end
-  if #state.beams~=2*M.SEGMENTS or #state.trails~=2 then state.refresh=t+.1 end
+  if #state.beams~=2*M.SEGMENTS or #state.trails~=3 then state.refresh=t+.1 end
   cache[folder]=state
  end
  local delta=root.Position-state.last;local elapsed=t-state.time;local teleported=delta.Magnitude>18
@@ -7982,14 +8024,15 @@ local panel = Instance.new("Frame")
 panel.Name="MainMenu"
 panel.AnchorPoint = Vector2.new(0.5, 0.5)
 panel.Position = UDim2.fromScale(0.5, 0.5)
-panel.Size = UDim2.new(.92,0,.86,0)
-local menuLimit=Instance.new("UISizeConstraint");menuLimit.MaxSize=Vector2.new(920,760);menuLimit.MinSize=Vector2.new(310,290);menuLimit.Parent=panel
+panel.Size = UDim2.new(1,-24,1,-24)
+local menuLimit=Instance.new("UISizeConstraint");menuLimit.MaxSize=Vector2.new(100000,100000);menuLimit.MinSize=Vector2.new(0,0);menuLimit.Parent=panel
 panel.BackgroundColor3 = Color3.fromRGB(11,19,32)
 panel.Visible = false
 panel.Parent = gui
 corner(panel, 12)
 
-MenuWidgets.text(panel,"ГАРАЖ / УГОН 60",UDim2.fromOffset(15,10),UDim2.new(1,-70,0,30),22,Color3.fromRGB(240,247,249))
+local menuTitle=MenuWidgets.text(panel,"ГАРАЖ / УГОН 60",UDim2.fromOffset(15,10),UDim2.new(1,-70,0,30),22,Color3.fromRGB(240,247,249))
+menuTitle.Name="ModalTitle"
 local menuSubtitle=MenuWidgets.text(panel,"Коллекция · развитие · оформление",UDim2.fromOffset(15,43),UDim2.new(1,-30,0,19),12,Color3.fromRGB(150,200,211))
 local tabsRow = Instance.new("ScrollingFrame")
 tabsRow.Position = UDim2.fromOffset(10,72)
@@ -9288,13 +9331,13 @@ local function button(parent,textValue,pos,size,callback,enabled)
 end
 local panel=Instance.new("Frame")
 panel.Name="Steal60NPCShopV35"
-panel.Size=UDim2.new(.9,0,.8,0)
+panel.Size=UDim2.new(1,-24,1,-24)
 panel.AnchorPoint=Vector2.new(.5,.5)
 panel.Position=UDim2.fromScale(.5,.47)
 panel.BackgroundColor3=C(14,23,38)
 panel.BorderSizePixel=0;panel.Visible=false;panel.Parent=gui;round(panel,14)
 local limit=Instance.new("UISizeConstraint")
-limit.MaxSize=Vector2.new(760,650);limit.MinSize=Vector2.new(320,340);limit.Parent=panel
+limit.MaxSize=Vector2.new(100000,100000);limit.MinSize=Vector2.new(0,0);limit.Parent=panel
 local outline=Instance.new("UIStroke")
 outline.Thickness=2;outline.Transparency=.23;outline.Color=C(84,207,193);outline.Parent=panel
 local header=label(panel,"ShopHeader",UDim2.new(1,-90,0,43),UDim2.fromOffset(19,9),"МАСТЕРСКАЯ",Enum.Font.GothamBlack,22,C(246,247,250))
@@ -9541,6 +9584,7 @@ local function box(parent,h,col)
  b.Size=UDim2.new(1,-14,0,h)
  b.BackgroundColor3=col or colorCard
  b.BorderSizePixel=0
+ local order=(parent:GetAttribute("CosmeticRowSequence")or 0)+1;parent:SetAttribute("CosmeticRowSequence",order);b.LayoutOrder=order
  b.Parent=parent
  corner(b,11)
  return b
@@ -9550,22 +9594,23 @@ local panel=Instance.new("Frame")
 panel.Name="CosmeticShopV44"
 panel.AnchorPoint=Vector2.new(.5,.5)
 panel.Position=UDim2.fromScale(.5,.5)
-panel.Size=UDim2.new(.9,0,.86,0)
+panel.Size=UDim2.new(1,-24,1,-24)
 panel.BackgroundColor3=C(11,19,32)
 panel.BorderSizePixel=0
 panel.Visible=false
 panel.Parent=gui
 corner(panel,14)
 local limiter=Instance.new("UISizeConstraint")
-limiter.MaxSize=Vector2.new(850,720)
-limiter.MinSize=Vector2.new(300,340)
+limiter.MaxSize=Vector2.new(100000,100000)
+limiter.MinSize=Vector2.new(0,0)
 limiter.Parent=panel
 local outline=Instance.new("UIStroke")
 outline.Color=C(123,208,251)
 outline.Transparency=.25
 outline.Thickness=2
 outline.Parent=panel
-text(panel,"АТЕЛЬЕ 60  ·  ПРЕМИАЛЬНЫЕ ОБРАЗЫ",UDim2.new(1,-90,0,37),UDim2.fromOffset(18,8),20,C(246,248,255),true)
+local modalTitle=text(panel,"АТЕЛЬЕ 60 · ОБРАЗЫ И ОФОРМЛЕНИЕ",UDim2.new(1,-90,0,37),UDim2.fromOffset(18,8),20,C(246,248,255),true)
+modalTitle.Name="ModalTitle"
 local subtitle=text(panel,"",UDim2.new(1,-32,0,27),UDim2.fromOffset(18,50),12,C(150,214,224))
 local function setOpen(open)
  panel.Visible=open
@@ -9592,6 +9637,7 @@ scroller.CanvasSize=UDim2.new()
 scroller.Parent=panel
 corner(scroller,10)
 local layout=Instance.new("UIListLayout")
+layout.SortOrder=Enum.SortOrder.LayoutOrder
 layout.Padding=UDim.new(0,8)
 layout.Parent=scroller
 local modes={{"hero","ГЕРОЙ"},{"pet","ПИТОМЕЦ"},{"paint","КРАСКА"},{"tuning","ТЮНИНГ"},{"aura","АУРА"}}
@@ -9606,7 +9652,7 @@ local function notice(s)
  local b=box(scroller,36,C(25,51,58))
  text(b,s,UDim2.new(1,-18,1,-8),UDim2.fromOffset(9,4),12,C(176,231,210),true)
 end
-local function mastery(category,data)
+local function mastery(category,data,parent)
  local hero=category=="hero"
  local level=math.clamp(math.floor(tonumber(hero and data.heroSkinBonusLevel or data.petBonusLevel) or 0),0,hero and Config.HERO_MAX or Config.PET_MAX)
  local max=hero and Config.HERO_MAX or Config.PET_MAX
@@ -9617,7 +9663,7 @@ local function mastery(category,data)
    if yes==true and def and def.category=="hero" then unlocked=true;break end
   end
  end
- local b=box(scroller,240,C(30,49,63))
+ local b=box(parent or scroller,240,C(30,49,63));b.Name="CosmeticMastery"
  local title=hero and "МАСТЕРСТВО ГЕРОЯ" or "МАСТЕРСТВО ПИТОМЦА"
  text(b,title,UDim2.new(1,-25,0,24),UDim2.fromOffset(14,8),15,C(245,249,252),true)
  text(b,(level>=max and"Бонус: +%d%% / +%d%%"or"Бонус: +%d%% / +%d%% · следующий +1%%"):format(level,max),
@@ -9625,14 +9671,14 @@ local function mastery(category,data)
  if not unlocked then
   text(b,hero and "Сначала купи любой скин героя." or "Сначала открой питомца — один раз за монеты или алмазы.",
    UDim2.new(1,-25,0,32),UDim2.fromOffset(14,61),12,C(178,196,213))
-  return
+  return b
  end
  if hero then text(b,'Мастерство действует и с твоим Roblox-аватаром.',UDim2.new(1,-28,0,30),UDim2.fromOffset(14,208),11,C(160,217,206))end
  local effects=(data.masteryEffects or{})[category]
  if effects then text(b,('Сейчас: %s\nДалее: %s'):format(effects.current,effects.next),UDim2.new(1,-28,0,104),UDim2.fromOffset(14,57),12,C(214,229,236))end
  if level>=max then
   text(b,"МАКСИМАЛЬНЫЙ УРОВЕНЬ · открыто навсегда",UDim2.new(1,-25,0,29),UDim2.fromOffset(14,172),13,C(253,216,117),true)
-  return
+  return b
  end
  local startX=14
  if hero then
@@ -9654,6 +9700,7 @@ local function mastery(category,data)
    send("upgradePetDiamonds","pet",nil)
   end,C(129,218,250),(tonumber(data.diamonds) or 0)>=gem)
  end
+ return b
 end
 local function petLicense(data)
  if data.petUnlocked==true then
@@ -9825,13 +9872,13 @@ local function aura3D(container,def)
  if def.simple then
   -- Translucent wakes and rising curls, matching the actual wind ribbon material.
   for _,side in ipairs({-1,1})do
-   local wake=Instance.new('ImageLabel');wake.BackgroundTransparency=1;wake.Image='rbxasset://textures/particles/smoke_main.dds';wake.ImageColor3=def.color;wake.ImageTransparency=.86
+   local wake=Instance.new('ImageLabel');wake.BackgroundTransparency=1;wake.Image='rbxasset://textures/particles/smoke_main.dds';wake.ImageColor3=def.color;wake.ImageTransparency=.48
    wake.Position=UDim2.fromScale(side<0 and .08 or .65,.30);wake.Size=UDim2.fromScale(.27,.34);wake.Rotation=side*18;wake.Parent=view
    for segment=0,35 do
     local function point(u)local a=u*math.pi*2.4+side*.7;local r=.115*(1-.48*u);return .5+side*.24+r*math.cos(a),.56-u*.34+.045*math.sin(a)end
     local x,y=point(segment/36);local x1,y1=point((segment+1)/36);local dx,dy=x1-x,y1-y
     local line=Instance.new('Frame');line.AnchorPoint=Vector2.new(0,.5);line.Position=UDim2.fromScale(x,y);line.Size=UDim2.new(math.sqrt(dx*dx+dy*dy),1,0,2)
-    line.Rotation=math.deg(math.atan2(dy,dx));line.BackgroundColor3=def.color;line.BackgroundTransparency=.73+.24*math.abs(segment-17.5)/17.5;line.BorderSizePixel=0;line.Parent=view;corner(line,3)
+    line.Rotation=math.deg(math.atan2(dy,dx));line.BackgroundColor3=def.color;line.BackgroundTransparency=.40+.50*math.abs(segment-17.5)/17.5;line.BorderSizePixel=0;line.Parent=view;corner(line,3)
    end
   end
   local torso=Instance.new('Frame');torso.Size=UDim2.fromScale(.22,.28);torso.Position=UDim2.fromScale(.39,.25);torso.BackgroundColor3=C(122,146,158);torso.BorderSizePixel=0;torso.ZIndex=3;torso.Parent=view;corner(torso,8)
@@ -9895,7 +9942,7 @@ for _,key in ipairs({'CosmeticPreviewToken','CosmeticPreviewUntil','CosmeticPrev
 end
 task.spawn(function()while gui.Parent do updateTrialBanner();task.wait(.2)end end)
 
-local function itemCard(def,data)
+local function itemCard(def,data,parent,width)
  local ownedTable=data.cosmeticsOwned or {}
  local equipped=data.cosmeticsEquipped or {}
  local owned=ownedTable[def.id]==true or (def.category=="pet" and data.petUnlocked==true)
@@ -9906,14 +9953,14 @@ local function itemCard(def,data)
  if isHero and Config.heroLookId(equipped.hero)==def.catalogLook then selected=true end
  local catalogReady=not isHero or catalogPreviews:GetAttribute(def.catalogLook)==true
  local isPet=def.category=="pet"
- local b=box(scroller,126)
+ local b=box(parent or scroller,126);b.Name="CosmeticCard";b:SetAttribute("CosmeticId",def.id)
  local extended=isHero or isPet or def.category=="aura" or isCar
- local wide=panel.AbsoluteSize.X>=610
+ local wide=(width or scroller.AbsoluteSize.X)>=540
  local x=wide and 201 or 130
- local headerY=wide and 19 or 13
- local actionY=wide and 206 or 176
+ local headerY=wide and 12 or 13
+ local actionY=wide and 188 or 193
  if extended then
-  b.Size=UDim2.new(1,-14,0,wide and 250 or 221)
+  b.Size=UDim2.new(1,parent and 0 or-14,0,wide and 230 or 235)
   studioCard(b,def)
   local view
   if isHero then view=add3DPreview(b,def)
@@ -9921,25 +9968,25 @@ local function itemCard(def,data)
   elseif isCar then view=previewCar(b,def)
   else view=aura3D(b,def) end
   if view then
-   view.Size=UDim2.fromOffset(wide and 176 or 111,wide and 188 or 145)
+   view.Size=UDim2.fromOffset(wide and 176 or 111,wide and 170 or 145)
    local canPreview=catalogReady and(not isCar or selectedCarId~=nil)
    local try=button(view,"ПРИМЕРИТЬ · 20 СЕК",UDim2.new(1,-12,0,36),UDim2.new(0,6,1,-42),function()
     send("preview",def.category,def.id,isCar and selectedCarId or nil)
    end,C(117,223,246),canPreview)
    try.Name="TryOn20Seconds";try.ZIndex=5;try.TextSize=wide and 11 or 10
   end
-  local title=text(b,def.name,UDim2.new(1,-x-12,0,38),UDim2.fromOffset(x,headerY),wide and 17 or 13,C(251,246,227),true)
+  local title=text(b,def.name,UDim2.new(1,-x-12,0,wide and 40 or 38),UDim2.fromOffset(x,headerY),wide and 17 or 13,C(251,246,227),true)
   title.TextYAlignment=Enum.TextYAlignment.Top
-  local desc=text(b,def.description,UDim2.new(1,-x-12,0,wide and 82 or 90),UDim2.fromOffset(x,wide and 66 or 49),wide and 13 or 11,C(192,212,229))
+  local desc=text(b,def.description,UDim2.new(1,-x-12,0,wide and 68 or 84),UDim2.fromOffset(x,wide and 56 or 55),wide and 13 or 11,C(192,212,229))
   desc.TextYAlignment=Enum.TextYAlignment.Top
   if isHero then
-   text(b,def.priceCoins and "ОДЕЖДА ROBLOX · ЗА МОНЕТЫ"or"ОДЕЖДА ROBLOX · ЗА АЛМАЗЫ",UDim2.new(1,-x-12,0,21),UDim2.fromOffset(x,wide and 157 or 142),wide and 11 or 10,def.accent or colorAccent,true)
+   text(b,def.priceCoins and "ОДЕЖДА ROBLOX · ЗА МОНЕТЫ"or"ОДЕЖДА ROBLOX · ЗА АЛМАЗЫ",UDim2.new(1,-x-12,0,21),UDim2.fromOffset(x,wide and 136 or 142),wide and 11 or 10,def.accent or colorAccent,true)
   elseif isCar then
    text(b,selectedCarId and "ДЛЯ ВЫБРАННОЙ МАШИНЫ" or "СНАЧАЛА ВЫБЕРИ МАШИНУ",
-    UDim2.new(1,-x-12,0,21),UDim2.fromOffset(x,wide and 157 or 142),11,C(121,236,196),true)
+    UDim2.new(1,-x-12,0,21),UDim2.fromOffset(x,wide and 136 or 142),11,C(121,236,196),true)
   elseif isPet then
    text(b,def.movement=="fly" and "ЛЕТАЕТ ЗА ВЛАДЕЛЬЦЕМ" or "ЕДЕТ СЗАДИ НА МАШИНЕ",
-    UDim2.new(1,-x-12,0,21),UDim2.fromOffset(x,wide and 157 or 142),11,C(121,236,196),true)
+    UDim2.new(1,-x-12,0,21),UDim2.fromOffset(x,wide and 136 or 142),11,C(121,236,196),true)
   end
  else
   local sw=Instance.new("Frame")
@@ -9962,10 +10009,10 @@ local function itemCard(def,data)
   text(b,def.description,UDim2.new(1,-86,0,40),UDim2.fromOffset(75,30),11,C(178,200,218))
  end
  if isCar and not selectedCarId then
-  text(b,"Нет купленных машин в каталоге",UDim2.new(1,-22,0,32),UDim2.fromOffset(11,136),12,C(240,185,145))
+  text(b,"Нет купленных машин в каталоге",UDim2.new(1,-22,0,32),UDim2.fromOffset(11,actionY),12,C(240,185,145))
  elseif isPet and not owned then
   text(b,"Нужно открыть питомца один раз (кнопки выше)",
-   UDim2.new(1,-22,0,33),UDim2.fromOffset(11,137),12,C(185,193,209),true)
+   UDim2.new(1,-22,0,33),UDim2.fromOffset(11,actionY),12,C(185,193,209),true)
  elseif isHero and not catalogReady then
   text(b,catalogPreviews:GetAttribute(def.catalogLook.."_Unavailable")and"Образ недоступен в Roblox. Покупка отключена."or"Образ Roblox загружается. Покупка доступна после загрузки.",UDim2.new(1,-22,0,34),UDim2.fromOffset(11,actionY),11,C(185,202,218))
  elseif owned then
@@ -10012,30 +10059,42 @@ render=function()
   btn.TextSize=11
  end
  for _,child in ipairs(scroller:GetChildren()) do if child~=layout then child:Destroy() end end
+ scroller:SetAttribute('CosmeticRowSequence',0)
+ local contentWidth=math.max(0,panel.AbsoluteSize.X-32)
+ if contentWidth<=0 then contentWidth=math.max(300,scroller.AbsoluteSize.X)end
+ local columns=require(RS.Shared.InterfaceAccess).catalogColumns(contentWidth)
+ local cellWidth=(contentWidth-14-10*(columns-1))/columns
+ panel:SetAttribute("CosmeticLayoutKey",columns..":"..tostring(cellWidth>=540))
+ local row,slot;
+ local function gridItem(def)
+  if not row or slot>=columns then row=box(scroller,cellWidth>=540 and 230 or 235);row.Name='CosmeticGridRow';row.BackgroundTransparency=1;slot=0 end
+  local cell=Instance.new('Frame');cell.Name='CosmeticGridCell';cell.BackgroundTransparency=1
+  cell.Size=UDim2.new(1/columns,-10*(columns-1)/columns,1,0);cell.Position=UDim2.new(slot/columns,slot*10/columns,0,0);cell.Parent=row
+  slot+=1;itemCard(def,data,cell,cellWidth)
+ end
  if state=="hero" or state=="pet" then
-  if state=="hero"then
-   itemCard(Config.ById[Config.COIN_HERO_ID],data) -- first, before mastery and paid catalog entries
-   local ownAvatar=box(scroller,89,C(30,57,68))
-   text(ownAvatar,"МОЙ ROBLOX-АВАТАР",UDim2.new(.53,-14,0,26),UDim2.fromOffset(12,7),14,C(229,243,239),true)
-   text(ownAvatar,"Вернуть свою одежду, лицо и аксессуары. Костюмы остаются в коллекции.",UDim2.new(.53,-14,0,44),UDim2.fromOffset(12,34),11,C(182,211,216))
+  local tools=box(scroller,50,C(30,57,68))
+  if state=='hero'then
    local equipped=data.cosmeticsEquipped and data.cosmeticsEquipped.hero
-   button(ownAvatar,equipped and "ВЕРНУТЬ МОЙ АВАТАР"or"СВОЙ АВАТАР УЖЕ НАДЕТ",UDim2.new(.45,-12,0,48),UDim2.new(.55,0,0,20),function()
-    send("unequip","hero",nil)
-   end,C(133,229,202),equipped~=nil)
+   button(tools,equipped and 'ВЕРНУТЬ МОЙ АВАТАР'or'СВОЙ АВАТАР УЖЕ НАДЕТ',UDim2.new(.5,-15,0,36),UDim2.fromOffset(8,7),function()send('unequip','hero',nil)end,C(133,229,202),equipped~=nil)
   end
-  mastery(state,data)
+  local jump=button(tools,state=='hero'and'МАСТЕРСТВО ГЕРОЯ ↓'or'МАСТЕРСТВО ПИТОМЦА ↓',UDim2.new(state=='hero'and .5 or 1,-15,0,36),UDim2.new(state=='hero'and .5 or 0,7,0,7),function()
+   local target=scroller:FindFirstChild('CosmeticMastery')
+   if target then scroller.CanvasPosition=Vector2.new(0,math.max(0,scroller.CanvasPosition.Y+target.AbsolutePosition.Y-scroller.AbsolutePosition.Y))end
+  end,C(130,212,244));jump.Name='MasteryShortcut'
   if state=="pet" then petLicense(data) end
  elseif state=="paint" or state=="tuning" then
   vehicleSelector(data)
   notice("Краска и рисунок сочетаются независимо. Тюнинг добавляется по деталям. ПРИМЕРИТЬ выставит выбранную машину на дорогу на 20 секунд; покупка не выполняется.")
  else
-  notice("Нажми ПРИМЕРИТЬ на карточке и пройдись. Аура оставляет шлейф и затухающие частицы при движении. На месте эффект не создаётся.")
+  notice("Примерь ауру на 20 секунд и пройдись. У ветра — воздушный шлейф и завихрения, у остальных — свои эффекты.")
  end
  if state=="hero" then
   local total=0
   for _,def in ipairs(Config.List) do if def.category=="hero"and not def.hiddenFromShop then total+=1 end end
   local pages=math.max(1,math.ceil((total-1)/HERO_PAGE_SIZE))
   heroPage=math.clamp(heroPage,1,pages)
+  if pages>1 then
   notice(("ОБРАЗЫ ROBLOX · %d разных образов · %d/%d"):format(total,heroPage,pages))
   local pager=box(scroller,44,C(27,53,69))
   button(pager,"◀ НАЗАД",UDim2.new(.35,-10,0,34),UDim2.fromOffset(8,5),function()
@@ -10045,12 +10104,14 @@ render=function()
   button(pager,"ДАЛЬШЕ ▶",UDim2.new(.34,-7,0,34),UDim2.new(.66,0,0,5),function()
    heroPage=math.min(pages,heroPage+1);scroller.CanvasPosition=Vector2.new(0,0);render()
   end,C(121,216,247),heroPage<pages)
+  end
  end
  if state=="pet" then
   local count=0
   for _,def in ipairs(Config.List) do if def.category=="pet" then count+=1 end end
   local pages=math.max(1,math.ceil(count/PET_PAGE_SIZE))
   petPage=math.clamp(petPage,1,pages)
+  if pages>1 then
   notice(("%d уникальных 3D-питомцев · все доступны сразу после лицензии · сейчас показаны все варианты"):format(count))
   local pager=box(scroller,44,C(27,53,69))
   button(pager,"◀ НАЗАД",UDim2.new(.35,-10,0,34),UDim2.fromOffset(8,5),function()
@@ -10060,7 +10121,9 @@ render=function()
   button(pager,"ДАЛЬШЕ ▶",UDim2.new(.34,-7,0,34),UDim2.new(.66,0,0,5),function()
    petPage=math.min(pages,petPage+1);scroller.CanvasPosition=Vector2.new(0,0);render()
   end,C(121,216,247),petPage<pages)
+  end
  end
+ if state=='hero'then gridItem(Config.ById[Config.COIN_HERO_ID])end
  local heroIndex=0
  local petIndex=0
  for _,def in ipairs(Config.List) do
@@ -10068,16 +10131,23 @@ render=function()
    if state=="hero" then
     if def.featuredCoins then continue end
     heroIndex+=1
-    if heroIndex>(heroPage-1)*HERO_PAGE_SIZE and heroIndex<=heroPage*HERO_PAGE_SIZE then itemCard(def,data) end
+    if heroIndex>(heroPage-1)*HERO_PAGE_SIZE and heroIndex<=heroPage*HERO_PAGE_SIZE then gridItem(def) end
    elseif state=="pet" then
     petIndex+=1
-    if petIndex>(petPage-1)*PET_PAGE_SIZE and petIndex<=petPage*PET_PAGE_SIZE then itemCard(def,data) end
+    if petIndex>(petPage-1)*PET_PAGE_SIZE and petIndex<=petPage*PET_PAGE_SIZE then gridItem(def) end
    else
-    itemCard(def,data)
+    gridItem(def)
    end
   end
  end
+ if state=="hero"or state=="pet"then mastery(state,data)end
 end
+panel:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
+ if not panel.Visible then return end
+ local width=math.max(0,panel.AbsoluteSize.X-32);local columns=require(RS.Shared.InterfaceAccess).catalogColumns(width)
+ local key=columns..":"..tostring((width-14-10*(columns-1))/columns>=540)
+ if key~=panel:GetAttribute("CosmeticLayoutKey")then task.defer(render)end
+end)
 catalogPreviews:GetAttributeChangedSignal("Revision"):Connect(function()
  task.delay(.25,function()if panel.Visible and state=="hero"then render()end end)
 end)

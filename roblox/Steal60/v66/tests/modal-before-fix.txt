@@ -2,17 +2,17 @@ CONTROLLED REGRESSION: current XML with ONLY InterfaceAccess returned to publish
 Expected failure: modal position uses the GUI canvas instead of scaled absolute pixels.
 Other modules/test doubles are current. Not a full old build or Roblox Engine execution.
 
-Final XML SHA-256: d3b21ee5c14ffbb98094689329249364df5cf0a5a92a54b8d8d73704299c0308
+Final XML SHA-256: 4ebacdeac6722c9e8ac78ceb81ab3b2d8d19d05d3ab63c91562c0dc85ac332c4
 XML instances: 130 script sources: 119
 PASS: installer paths, infinite bounds, audio ingress and reset configuration
-PASS: 1322 unique translations, format tokens, American English and no numeric require/loadstring
-Compiled 18 KLOC into 1150 KB bytecode (read 0.00s, parse 0.02s, compile 0.03s)
-/tmp/steal60-v66-vogk9ys5/run.luau:155: modal position uses the GUI canvas instead of scaled absolute pixels
+PASS: 1327 unique translations, format tokens, American English and no numeric require/loadstring
+Compiled 18 KLOC into 1153 KB bytecode (read 0.00s, parse 0.02s, compile 0.03s)
+/tmp/steal60-v66-gbugq0u0/run.luau:155: modal position uses the GUI canvas instead of scaled absolute pixels
 stacktrace:
 [C] function assert
-/tmp/steal60-v66-vogk9ys5/run.luau:155 function check
-/tmp/steal60-v66-vogk9ys5/run.luau:21670
-/tmp/steal60-v66-vogk9ys5/run.luau:21684
+/tmp/steal60-v66-gbugq0u0/run.luau:155 function check
+/tmp/steal60-v66-gbugq0u0/run.luau:22375
+/tmp/steal60-v66-gbugq0u0/run.luau:22397
 PASS: purchase compatibility, delivery effects, skill policy, personal reset
 PASS: 10,000 district indices and five-theme selection
 PASS: RU/EN immediate + deferred events, dynamic text, streamed prompts/signs
@@ -42,8 +42,8 @@ PASS: real CosmeticService purchases/save snapshots, coin-only rejection, worker
 PASS: +1 speed, five-diamond prices, own-avatar mastery, distinct benefits with both currencies, one-card UI and mixed/shared upgrade saves
 PASS: real memory server/client/ingress/music recovery, fast-key acknowledgement, lost-response sync, cancel/unlock, stale tokens, target removal, NPC cleanup contracts and bounded siren
 Traceback (most recent call last):
-  File "/workspace/backpacks-site/roblox/Steal60/v66/tests/validate.py", line 154, in <module>
+  File "/workspace/backpacks-site/roblox/Steal60/v66/tests/validate.py", line 157, in <module>
     subprocess.run([str(a.luau),str(bundle)],check=True)
   File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 571, in run
     raise CalledProcessError(retcode, process.args,
-subprocess.CalledProcessError: Command '['/tmp/steal60-luau/luau', '/tmp/steal60-v66-vogk9ys5/run.luau']' returned non-zero exit status 1.
+subprocess.CalledProcessError: Command '['/tmp/steal60-luau/luau', '/tmp/steal60-v66-gbugq0u0/run.luau']' returned non-zero exit status 1.
