@@ -11681,6 +11681,23 @@ local ROAD_FULL_HALF = ROAD_HALF + T.ParkingWidth
 local WALK = T.SidewalkWidth
 
 local TrackBuilder = {}
+local GARAGE_START=-60
+
+-- Recover pedestrians before the ocean/safety floor leaves them below a
+-- boundary. Drivers retain DriveService's validated movement rules.
+function TrackBuilder.rescueOutside(player)
+    local character=player.Character
+    local root=character and character:FindFirstChild('HumanoidRootPart')
+    local hum=character and character:FindFirstChildOfClass('Humanoid')
+    if not root or not hum or hum.Health<=0 or hum.SeatPart then return false end
+    local p=root.Position
+    local belowGarage=p.X<T.SalonZoneLength and p.Y< -1
+    if not(belowGarage or p.Y< -12 or math.abs(p.Z)>T.GroundHalfWidth-7 or p.X<GARAGE_START+4 or p.X>Layout.trackEnd()+12)then return false end
+    root.AssemblyLinearVelocity=Vector3.zero;root.AssemblyAngularVelocity=Vector3.zero
+    character:PivotTo(CFrame.new(math.clamp(p.X,GARAGE_START+10,Layout.trackEnd()-8),4,
+        math.clamp(p.Z,-T.GroundHalfWidth+13,T.GroundHalfWidth-13)))
+    return true
+end
 
 local function addPlotLabel(pad, text)
 	local bb = Instance.new("BillboardGui");bb.AutoLocalize=false
@@ -11705,8 +11722,11 @@ function TrackBuilder.init()
 	local core = Instance.new("Model")
 	core.Name = "TrackCore"
 
-	local x0, x1 = -60, T.SalonZoneLength
+	local x0, x1 = GARAGE_START, T.SalonZoneLength
 	local len, cx = x1 - x0, (x0 + x1) / 2
+    -- Keep the small perimeter loaded independently of decorative buildings.
+    local bounds=Instance.new('Model');bounds.Name='GarageMapBounds'
+    bounds.ModelStreamingMode=Enum.ModelStreamingMode.Persistent;bounds.Parent=core
 
 	P.part(core, "Ground", Vector3.new(len, 2, T.GroundHalfWidth * 2), Vector3.new(cx, -1, 0), Color3.fromRGB(120, 125, 130), Enum.Material.Concrete)
 	P.part(core, "Road", Vector3.new(len, 0.4, ROAD_FULL_HALF * 2), Vector3.new(cx, 0, 0), Color3.fromRGB(60, 60, 62), Enum.Material.Asphalt)
@@ -11730,9 +11750,10 @@ function TrackBuilder.init()
         P.part(core, "BorderNeonRail", Vector3.new(len, .6, 1.0),
             Vector3.new(cx, 3.7, edgeZ - side * 1.0), Color3.fromRGB(98, 216, 223), Enum.Material.Neon, false).Transparency=1
     end
-    local startBoundary=P.part(core, "StartMapBoundary", Vector3.new(4, 48, T.GroundHalfWidth * 2),
-        Vector3.new(x0-4,24,0),Color3.fromRGB(96,120,139), Enum.Material.SmoothPlastic)
+    local startBoundary=P.part(bounds, "StartMapBoundary", Vector3.new(6,96,T.GroundHalfWidth*2+8),
+        Vector3.new(x0+1,32,0),Color3.fromRGB(96,120,139),Enum.Material.SmoothPlastic)
     startBoundary.Transparency=1;startBoundary.CastShadow=false;startBoundary.CanCollide=true
+    startBoundary.CanTouch=false;startBoundary.CollisionGroup='Default'
 
     -- PERMANENT map edges independent of streamed districts. Long Roblox Parts
     -- are split into 650-stud sections; safety floor catches accidental falls.
@@ -11744,15 +11765,15 @@ function TrackBuilder.init()
         local length=math.min(650,worldEnd-segmentX)
         if length>0 then
             local midpoint=segmentX+length*.5
-            local floor=P.part(core,"SafetyFloor",Vector3.new(length,1,T.GroundHalfWidth*2-10),
+            local floor=P.part(bounds,"SafetyFloor",Vector3.new(length,1,T.GroundHalfWidth*2-10),
                 Vector3.new(midpoint,-6,0),Color3.fromRGB(40,58,62),Enum.Material.SmoothPlastic)
             floor.Transparency=1
-            floor.CastShadow=false
+            floor.CastShadow=false;floor.CanCollide=true;floor.CollisionGroup='Default'
             for _,side in ipairs({-1,1}) do
-                local wall=P.part(core,"PermanentMapEdge",Vector3.new(length,90,5),
-                    Vector3.new(midpoint,44,side*(T.GroundHalfWidth-5)),Color3.fromRGB(35,53,65),Enum.Material.SmoothPlastic)
+                local wall=P.part(bounds,"PermanentMapEdge",Vector3.new(length,112,5),
+                    Vector3.new(midpoint,33,side*(T.GroundHalfWidth-5)),Color3.fromRGB(35,53,65),Enum.Material.SmoothPlastic)
                 wall.Transparency=1
-                wall.CastShadow=false
+                wall.CastShadow=false;wall.CanCollide=true;wall.CanTouch=false;wall.CollisionGroup='Default'
             end
         end
     end
@@ -11815,19 +11836,7 @@ function TrackBuilder.init()
         while core.Parent do
             task.wait(.50)
             for _,player in ipairs(Players:GetPlayers()) do
-                local character=player.Character
-                local root=character and character:FindFirstChild("HumanoidRootPart")
-                local hum=character and character:FindFirstChildOfClass("Humanoid")
-                if root and hum and hum.Health>0 and not hum.SeatPart then
-                    local p=root.Position
-                    if p.Y < -12 or math.abs(p.Z)>T.GroundHalfWidth-7 or p.X < x0-21 or p.X>Layout.trackEnd()+12 then
-                        root.AssemblyLinearVelocity=Vector3.zero
-                        root.AssemblyAngularVelocity=Vector3.zero
-                        character:PivotTo(CFrame.new(
-                            math.clamp(p.X,x0+2,Layout.trackEnd()-8),
-                            4,math.clamp(p.Z,-T.GroundHalfWidth+13,T.GroundHalfWidth-13)))
-                    end
-                end
+                TrackBuilder.rescueOutside(player)
             end
         end
     end)

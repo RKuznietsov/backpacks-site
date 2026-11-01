@@ -49,24 +49,61 @@ do
 end
 print('PASS: bounded 25-tile ocean and 56 subtle crests, native part size/collision limits, one thousand district moves with 4096-stud horizon coverage, animated ripples and full cleanup (no water shader/rendering)')
 
--- Actual builders: the new transparent limits keep their original height and
--- collider geometry in the garage and streamed/procedural districts.
+-- Actual builders: invisible limits cover the garage shoreline above and below
+-- water, close both corners and preserve the onward procedural road.
 do
  local oldSpawn=task.spawn;task.spawn=function()end
  local previousLighting=table.clone(services.Lighting.props)
  require('TrackBuilder').init();task.spawn=oldSpawn
  local core=workspace:FindFirstChild('TrackCore');check(core~=nil,'actual permanent world builder completes')
+ local ground=core:FindFirstChild('Ground');local front=core:FindFirstChild('StartMapBoundary',true)
+ local groundStart=ground.Position.X-ground.Size.X/2
+ check(front.Position.X+front.Size.X/2>groundStart+2,'garage front wall overlaps solid land before the exposed shoreline, closing the old offshore gap')
+ local bounds=core:FindFirstChild('GarageMapBounds')
+ check(bounds and bounds.ModelStreamingMode==Enum.ModelStreamingMode.Persistent,'the small garage safety perimeter remains loaded independently of decorative ground')
+ check(front:IsDescendantOf(bounds)and front.Position.Y-front.Size.Y/2< -6.5,'front boundary reaches below both the sea and emergency floor, preventing an underpass')
  local side,start,permanent=0,0,0
  for _,part in ipairs(core:GetDescendants())do
   if part.Name=='SideMapBoundary'then
    side+=1;check(part.Transparency==1 and part.CanCollide and part.Anchored and part.Size.Y==48 and part.Size.Z==4 and math.abs(part.Position.Z)==196 and not part.CastShadow,'garage side walls remain tall solid boundaries and become completely invisible')
   elseif part.Name=='StartMapBoundary'then
-   start+=1;check(part.Transparency==1 and part.CanCollide and part.Size.Y==48 and not part.CastShadow,'start enclosure no longer blocks the ocean view or casts a wall shadow')
+   start+=1;check(part.Transparency==1 and part.CanCollide and part.Size.Y>=48 and not part.CastShadow and part.CollisionGroup=='Default','start enclosure remains invisible, high and solid in the same collision group as the road')
   elseif part.Name=='PermanentMapEdge'then
-   permanent+=1;check(part.Transparency==1 and part.Size.Y==90 and part.Anchored,'the permanent ninety-stud safety boundary remains in place')
+   permanent+=1;check(part.Transparency==1 and part.Size.Y>=90 and part.Anchored and part.CanCollide and part:IsDescendantOf(bounds)and part.Position.Y-part.Size.Y/2< -6.5,'persistent lateral boundaries keep their tall top and extend below the safety floor')
   elseif part.Name=='BorderNeonRail'then check(part.Transparency==1,'outer floating rail no longer crosses the sea horizon')end
  end
  check(side==2 and start==1 and permanent>=2,'both sides, start and permanent safety sections are present')
+ local left,right
+ for _,part in ipairs(bounds:GetChildren())do if part.Name=='PermanentMapEdge'then if part.Position.Z<0 then left=part else right=part end end end
+ for _,wall in ipairs({left,right})do
+  check(front.Position.X+front.Size.X/2>=wall.Position.X-wall.Size.X/2 and front.Position.X-front.Size.X/2<=wall.Position.X+wall.Size.X/2 and
+   front.Size.Z/2>=math.abs(wall.Position.Z)+wall.Size.Z/2,'the front wall overlaps the side bounds at both corners without an exit around its end')
+ end
+ -- Cross-shore paths at the walking, water and emergency-floor levels must
+ -- intersect the actual wall volume, rather than passing under a visual panel.
+ for z=-200,200,20 do for _,y in ipairs({-6,-2.35,0,3,12,40})do
+  local at=front.CFrame:PointToObjectSpace(V.new(front.Position.X,y,z))
+  check(math.abs(at.Z)<=front.Size.Z/2 and math.abs(at.Y)<=front.Size.Y/2,'entire garage shoreline is blocked at floor, sea, walking and jumping heights')
+ end end
+ do
+  local previousChar=player.Character;local char=Instance.new('Model');char.Parent=workspace;player.Character=char
+  local root=Instance.new('Part');root.Name='HumanoidRootPart';root.Parent=char
+  local hum=Instance.new('Humanoid');hum.Health=100;hum.Parent=char
+  local Builder=require('TrackBuilder')
+  local function position(p)root.Position=p;char.WorldPivot=root.CFrame;root.AssemblyLinearVelocity=V.new(-7,-18,4);root.AssemblyAngularVelocity=V.new(2,3,4)end
+  for _,p in ipairs({V.new(-60.1,3,0),V.new(-63,-3,0),V.new(-63,-7,-198),V.new(-63,-7,198),V.new(100,-2.5,0),V.new(200,-3,201)})do
+   position(p);check(Builder.rescueOutside(player),'a pedestrian who got beyond the garage edge is recovered before remaining in the sea')
+   check(root.Position.X>=front.Position.X+front.Size.X/2+4 and root.Position.Y==4 and math.abs(root.Position.Z)<=187,'recovery lands safely inside the wall, not inside its collider or beyond the shore')
+   check(root.AssemblyLinearVelocity.Magnitude==0 and root.AssemblyAngularVelocity.Magnitude==0,'shore recovery clears falling velocity')
+  end
+  for _,p in ipairs({V.new(-54,3,0),V.new(15,3,0),V.new(60,4,64),V.new(60,4,-64),V.new(450,3,0),V.new(4000,3,0)})do
+   position(p);check(not Builder.rescueOutside(player)and(root.Position-p).Magnitude<.001,'valid garage walks, plots and onward road travel are untouched')
+  end
+  position(V.new(-63,-3,0));hum.SeatPart=Instance.new('VehicleSeat')
+  check(not Builder.rescueOutside(player),'the pedestrian shoreline guard never relocates a seated driver');hum.SeatPart:Destroy();hum.SeatPart=nil
+  hum.Health=0;check(not Builder.rescueOutside(player),'shoreline recovery ignores a dead character')
+  char:Destroy();player.Character=previousChar
+ end
  for _,index in ipairs({1,5,6,20,1000})do
   local district=require('DistrictBuilder').build(index);local walls=0
   for _,part in ipairs(district:GetDescendants())do if part.Name=='SideMapBoundary'then
@@ -78,4 +115,4 @@ do
  check(services.Lighting.FogStart==300 and services.Lighting.FogEnd==1080 and atmosphere.Color.B>atmosphere.Color.R,'sea-blue haze retains the original district streaming distances')
  core:Destroy();services.Lighting.props=previousLighting
 end
-print('PASS: actual core and five district builds retain 48/90-stud boundaries while hiding side/start walls and outer rails; maritime haze keeps streaming distances unchanged (geometry/property doubles)')
+print('PASS: actual core closes the garage shoreline on land, below sea/floor and at both corners with persistent invisible colliders; real pedestrian recovery is safe; five district builds and maritime haze retained (geometry/API doubles)')
