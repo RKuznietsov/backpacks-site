@@ -7,14 +7,13 @@ end end
 local Cars=require('Cars');local Classes=require('CarClasses')
 for level=1,150 do
  local class,index=Policy.classFor(level)
- check(Classes[class].requiredHack<=level,'class must be unlocked')
- if index<5 then check(Policy.Min[index+1]>level,'must use highest unlocked class')end
+ check(class=='super'and index==5,'endgame uses existing supercar catalog')
  check(Policy.challenge(level)==math.max(31,level+1),'hard car level')
  check(not Req.canHack({hackLevel=level},Policy.challenge(level)),'hard car cannot bypass skill')
- local choices=0
- for _,car in ipairs(Cars.ByClass[class])do if Req.get(index,car,'common')<=level then choices+=1 end end
- check(choices>0,'at least one eligible ordinary car')
 end
+local seen={};local policyRng=Random.new(666)
+for _=1,10000 do local need=Policy.normalRequirement(policyRng);check(need>=25 and need<=30,'ordinary endgame cars require 25-30');seen[need]=true end
+for need=25,30 do check(seen[need]and not Req.canHack({hackLevel=24},need)and Req.canHack({hackLevel=30},need),'endgame keeps real skill gate')end
 check(not Req.canHack({hackLevel=0/0},1),'NaN skill rejected')
 check(not Req.canHack({hackLevel=math.huge},1),'infinite skill rejected')
 local Reset=require('StudioTestProfile')
@@ -129,7 +128,7 @@ for _,kind in ipairs({'police','repair'})do
  local root=Instance.new('Model');Roadside.decorate(root,kind,100,1)
  check(root:FindFirstChild(kind=='police'and'TrafficOfficer'or'RoadWorker',true)~=nil,'dressed roadside person')
  if kind=='police'then check(root:FindFirstChild('TrafficBatonStripe',true)~=nil,'traffic baton');check(root:FindFirstChild('RedLight',true)~=nil,'detailed patrol car')
- else check(root:FindFirstChild('SteelDrum',true)~=nil,'road roller');check(root:FindFirstChild('OpenAsphaltBed',true)~=nil,'repair surface')end
+ else check(root:FindFirstChild('RearDiggingBucket',true)~=nil,'detailed backhoe');check(root:FindFirstChild('OpenAsphaltBed',true)~=nil,'repair surface')end
  root:Destroy()
 end
 print('PASS: separate police and roadworks native model constructors')

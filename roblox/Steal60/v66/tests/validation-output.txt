@@ -1,10 +1,10 @@
-Final XML SHA-256: e8d285003a4c182079f50ace90d3854d52be9e730b7341d85aef12c99983211f
-XML instances: 120 script sources: 109
+Final XML SHA-256: f8b9a6f0b129d721a4a69946671854c412741695c944c16a768ff5dd1856af7d
+XML instances: 125 script sources: 114
 Baseline SHA-256: c9f96485fd61b68ae4d576ed57f9fb9287015692969f7c8a9878c8c81c65102f
 PASS: v65 durable storage, payment processing, skill predicate and catalog sources byte-identical
 PASS: installer paths, infinite bounds, audio ingress and reset configuration
-PASS: 1236 unique translations, format tokens, American English and no numeric require/loadstring
-Compiled 18 KLOC into 1090 KB bytecode (read 0.00s, parse 0.02s, compile 0.02s)
+PASS: 1264 unique translations, format tokens, American English and no numeric require/loadstring
+Compiled 18 KLOC into 1121 KB bytecode (read 0.00s, parse 0.02s, compile 0.03s)
 PASS: purchase compatibility, delivery effects, skill policy, personal reset
 PASS: 10,000 district indices and five-theme selection
 PASS: RU/EN immediate + deferred events, dynamic text, streamed prompts/signs
@@ -22,10 +22,17 @@ PASS: late-income marginal value, exact new prices and early progression
 PASS: real upgrade handlers save immediately, separate cooldowns and paired failure behavior
 PASS: Russian inflection, English singulars, American English and unified glossary
 PASS: adaptive-scale geometry, analog control mapping and notification keys (no hardware rendering)
-PASS: actual pet-license sanitization; 10 pets, 60 hero entries, 4 auras; separate paid mastery
-AUDIT FINAL ASSERTIONS: 313389
+PASS: actual pet-license sanitization; 10 pets, 61 hero entries, 5 auras; separate paid mastery
+AUDIT FINAL ASSERTIONS: 323326
+PASS: compact measured shelf labels, overlap rules, unobscured leaderboard geometry, columns and literal Unicode names
+PASS: balanced early police/repair scheduling, grounded district signs, per-viewer facing and dressed rounded/R15 actor paths
+PASS: quiet driver-only engine lifecycle, police/death sound suppression and actual handbook-header construction; rendering/assets still require Studio
+PASS: actual patrol/backhoe/NPC bounds on both road sides; actors separate from vehicles and opposite lane open
+PASS: actual ParkingService spawns 7 cars at 25..30 + one challenge, preserves normals across skill changes, enforces real skill predicate and unloads
+PASS: coin cosmetics, quadratic mastery pacing, modest aura and all walking pet bounds behind the driver on 150 cars with/without tuning
+PASS: real CosmeticService purchases/save snapshots, coin-only rejection, worker skill, paint/aura equip, license, mastery costs and duplicate/insufficient-funds guards
 [Steal60] Main запущен
 [Steal60/Delivery] Сдача автомобиля без водителя: рамка парковки, остановка 0.65 сек
 PASS: actual Main + DeliveryService + HeistService + TutorialService + loot/catalog logic: four deliveries (seated and exited), rewards, XP/level, shelves, helper, lesson, replay and invalid-delivery rejection
-FINAL COMBINED ASSERTIONS: 313434
+FINAL COMBINED ASSERTIONS: 326790
 NOT RUN: Roblox Engine/Studio rendering, physics, live DataStore and Marketplace integration.

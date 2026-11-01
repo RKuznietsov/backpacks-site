@@ -13,9 +13,9 @@
   },
   {
     "script": "AuraVisualLibrary",
-    "sha256": "8bfb7b1f08557267ebda55da481a54f411ca0422a48e8bc079bf00afd2010596",
-    "v65_status": "unchanged",
-    "initial_v66_status": "unchanged"
+    "sha256": "a62a9401d20a0b7bf07114cb0b7de07ba8a0b2f32e3124fb7ef3792d6e4c08e9",
+    "v65_status": "modified",
+    "initial_v66_status": "modified"
   },
   {
     "script": "AvatarOutfit",
@@ -103,7 +103,7 @@
   },
   {
     "script": "ClientMain",
-    "sha256": "06c4b67a8cfd57e63d21a65f4f6e7dc663f26e38a5f67a25acb72c2137788f3a",
+    "sha256": "7f746dcbe6b8ec1a8a2ebca28d55961f0f6fd4ed4c050be2ddf679d4f4eba1b3",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -133,13 +133,13 @@
   },
   {
     "script": "CosmeticConfig",
-    "sha256": "602a432898fbb631f310144ffeff9d5086cde7e878a24d6f6526979eef6ae774",
+    "sha256": "a877cd99b68bd1b44870548e804ca4f4eb49a8dc3d78421e18c8f590d55ed600",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
   {
     "script": "CosmeticHUD",
-    "sha256": "024620c684d82b3a1ccfaae1b738a755d4ce03aa851d8fdf66d8566c4b5e6ebc",
+    "sha256": "0201a54a7766445b2c2fcb8408cdcfc4c1c8eb65aaec49b350b02f593e291f92",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -151,7 +151,7 @@
   },
   {
     "script": "CosmeticService",
-    "sha256": "6c14d81ca89ff98a20eabe7226c60d49725ef8f52dc28586d9a0a3c7dafca084",
+    "sha256": "73036c1f550711f5968ea8a8725c37b5c8828d18b5f670c29ddc49b2270b5d2e",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -223,7 +223,7 @@
   },
   {
     "script": "EconomyBalance",
-    "sha256": "28c7161dbdc761d174baafb274b7c2c5ae5f5fe3da15e49b9a8aa378490bcf0e",
+    "sha256": "aa3c76edd63de2dc5dbb9b8188b9e61cad0583eea6521c51c063198f71da9804",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -235,9 +235,15 @@
   },
   {
     "script": "EndlessParking",
-    "sha256": "6fdc10c0106190df28bc31463561420193d2baf07d00fb7c0d6706673f74de45",
+    "sha256": "996957235be3ffe958471242d2da9e79030824477000d9bc1dee140e9c8e1657",
     "v65_status": "added",
-    "initial_v66_status": "unchanged"
+    "initial_v66_status": "modified"
+  },
+  {
+    "script": "EngineAudio",
+    "sha256": "cab47517073b702f781b139453a2dc2882d10227395c79bb1cefa86fc42108a6",
+    "v65_status": "added",
+    "initial_v66_status": "added"
   },
   {
     "script": "Grammar",
@@ -253,7 +259,7 @@
   },
   {
     "script": "HUDLayout",
-    "sha256": "98f3ddfe4db2006410ed9daf0bb86aaaa3f66dfb9cccf9343c7ea6b6a98440e7",
+    "sha256": "71ba1e76bf0941f568ce2375c018834249ee351f9c9c3366ddee2c5278ca5002",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -301,27 +307,33 @@
   },
   {
     "script": "InterfaceAccess",
-    "sha256": "b87c248608632b74e6e3d83775986d574048f328209e12bd4818ed94400b8eef",
+    "sha256": "227283828abf429ff0bd4c3216d4aede92bfdd5eeacff6fff6bf37d3188de981",
     "v65_status": "added",
     "initial_v66_status": "added"
   },
   {
     "script": "LanguageCatalog",
-    "sha256": "30362b151f39339b95029527c377b2b4f4cc2c24d9cfe9e8c9696a7ac3be67f0",
+    "sha256": "6683bcddf528aa778f0a964bc492bb1479e9c2a97bc857c0ed57a33f5a953a39",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
   {
     "script": "LanguageController",
-    "sha256": "fe49371d319b3d6c7b373874e0fb7a38034e3fd6981de48b81f3a35a175d04b4",
+    "sha256": "58ff0d42078451449b69d5cc8bf4266f0e81fdc0f61801db5ac2d695d5e7ef12",
     "v65_status": "modified",
-    "initial_v66_status": "unchanged"
+    "initial_v66_status": "modified"
   },
   {
     "script": "LanguageService",
     "sha256": "b37e905a82e70f4343dc27ef9aacfc85e6fff76e86e49ab6c9075a7b84c480d2",
     "v65_status": "modified",
     "initial_v66_status": "unchanged"
+  },
+  {
+    "script": "LeaderboardView",
+    "sha256": "d16f5d28fd74cd198b5c63673d7b5668e1f2d6e07d7397de428679c3c084701d",
+    "v65_status": "added",
+    "initial_v66_status": "added"
   },
   {
     "script": "Loot",
@@ -373,15 +385,15 @@
   },
   {
     "script": "MusicDirector",
-    "sha256": "48037bea9000ef68c1d8af2a8585b7087dc11bb5bc11fbc7724b48509e8af6b9",
+    "sha256": "0c073fc5a025f11b03ad2572107b72a017b05d8a8cfd2fb9e9bc785b89eb0868",
     "v65_status": "modified",
-    "initial_v66_status": "unchanged"
+    "initial_v66_status": "modified"
   },
   {
     "script": "MusicScore",
-    "sha256": "e0d3b3f7157c42f343d0a61f89a08d62a38a04558d37efb2292de7ac3b036d45",
-    "v65_status": "unchanged",
-    "initial_v66_status": "unchanged"
+    "sha256": "5aa2caaa0b96fbf0847524b516f082c4ab7387acaec2687995d025535f59e94b",
+    "v65_status": "modified",
+    "initial_v66_status": "modified"
   },
   {
     "script": "NPCBody",
@@ -403,15 +415,15 @@
   },
   {
     "script": "OwnerService",
-    "sha256": "235be9b89cbaca11941c056f0da932aaa728a3d1fa501bf2969ddbba70e33f36",
-    "v65_status": "unchanged",
-    "initial_v66_status": "unchanged"
+    "sha256": "149bbfe0142c6025e95ed28a807d1608e750c93b6a69359719b4e0bee056dfaf",
+    "v65_status": "modified",
+    "initial_v66_status": "modified"
   },
   {
     "script": "ParkingService",
-    "sha256": "8bfbbc604942cba5e7af52f65099c4dfcfc712fe649c1c7f83e231937589f616",
+    "sha256": "db12f32394a12037145a84349d575326310ed746fabb8a6964fa0360b6ca2f97",
     "v65_status": "modified",
-    "initial_v66_status": "unchanged"
+    "initial_v66_status": "modified"
   },
   {
     "script": "PetAnimationLibrary",
@@ -421,9 +433,9 @@
   },
   {
     "script": "PetMount",
-    "sha256": "1440a5aa6b81609d41c24262b796e0de64672f46cf19d5e4302ed444e72f0a92",
+    "sha256": "4abfc97b9d91ac1c19ad2ddbd72c910028f02f812c8c3230297b49c86252c35a",
     "v65_status": "added",
-    "initial_v66_status": "unchanged"
+    "initial_v66_status": "modified"
   },
   {
     "script": "PetVisualLibrary",
@@ -433,9 +445,9 @@
   },
   {
     "script": "PoliceService",
-    "sha256": "0edc3928337239acbee7a1eca4ab009f26375ba197f7cb21ca9e781499c0ef1c",
+    "sha256": "64add76525fcd05da18e9bbece517c9a987f2b35ec5d97954704522804ef81a5",
     "v65_status": "modified",
-    "initial_v66_status": "unchanged"
+    "initial_v66_status": "modified"
   },
   {
     "script": "ProfileStore",
@@ -463,9 +475,15 @@
   },
   {
     "script": "RoadChallengeService",
-    "sha256": "98857613ea74552b6e1377a7c32eca98fdbd2bdec38a4e221bf8a0610985bc23",
+    "sha256": "23ff281d01ec92d362eff5ba5f36a2088436dd99de16f03eddd5356f041cd3fb",
     "v65_status": "modified",
-    "initial_v66_status": "unchanged"
+    "initial_v66_status": "modified"
+  },
+  {
+    "script": "RoadEventSchedule",
+    "sha256": "ac1f4790a013dd5d6dbeb37bc7c02076cfd69cef9c728a1ec2526af2290f7b70",
+    "v65_status": "added",
+    "initial_v66_status": "added"
   },
   {
     "script": "RoadEventService",
@@ -481,15 +499,27 @@
   },
   {
     "script": "RoadsideArt",
-    "sha256": "0dd7b6e4013143be44f6f3490cbe2614c8bd450c98760661926ba0c000c7afcd",
+    "sha256": "987fbd7b86d72b9d0e92f494074d638c00ebb538e521218ab3692548812c118a",
     "v65_status": "added",
-    "initial_v66_status": "unchanged"
+    "initial_v66_status": "modified"
+  },
+  {
+    "script": "RoadsideCharacters",
+    "sha256": "9f19dd11d5bb6433a8fbc579f0dcd80d6c15f9a690524a64a902d8243963f0d7",
+    "v65_status": "added",
+    "initial_v66_status": "added"
+  },
+  {
+    "script": "RoadsideFacing",
+    "sha256": "f00e5a556c1726246d760fc3e8529feed89c133e5bbde5825aa5a14778b309b9",
+    "v65_status": "added",
+    "initial_v66_status": "added"
   },
   {
     "script": "RouteHUD",
-    "sha256": "6454c3b5a0e5e302132a0525158891e6a1b85204dd1bceaeb312d6bd2f346a95",
+    "sha256": "cca5f20e343069c272a406299c28389d9ded562fec7bf3db0bdf7de4460362c7",
     "v65_status": "modified",
-    "initial_v66_status": "unchanged"
+    "initial_v66_status": "modified"
   },
   {
     "script": "SalonArtDirector",
@@ -505,15 +535,15 @@
   },
   {
     "script": "SalonService",
-    "sha256": "62a96333d182336762cc201bb437cf78f2131eb3fa69044544a7c2ab58dd80e3",
+    "sha256": "48aa7af965b611541a348b11ec1425b073661294c51f7b98908e387453a034e1",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
   {
     "script": "SeasonLeaderboardService",
-    "sha256": "970c968308128f3905b868d1fd60151ca3062e4b4fc822603bd23fc3acd4043e",
-    "v65_status": "unchanged",
-    "initial_v66_status": "unchanged"
+    "sha256": "b4d621bef6a4fba34a984b949e464f8bc87725881172bcd574f1cc334ea5e00f",
+    "v65_status": "modified",
+    "initial_v66_status": "modified"
   },
   {
     "script": "SecurityService",
@@ -535,9 +565,9 @@
   },
   {
     "script": "ShelfTypography",
-    "sha256": "173b3dcd41bcc20f9778d43e66d93176fc23bd8af21cb9d056f32ac4e76e7063",
+    "sha256": "446bbead35099c50e90257f937e2e0cd1ed9d8e8c023000c6c7aad71edba7a71",
     "v65_status": "added",
-    "initial_v66_status": "unchanged"
+    "initial_v66_status": "modified"
   },
   {
     "script": "ShowcaseSelection",
@@ -601,7 +631,7 @@
   },
   {
     "script": "TutorialHUD",
-    "sha256": "ea678730dc37476b777101e744272375e227d2f5ba4488e040c3b53754373d7c",
+    "sha256": "22366f946b95a2829fd6adf821bd36f0b7ac2bf5ef18b7abd898b97e88ee6b38",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -649,8 +679,8 @@
   },
   {
     "script": "WorldArtDirector",
-    "sha256": "eb8ca23ea5ae9884a3d9d84189050b669515d9e92bbed0b62ec23fb9e59a1192",
+    "sha256": "9787ed3f517e1ca6a20c254a1729c68ada5da6a76454f6d2ef9aa3ef940035d3",
     "v65_status": "modified",
-    "initial_v66_status": "unchanged"
+    "initial_v66_status": "modified"
   }
 ]

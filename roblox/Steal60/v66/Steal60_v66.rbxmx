@@ -896,7 +896,7 @@ local Balance=require(script.Parent.EconomyBalance)
 -- Global, persistent bonuses; one point per purchase, never attached to a specific appearance.
 M.HERO_MAX=30
 M.PET_MAX=60
-M.PET_LICENSE_COINS=18000
+M.PET_LICENSE_COINS=5000000
 M.PET_LICENSE_DIAMONDS=240
 function M.heroUpgradeCoins(level)return Balance.masteryCost('hero',level)end
 function M.heroUpgradeDiamonds(level)
@@ -910,7 +910,11 @@ function M.petUpgradeDiamonds(level)
  if level>=M.PET_MAX then return nil end
  return 20
 end
+M.COIN_HERO_ID='hero_worker_coin_v66'
 M.List={
+ {id='hero_worker_coin_v66',category='hero',name='ОБЫЧНЫЙ РАБОЧИЙ',description='Простая серая рабочая рубашка, тёмные брюки и открытое лицо. Мастерство героя доступно за монеты.',priceCoins=4000000,currency='coins',color=C(116,127,132),catalogLook='worker',featuredCoins=true},
+ {id='paint_workgray_coin_v66',category='paint',name='Рабочий серый',description='Спокойный серый кузов без узоров и свечения.',priceCoins=750000,currency='coins',color=C(122,134,142),material='SmoothPlastic',style='solid'},
+ {id='aura_breeze_coin_v66',category='aura',name='Лёгкий ветер',description='Один тонкий серо-голубой след при движении. Без искр, частиц и яркого свечения.',priceCoins=1500000,currency='coins',color=C(165,188,200),simple=true},
  {id="skin_sakura",category="skin",name="Сакура-дрифт",description="Объёмные лепестки сакуры и сливочные цветы на кузове",price=320,color=C(255,146,189),style="sakura"},
  {id="paint_bubblegum",category="paint",name="Клубничный пломбир",description="Клубничный кузов и сливочная крыша",price=125,color=C(255,139,182),accent=C(255,244,218),material="SmoothPlastic",style="twoTone"},
  {id="paint_soda",category="paint",name="Мятная газировка",description="Мятный кузов и ванильная отделка",price=125,color=C(108,230,191),accent=C(255,241,208),material="SmoothPlastic",style="twoTone"},
@@ -1012,6 +1016,7 @@ M.List[#M.List+1]={id='tune_mirrors',category='tuning',name='Карбоновы�
 -- Old pet purchases migrate to that license in CosmeticService.
 -- Ten distinct catalog silhouettes. Legacy purchases migrate to their matching look.
 M.CatalogLooks={
+ worker={id='worker_coin_v66',canonical='hero_worker_coin_v66',name='ОБЫЧНЫЙ РАБОЧИЙ',color=C(116,127,132),pantsColor=C(43,50,57),description='Простая серая рабочая рубашка, тёмные брюки и открытое лицо. Мастерство героя доступно за монеты.'},
  mechanic={id='mechanic',canonical='hero_premium_mech',name="АКВАПИЛОТ",hat=1365767,face=138940480674278,jacket=71576448094265,color=C(51,163,201),pantsColor=C(25,47,72),description="Крылатый шлем «Валькирия», голубая куртка и тёмный низ."},
  dealer={id='dealer',canonical='hero_premium_archon',name='ЗОЛОТОЙ МАГНАТ',hat=1285307,face=11748356,jacket=71576448094265,color=C(242,183,66),pantsColor=C(40,32,56),description="Федора «Спаркл Тайм», очки «Клокворк» и контрастный городской костюм."},
  workshop={id='workshop',canonical='hero_premium_phoenix',name="ДИДЖЕЙ МАНГО",hair=89315454377282,hat=1235488,jacket=17638739844,color=C(255,152,74),pantsColor=C(42,33,66),description="Наушники «Клокворк», объёмная причёска и яркая красная куртка."},
@@ -1024,6 +1029,7 @@ M.CatalogLooks={
  comic={id='comic',canonical='hero_catalog_comic_v56',name="БОЛЬШАЯ УЛЫБКА",hat=1048037,jacket=17638739844,color=C(255,207,83),pantsColor=C(39,68,98),description="Узнаваемая большая голова и яркая куртка: отдельный мультяшный образ с большой улыбкой."},
 }
 local clothingThemes={
+ worker={'gray mechanic work uniform','gray worker shirt pants'},
  mechanic={'blue pilot uniform','pilot suit'},dealer={'black gold suit','gold tuxedo'},
  workshop={'orange streetwear','orange jacket'},stylist={'white celestial robe','white fantasy robe'},
  hacker={'black cyan techwear','cyan techwear'},racer={'red racing suit','racing uniform'},
@@ -1035,7 +1041,7 @@ for key,terms in pairs(clothingThemes)do
  profile.jacket=nil
  profile.description=profile.description..' Полный комплект: одежда для торса и ног.'
 end
-M.CatalogOrder={'mechanic','dealer','workshop','stylist','hacker','racer','pirate','wizard','cone','comic'}
+M.CatalogOrder={'worker','mechanic','dealer','workshop','stylist','hacker','racer','pirate','wizard','cone','comic'}
 local newEntries={
  {id='hero_catalog_street_v56',price=240}, {id='hero_catalog_pirate_v56',price=350},
  {id='hero_catalog_wizard_v56',price=430}, {id='hero_catalog_cone_v56',price=180},
@@ -1046,7 +1052,7 @@ local canonical={}
 for key,preset in pairs(M.CatalogLooks)do canonical[preset.canonical]=key end
 local family={phantom='hacker',stealth='hacker',plasma='hacker',cyber='hacker',ronin='racer',sport='racer',drift='racer',street='racer',astral='dealer',royal='dealer',solar='dealer',frost='stylist',pilot='workshop',sentinel='mechanic',specter='stylist'}
 for _,def in ipairs(M.List)do
- if def.category=='hero'then
+ if def.category=='hero'and not def.featuredCoins then
   def.catalogLook=def.id=='hero_premium_ronin'and'racer'or canonical[def.id]or family[def.silhouette or def.style]or'hacker'
   def.hiddenFromShop=canonical[def.id]==nil
   def.premiumDesign=nil
@@ -1127,10 +1133,12 @@ function M.deliveries(data)
  local count=0;for _,entry in pairs(data.catalog or{})do count+=math.max(0,math.floor(tonumber(entry.count)or 0))end
  return count
 end
+-- Quadratic long-term progression avoids both the old 9-level sprint and exponential endgame prices.
 function M.masteryCost(category,level)
  local maximum=category=='hero'and 30 or 60
- if level<0 or level>=maximum then return nil end
- return math.floor((category=='hero'and 45000 or 3500)*(category=='hero'and 1.28 or 1.20)^level+.5)
+ if type(level)~='number'or level~=level or level%1~=0 or level<0 or level>=maximum then return nil end
+ local base=category=='hero'and 100000 or 75000
+ return math.floor(base*(1+level/6)^2+.5)
 end
 return M
 ]]></ProtectedString></Properties></Item></Item>
@@ -3432,6 +3440,17 @@ function M.create(root,def)
  if not host then host=root end
  local tracked={};local half=math.clamp(host.Size.X*.56,.65,1.1);local back=host.Size.Z*.5+.18
  local high=host.Size.Y*.35;local low=-host.Size.Y*.42
+ if def.simple then
+  local a=Instance.new('Attachment');a.Name='Steal60SimpleTrailA';a.Position=Vector3.new(-.26,low,back);a.Parent=host
+  local b=Instance.new('Attachment');b.Name='Steal60SimpleTrailB';b.Position=Vector3.new(.26,low,back);b.Parent=host
+  local trail=Instance.new('Trail');trail.Name='SimpleBreeze';trail.Attachment0=a;trail.Attachment1=b;trail.Enabled=false
+  trail.FaceCamera=true;trail.Lifetime=.45;trail.MinLength=.08;trail.MaxLength=5;trail.LightEmission=0;trail.LightInfluence=1
+  trail.Color=ColorSequence.new(def.color);trail.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,.58),NumberSequenceKeypoint.new(1,1)})
+  trail.WidthScale=NumberSequence.new({NumberSequenceKeypoint.new(0,.45),NumberSequenceKeypoint.new(1,0)});trail.Parent=folder
+  folder:SetAttribute('TrailCount',1);folder:SetAttribute('EmitterCount',0);folder:SetAttribute('AuraId',def.id);folder:SetAttribute('AuraOrigin','Back')
+  folder.Destroying:Connect(function()states[root]=nil;if a.Parent then a:Destroy()end;if b.Parent then b:Destroy()end end)
+  return folder
+ end
  local accent=def.id=='aura_plasma'and C(185,95,255)or def.id=='aura_crimson'and C(255,201,64)or def.id=='aura_gold'and C(255,246,173)or C(113,255,217)
  local function attach(name,pos)
   local a=Instance.new('Attachment');a.Name='Steal60BackTrail_'..name;a.Position=pos;a.Parent=host;tracked[#tracked+1]=a;return a
@@ -4001,7 +4020,7 @@ function M.start(gui)
  local police=player:GetAttribute('PoliceActive')==true
  local folder=Instance.new('Folder');folder.Name='Steal60LocalSoundtrack';folder.Parent=SoundService
  local musicGroup=Instance.new('SoundGroup');musicGroup.Name='Steal60Music';musicGroup.Volume=.45;musicGroup.Parent=SoundService
- local effectsGroup=Instance.new('SoundGroup');effectsGroup.Name='Steal60PoliceEffects';effectsGroup.Volume=.50;effectsGroup.Parent=SoundService
+ local effectsGroup=Instance.new('SoundGroup');effectsGroup.Name='Steal60PoliceEffects';effectsGroup.Volume=.06;effectsGroup.Parent=SoundService
  local function listen(signal,fn)local c=signal:Connect(fn);links[#links+1]=c;return c end
  local function ready(entry)return entry and not entry.failed and(entry.loaded or entry.sound.IsLoaded)end
  local function pick(bank,previous)
@@ -4068,7 +4087,7 @@ function M.start(gui)
  end
  add('ambient',Score.Ambient);add('heist',Score.Heists);add('siren',Score.Siren);add('alarm',Score.Alarm)
  local audioRemote=game:GetService('ReplicatedStorage'):WaitForChild('Remotes'):WaitForChild('SetAudio')
- local button=Instance.new('TextButton');button.Name='MusicToggle';button.AnchorPoint=Vector2.new(1,0);button.Position=UDim2.new(1,-14,0,14)
+ local button=Instance.new('TextButton');button.Name='MusicToggle';button.AnchorPoint=Vector2.new(1,0);button.Position=UDim2.new(1,-14,0,44)
  button.Size=UDim2.fromOffset(44,44);button.ZIndex=120;button.Active=true;button.Selectable=true;button.Visible=true;button.Text='';button.AutoLocalize=false;button.Parent=gui
  local note=Instance.new('Frame');note.Name='NoteDrawing';note.Position=UDim2.fromOffset(0,0);note.Size=UDim2.fromScale(1,1);note.BackgroundTransparency=1;note.ZIndex=121;note.Parent=button
  local pieces={}
@@ -4081,7 +4100,7 @@ function M.start(gui)
  stroke('NoteLeft',UDim2.fromOffset(10,7),UDim2.fromOffset(9,26),-15,true);stroke('NoteRight',UDim2.fromOffset(10,7),UDim2.fromOffset(22,24),-15,true)
  local slash=stroke('MutedSlash',UDim2.fromOffset(3,34),UDim2.fromOffset(21,5),-45);slash.ZIndex=123;slash.BackgroundColor3=Color3.fromRGB(255,153,164)
  local corner=Instance.new('UICorner');corner.CornerRadius=UDim.new(0,9);corner.Parent=button
- local volumePanel=Instance.new('Frame');volumePanel.Name='MusicVolumePanel';volumePanel.AnchorPoint=Vector2.new(1,0);volumePanel.Position=UDim2.new(1,-14,0,64);volumePanel.Size=UDim2.fromOffset(190,80);volumePanel.BackgroundColor3=Color3.fromRGB(18,36,45);volumePanel.Visible=false;volumePanel.ZIndex=124;volumePanel.Parent=gui
+ local volumePanel=Instance.new('Frame');volumePanel.Name='MusicVolumePanel';volumePanel.AnchorPoint=Vector2.new(1,0);volumePanel.Position=UDim2.new(1,-14,0,94);volumePanel.Size=UDim2.fromOffset(190,80);volumePanel.BackgroundColor3=Color3.fromRGB(18,36,45);volumePanel.Visible=false;volumePanel.ZIndex=124;volumePanel.Parent=gui
  local volumeLabel=Instance.new('TextLabel');volumeLabel.Size=UDim2.new(1,-12,0,30);volumeLabel.Position=UDim2.fromOffset(6,4);volumeLabel.BackgroundTransparency=1;volumeLabel.TextColor3=Color3.new(1,1,1);volumeLabel.TextSize=14;volumeLabel.Font=Enum.Font.GothamBold;volumeLabel.ZIndex=125;volumeLabel.Parent=volumePanel
  local function saveAudio(volume,muted)
   player:SetAttribute('Steal60MusicVolume',volume);player:SetAttribute('Steal60MusicMuted',muted);audioRemote:FireServer(volume,muted)
@@ -4100,6 +4119,7 @@ function M.start(gui)
   local off=player:GetAttribute('Steal60MusicMuted')==true;musicGroup.Volume=off and 0 or(player:GetAttribute('Steal60MusicVolume')or .45)
   volumeLabel.Text=('Громкость музыки: %d%%'):format(math.floor((player:GetAttribute('Steal60MusicVolume')or .45)*100+.5))
   if player:GetAttribute('Steal60MenuOpen')or player:GetAttribute('HackActive')then volumePanel.Visible=false end
+  player:SetAttribute('Steal60AudioPanelOpen',volumePanel.Visible)
   local pending=false;for _,entry in ipairs(records)do if(entry.bank=='ambient'or entry.bank=='heist')and not entry.loaded and not entry.failed then pending=true;break end end
   local state=off and'ВЫКЛ'or(current and'ВКЛ'or(pending and'ЗАГРУЗКА'or'НЕТ АУДИО'))
   button:SetAttribute('MusicStatus',state);button:SetAttribute('Tooltip','Музыка: '..state);slash.Visible=off
@@ -4133,6 +4153,7 @@ function M.start(gui)
  gui.Destroying:Connect(function()
   live=false;for _,c in ipairs(links)do c:Disconnect()end
   for _,entry in ipairs(records)do if entry.tween then entry.tween:Cancel()end;entry.sound:Stop()end
+  player:SetAttribute('Steal60AudioPanelOpen',nil)
   folder:Destroy();musicGroup:Destroy();effectsGroup:Destroy()
  end)
 end
@@ -4141,8 +4162,8 @@ return M
 local M={}
 M.Ambient={1848354536,1841647093,1843529601}
 M.Heists={1843529634,1837875734,1840684529,1837849285,1837768517}
-M.Siren={156667202,9125713501}
-M.Alarm={138081500,9114393407}
+M.Siren={} -- Removed: unverified police clips can contain startling voices.
+M.Alarm={} -- Police lights/UI remain; no arrest scream or loud alarm playback.
 function M.order(list,rng,last)
  local first=rng:NextInteger(1,#list)
  if #list>1 and list[first]==last then first=first%#list+1 end
@@ -4713,7 +4734,7 @@ function M.driving(player)
  local h=player.Character and player.Character:FindFirstChildOfClass('Humanoid');return h and h.SeatPart~=nil or false
 end
 function M.suppressHud(player)
- return player:GetAttribute('Steal60MenuOpen')==true or player:GetAttribute('HackActive')==true or player:GetAttribute('CosmeticPreviewToken')~=nil or player:GetAttribute('Steal60ToastActive')==true
+ return player:GetAttribute('Steal60MenuOpen')==true or player:GetAttribute('HackActive')==true or player:GetAttribute('CosmeticPreviewToken')~=nil or player:GetAttribute('Steal60ToastActive')==true or player:GetAttribute('Steal60ReadingLeaderboard')==true or player:GetAttribute('Steal60AudioPanelOpen')==true
 end
 function M.compactDetails(player)
  local camera=workspace.CurrentCamera;return player:GetAttribute('Steal60DetailsOpen')==true and camera and camera.ViewportSize.Y<500
@@ -4768,13 +4789,14 @@ function M.start(gui)
  Run.Heartbeat:Connect(function(dt)
   elapsed+=dt;if elapsed<.1 then return end;elapsed=0
   local camera=workspace.CurrentCamera;local width=camera and camera.ViewportSize.X or 1024;local height=camera and camera.ViewportSize.Y or 768
-  local top=height<500 and 66 or 162
+  banner.Position=UDim2.new(.5,0,0,width<980 and 96 or 72)
+  local top=196
   dock.Position=UDim2.new(1,-12,0,top);dock.Size=UDim2.fromOffset(math.min(300,width-24),math.max(45,math.min(380,height-top-180)))
   local any=false
   for _,frame in ipairs(dock:GetChildren())do local role=roles[frame.Name];if role then frame.Visible=M.detailsVisible(player,role);any=any or frame.Visible end end
   dock.Visible=any
   local status=gui:FindFirstChild('StatusHUD');if status then status.Visible=not M.suppressHud(player)end
-  local trial=gui:FindFirstChild('CosmeticTryOnCountdown');if trial then trial.Position=UDim2.new(.5,0,0,56);trial.Visible=player:GetAttribute('CosmeticPreviewToken')~=nil and not player:GetAttribute('Steal60MenuOpen')end
+  local trial=gui:FindFirstChild('CosmeticTryOnCountdown');if trial then trial.Position=UDim2.new(.5,0,0,104);trial.Visible=player:GetAttribute('CosmeticPreviewToken')~=nil and not player:GetAttribute('Steal60MenuOpen')end
   local root=player.Character and player.Character:FindFirstChild('HumanoidRootPart')
   local district=root and Layout.indexAt(root.Position.X)or 0;local now=os.clock()
   if district~=previousDistrict then nextNotice=0 end
@@ -4782,7 +4804,7 @@ function M.start(gui)
   previousDistrict=district
   banner.Visible=district>5 and now<noticeUntil and not M.suppressHud(player)
   player:SetAttribute('Steal60DevelopmentNotice',banner.Visible)
-  local route=gui:FindFirstChild('RoutePanel');if route then route.Size=UDim2.fromOffset(math.min(300,width-24),88);route.Position=UDim2.new(1,-18,0,banner.Visible and width<980 and 110 or 66)end
+  local route=gui:FindFirstChild('RoutePanel');if route then route.Size=UDim2.fromOffset(math.min(300,width-24),88);route.Position=UDim2.new(1,-18,0,banner.Visible and width<980 and 140 or 100)end
   sync()
  end)
 end
@@ -5043,11 +5065,12 @@ function M.change(current,owned,valid,limit,incoming,outgoing)
  list[#list+1]=incoming;return list,'added'
 end
 return M
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_STEAL60_V64_LanguageCatalog"><Properties><string name="Name">LanguageCatalog</string><ProtectedString name="Source"><![CDATA[-- Canonical RU source -> American English. Noun inflection is presentation-only in Grammar.
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_STEAL60_V64_LanguageCatalog"><Properties><string name="Name">LanguageCatalog</string><ProtectedString name="Source"><![CDATA[-- Canonical RU sources and American English translations.
 return {
- ["Достигнут предел скорости. Эта покупка больше не даст прибавки."]="Speed limit reached. This purchase would no longer improve your speed.",
- ["ДОСТИГНУТ ПРЕДЕЛ СКОРОСТИ"]="SPEED LIMIT REACHED",
- ["Бонус базового дохода +%d п.п."]="Base income bonus +%d pp",
+ ["STEAL60 · МАРШРУТ"]="STEAL60 · ROUTE",
+ ["Бонус: +%d п.п. / +%d п.п."]="Bonus: +%d pp / +%d pp",
+ ["Сейчас: %s\nДалее: %s"]="Current: %s\nNext: %s",
+ ["Бонус монет +%d п.п. · Доход в час: %s $"]="Coin bonus +%d pp · Income per hour: %s $",
  [" $/ч"]=" $/h",
  [" $/ч за штуку"]=" $/h each",
  [" %s · %s · +%s $/ч"]=" %s · %s · +%s $/h",
@@ -5103,6 +5126,8 @@ return {
  ["+%d%% денег за угон · +%d%% ОПЫТ · касса %d ч."]="+%d%% theft coins · +%d%% XP · %d h register",
  ["+0% к деньгам за угоны"]="+0% theft earnings",
  ["+1 к максимальной скорости"]="+1 maximum speed",
+ ["+1 п.п. · %d 💎"]="+1 pp · %d 💎",
+ ["+1 п.п. · %s $"]="+1 pp · %s $",
  ["+1% ЗА 20 АЛМАЗОВ"]="+1% FOR 20 DIAMONDS",
  ["+1% ЗА МОНЕТЫ · "]="+1% FOR COINS · ",
  ["+15 п.п. за редкую, эпическую или легендарную доставку"]="+15 percentage points for rare, epic or legendary deliveries",
@@ -5135,6 +5160,7 @@ return {
  ["225 алмазов"]="225 diamonds",
  ["250 алмазов"]="250 diamonds",
  ["3 300 алмазов"]="3,300 diamonds",
+ ["30 ДНЕЙ"]="30 DAYS",
  ["60 СЕК"]="60 SEC",
  ["60 СЕК   /   АВТОПРИКЛЮЧЕНИЕ"]="60 SEC   /   ROAD TRIP",
  ["630 алмазов"]="630 diamonds",
@@ -5213,8 +5239,10 @@ return {
  ["Белта Туринг"]="Belta Touring",
  ["Боковые пороги"]="Side Skirts",
  ["Большой набор с выгодой за объём"]="A larger pack with better value",
+ ["Бонус базового дохода +%d п.п."]="Base income bonus +%d pp",
  ["Бонус монет +%d%%"]="Coin bonus +%d%%",
  ["Бонус сохраняется при смене облика. Каждый +1% стоит 20 алмазов; монетная цена растёт."]="Your bonus stays when you change looks. Each +1% costs 20 diamonds; coin prices increase.",
+ ["Бонус: +%d п.п. / +%d п.п. · следующий +1 п.п."]="Bonus: +%d pp / +%d pp · next +1 pp",
  ["Боро 80"]="Boro 80",
  ["Бурнер Сикс"]="Burner Six",
  ["Быстрая машина (старый пропуск)"]="Fast car (legacy pass)",
@@ -5325,6 +5353,7 @@ return {
  ["ГАРАЖ / УГОН 60"]="GARAGE / STEAL 60",
  ["ГАРАЖ · %d/%d машин в коллекции · на витрине %d/%d · выбрано %d"]="GARAGE · %d/%d cars collected · displayed %d/%d · selected %d",
  ["ГАРАЖ №%d"]="GARAGE %d",
+ ["ГАРАЖИ"]="GARAGES",
  ["ГАРАЖНЫЙ КЛУБ"]="GARAGE CLUB",
  ["ГЕРОЙ"]="HERO",
  ["ГОРОДСКАЯ СТУДИЯ"]="CITY STUDIO",
@@ -5334,6 +5363,7 @@ return {
  ["Гавон Эстейт"]="Gavon Estate",
  ["Геймпад: RT/LT — газ/назад · стик — руль · X — выровнять"]="Gamepad: RT/LT — drive/reverse · stick — steer · X — recover",
  ["Геймпад: стик — ходьба · X — действие · Y — меню"]="Gamepad: stick — move · X — interact · Y — menu",
+ ["Герой: +%d п.п. к бонусу монет и кассы."]="Hero: +%d pp to the coin and register bonus.",
  ["Герой: +%d%% ко всем монетам, включая кассу."]="Hero: +%d%% to all coins, including the register.",
  ["Герой: максимальное мастерство"]="Hero: maximum mastery",
  ["Герой: максимальное мастерство."]="Hero: maximum mastery.",
@@ -5363,6 +5393,7 @@ return {
  ["ДОРОЖНАЯ КОМАНДА"]="CONE CREW",
  ["ДОСТАВЛЯЙ УГНАННЫЕ АВТО"]="DELIVER STOLEN CARS",
  ["ДОСТАВЬ АВТО В ГАРАЖ"]="DELIVER THE CAR TO YOUR GARAGE",
+ ["ДОСТИГНУТ ПРЕДЕЛ СКОРОСТИ"]="SPEED LIMIT REACHED",
  ["ДОХОД В ЧАС"]="INCOME PER HOUR",
  ["ДУБЛИКАТ: %s · %d/5 к следующей звезде (бонус не повторяется)"]="DUPLICATE: %s · %d/5 towards the next star (base bonus is not repeated)",
  ["Далее: "]="Next: ",
@@ -5407,6 +5438,7 @@ return {
  ["Доставь машину домой"]="Bring the car home",
  ["Доставь машину: система сама поставит первые предметы."]="Deliver a car and your first items will be placed automatically.",
  ["Доставь редкую машину"]="Deliver a rare car",
+ ["Достигнут предел скорости. Эта покупка больше не даст прибавки."]="Speed limit reached. This purchase would no longer improve your speed.",
  ["Доход"]="Income",
  ["Доход в час: %s $"]="Income per hour: %s $",
  ["Доход полок +%d%%"]="Shelf income +%d%%",
@@ -5417,6 +5449,7 @@ return {
  ["Дрон-искатель"]="Scout Drone",
  ["ЕДЕТ НА БАГАЖНИКЕ"]="RIDES ON THE ROOF",
  ["ЕДЕТ НА КРЫШЕ"]="RIDES ON THE ROOF",
+ ["ЕДЕТ СЗАДИ НА МАШИНЕ"]="RIDES AT THE REAR OF THE CAR",
  ["ЕЖЕДНЕВНЫЕ КОНТРАКТЫ"]="DAILY CONTRACTS",
  ["ЕЖЕДНЕВНЫЕ ЦЕЛИ"]="DAILY GOALS",
  ["ЕЗДИ · УГОНЯЙ · СОБИРАЙ"]="DRIVE · STEAL · COLLECT",
@@ -5438,6 +5471,7 @@ return {
  ["ЗАНЯТО"]="BUSY",
  ["ЗАПОМИНАЙ ПОРЯДОК..."]="WATCH THE ORDER...",
  ["ЗАПОМНИ КОД"]="REMEMBER THE CODE",
+ ["ЗАРАБОТАНО"]="EARNED",
  ["ЗВЕЗДА УЛИЦ"]="STREET STAR",
  ["ЗЕЛЁНЫЕ"]="GREEN",
  ["ЗЕЛЁНЫЙ"]="GREEN",
@@ -5480,6 +5514,7 @@ return {
  ["Зона салонов"]="Garage Area",
  ["Зона успеха +%d п.п."]="Success zone +%d pp",
  ["Зорион Х"]="Zorion X",
+ ["ИГРОК"]="PLAYER",
  ["ИЗУМРУДНЫЕ КРИСТАЛЛЫ"]="EMERALD CRYSTALS",
  ["ИНФОРМАТОР · +12%"]="INFORMANT · +12%",
  ["Игрок #"]="Player #",
@@ -5513,7 +5548,9 @@ return {
  ["КУПИТЬ · %d 💎"]="BUY · %d 💎",
  ["КУПИТЬ ВИП\n"]="BUY VIP\n",
  ["КУПИТЬ И УСТАНОВИТЬ · %d 💎"]="BUY AND INSTALL · %d 💎",
+ ["КУПИТЬ И УСТАНОВИТЬ · %s $"]="BUY AND APPLY · %s $",
  ["КУПИТЬ НАВСЕГДА · %d 💎"]="BUY FOREVER · %d 💎",
+ ["КУПИТЬ НАВСЕГДА · %s $"]="BUY FOREVER · %s $",
  ["КУРОРТ НА ЗАКАТЕ"]="SUNSET RESORT",
  ["Кабуто, маска они с клыками, пластинчатая броня и катаны"]="Kabuto helmet, theatrical mask, decorative panels and a travel scroll",
  ["Кавенто ЛХ"]="Cavento LX",
@@ -5609,6 +5646,7 @@ return {
  ["Лунора Кросс"]="Lunora Cross",
  ["Лучшие предметы автоматически приносят доход. Улучшай их до ★5 за монеты."]="Your best items earn income automatically. Upgrade them to ★5 with coins.",
  ["Лёгкие спортивные корпуса на тонких опорах. Подгоняется под выбранный кузов."]="Light sport housings on slim supports. Fitted to your chosen bodywork.",
+ ["Лёгкий ветер"]="Light Breeze",
  ["МАГАЗИН АЛМАЗОВ"]="DIAMOND SHOP",
  ["МАКС"]="MAX",
  ["МАКС · ЗОЛОТЫЕ"]="MAX · GOLD",
@@ -5630,6 +5668,7 @@ return {
  ["МЕНЮ → КАТАЛОГ → выбери ручную витрину. Отмечай до шести машин кнопками «ОСТАВИТЬ НА ВИТРИНЕ» и «УБРАТЬ С ВИТРИНЫ». Пустые места остаются пустыми; выбор сохраняется. Кнопка автовитрины возвращает автоматический выбор. Машина для поездки остаётся в коллекции."]="MENU → CATALOG → choose manual display. Select up to six cars using KEEP ON DISPLAY and REMOVE FROM DISPLAY. Empty spots stay empty and your choice is saved. Auto display returns to automatic selection. A car you drive stays in your collection.",
  ["МОЙ ROBLOX-АВАТАР"]="MY ROBLOX AVATAR",
  ["МОНЕТЫ"]="COINS",
+ ["МОНЕТЫ, ЗАРАБОТАННЫЕ ЗА СЕЗОН"]="COINS EARNED THIS SEASON",
  ["МОНЕТЫ, ЗАРАБОТАННЫЕ ЗА СЕЗОН  ·  СЕЗОННЫЙ РЕЙТИНГ"]="COINS EARNED THIS SEASON  ·  SEASONAL LEADERBOARD",
  ["МОТОР / 60"]="MOTOR / 60",
  ["Магазин"]="Shop",
@@ -5741,6 +5780,7 @@ return {
  ["Не хватает алмазов: нужно %d 💎. Открой МЕНЮ → Магазин."]="Not enough diamonds: %d 💎 required. Open MENU → Shop.",
  ["Недостаточно алмазов для ВИП: нужно %d 💎."]="Not enough diamonds for VIP: %d 💎 required.",
  ["Недостаточно навыка (нужен уровень %d). Сработала сигнализация!"]="Not enough skill (level %d required). The alarm went off!",
+ ["Недоступно за выбранную валюту."]="Unavailable for the selected currency.",
  ["Нексис Трек"]="Nexis Track",
  ["Неон"]="Neon",
  ["Неоновая галактика"]="Neon Galaxy",
@@ -5777,7 +5817,9 @@ return {
  ["ОБРАЗЫ · ПИТОМЦЫ 💎"]="LOOKS · PETS 💎",
  ["ОБЩИЙ БОНУС"]="TOTAL BONUS",
  ["ОБЪЕЗД"]="DETOUR",
+ ["ОБЫЧНЫЙ РАБОЧИЙ"]="EVERYDAY WORKER",
  ["ОДЕЖДА ROBLOX · ЗА АЛМАЗЫ"]="ROBLOX CLOTHING · FOR DIAMONDS",
+ ["ОДЕЖДА ROBLOX · ЗА МОНЕТЫ"]="ROBLOX CLOTHING · COINS",
  ["ОПЕРАЦИЯ / 60 СЕК"]="OPERATION / 60 SEC",
  ["ОСТАВИТЬ НА ВИТРИНЕ"]="KEEP ON DISPLAY",
  ["ОСТАНЕТСЯ В КОЛЛЕКЦИИ"]="STAYS IN YOUR COLLECTION",
@@ -5810,6 +5852,7 @@ return {
  ["Огненный спорт"]="Fire Sport",
  ["Один дубликат окрашивает один из 5 углов следующей звезды. Проценты разных деталей СКЛАДЫВАЮТСЯ."]="Each duplicate fills one of the next star's 5 points. Bonuses from different parts ADD TOGETHER.",
  ["Один общий бонус для всех твоих питомцев."]="One shared bonus for every pet look.",
+ ["Один тонкий серо-голубой след при движении. Без искр, частиц и яркого свечения."]="One thin gray-blue trail while moving. No sparks, particles, or bright glow.",
  ["Один цельный пушистый хвост с белым кончиком"]="One fluffy tail with a white tip",
  ["Одной покупки достаточно. Все нынешние и будущие облики — бесплатно!"]="One purchase unlocks every current and future pet look for free!",
  ["Окраина"]="Outskirts",
@@ -5903,6 +5946,7 @@ return {
  ["Питомец и его облики"]="Your pet and its looks",
  ["Питомец открывается один раз за заработанные монеты или алмазы. После лицензии все его облики бесплатны. Общий бонус питомца сохраняется при смене облика. Покупать питомца для завершения обучения не требуется."]="Unlock your pet once with earned coins or diamonds. All pet looks are free after buying the licence. Its shared bonus stays when you change looks. You do not need to buy a pet to finish the tutorial.",
  ["Питомец открыт навсегда! Все его облики теперь бесплатны."]="Pet unlocked forever! All its looks are now free.",
+ ["Питомец: +%d п.п. к бонусу монет и кассы. Облики бесплатны."]="Pet: +%d pp to the coin and register bonus. Looks are free.",
  ["Питомец: +%d%% ко всем монетам и кассе. Облики бесплатны."]="Pet: +%d%% to all coins and register income. All looks are free.",
  ["Питомец: максимальное мастерство."]="Pet: maximum mastery.",
  ["Плазменный хищник · Абсолют"]="Plasma Predator · Ultimate",
@@ -5972,17 +6016,21 @@ return {
  ["Продолжай доставлять машины. Для первой звезды первый предмет гарантирован при первой доставке; следующие копии выпадают в соответствующем районе. Каждая копия получается только за настоящую доставку."]="Keep delivering cars. Your first delivery guarantees the tutorial item; further copies drop in the matching district. Every copy requires a real delivery.",
  ["Проезжай посты по свободной полосе"]="Pass checkpoints using the open lane",
  ["Прокачка"]="Upgrades",
+ ["Простая серая рабочая рубашка, тёмные брюки и открытое лицо. Мастерство героя доступно за монеты."]="A plain gray work shirt, dark pants, and an open face. Hero mastery is available for coins.",
+ ["Простая серая рабочая рубашка, тёмные брюки и открытое лицо. Мастерство героя доступно за монеты. Полный комплект: одежда для торса и ног."]="A plain gray work shirt, dark pants, and an open face. Hero mastery is available for coins. Complete outfit: top and pants.",
  ["Простой чехол"]="Basic Seat Cover",
  ["Птичий шлем с клювом, золотые перья и янтарные крылья"]="Bird helmet with a beak, gold feathers and amber wings",
  ["Пульс Хэтч"]="Pulse Hatch",
  ["Пушистое облачко с пастельной радугой и капельками"]="Fluffy cloud with a pastel rainbow and raindrops",
  ["Пёс-авиатор"]="Aviator Pup",
  ["РАЙОН "]="DISTRICT ",
+ ["РАЙОН %d"]="DISTRICT %d",
  ["РЕМОНТ · ОБЪЕЗД"]="ROADWORKS · DETOUR",
  ["РЕМОНТ ДОРОГИ — ОБЪЕЗД"]="ROADWORKS — DETOUR",
  ["РЕМОНТ И ТЮНИНГ"]="REPAIR & TUNING",
  ["РУКОВОДСТВО"]="HANDBOOK",
  ["РУЧНОЙ ВЫБОР: на витрине только отмеченные машины. Пустые места не заполняются автоматически."]="MANUAL DISPLAY: only your selected cars are shown. Empty spaces stay empty.",
+ ["Рабочий серый"]="Work Gray",
  ["Равйн Дрифт"]="Ravyn Drift",
  ["Радужное облачко"]="Rainbow Cloud",
  ["Раздвоенные спицы, тёмный обод и мятная ступица. Подгоняется под выбранный кузов."]="Split spokes, a dark rim and a mint hub. Fitted to your chosen bodywork.",
@@ -6015,6 +6063,7 @@ return {
  ["САЛОН "]="GARAGE ",
  ["СВОЙ АВАТАР УЖЕ НАДЕТ"]="YOUR AVATAR IS ALREADY EQUIPPED",
  ["СЕЗОН ПОКА ПУСТОЙ\nПервым заработай монеты и возглавь рейтинг!"]="NO SCORES THIS SEASON YET\nBe the first to earn coins and lead the board!",
+ ["СЕЗОННЫЙ ТОП-10"]="SEASON TOP 10",
  ["СЕРИЯ x%d  ·  ВЗЛОМ %d"]="STREAK x%d  ·  HACKING %d",
  ["СИНИЙ"]="BLUE",
  ["СИНХРОНИЗАЦИЯ СИГНАЛА"]="SIGNAL SYNC",
@@ -6096,6 +6145,7 @@ return {
  ["Сохранение недоступно. Налёт не завершён."]="Saving is unavailable. The raid was not completed.",
  ["Спальный район"]="City Blocks",
  ["Спектра ГТ"]="Spectra GT",
+ ["Спокойный серый кузов без узоров и свечения."]="Plain gray bodywork without patterns or glow.",
  ["Спорт"]="Sport",
  ["Спорт-двигатель"]="Sport Engine",
  ["Спорт-приборы"]="Sport Gauges",
@@ -6291,7 +6341,7 @@ function M.start(gui)
  local language=player:GetAttribute('Steal60Language')=='en'and'en'or'ru';local alive=true
  local records=setmetatable({},{__mode='k'});local links={};local switching=false
  local button=Instance.new('TextButton');button.Name='LanguageToggle';button.AnchorPoint=Vector2.new(1,0)
- button.Position=UDim2.new(1,-66,0,14);button.Size=UDim2.fromOffset(44,44);button.ZIndex=120
+ button.Position=UDim2.new(1,-66,0,44);button.Size=UDim2.fromOffset(44,44);button.ZIndex=120
  button.Font=Enum.Font.GothamBold;button.TextSize=16;button.TextColor3=Color3.fromRGB(185,255,227)
  button.BackgroundColor3=Color3.fromRGB(24,70,66);button.BorderSizePixel=0;button.AutoLocalize=false;button.Parent=gui
  local corner=Instance.new('UICorner');corner.CornerRadius=UDim.new(0,9);corner.Parent=button
@@ -6303,6 +6353,7 @@ function M.start(gui)
   if object[property]~=rendered then object[property]=rendered end
  end
  local function watch(object)
+  if object:GetAttribute('Steal60Literal')then return end
   if records[object]or object==button or object.Name=='FullName'or object.Name=='Ticker'then return end
   local properties;local statSource
   if object:IsA('IntValue')and object.Parent and object.Parent.Name=='leaderstats'then statSource=Text.statSource(object);if not statSource then return end;properties={'Name'}end
@@ -6467,47 +6518,124 @@ function M.points(data,rarity,legacySecondBot)
  return points
 end
 return M
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_v66_EndlessParking"><Properties><string name="Name">EndlessParking</string><ProtectedString name="Source"><![CDATA[-- Pure policy. Existing catalog classes and per-vehicle hack requirements remain authoritative.
-local M={Order={'junk','regular','sport','premium','super'},Min={1,5,10,15,20}}
-function M.classFor(level)
- local index=1
- for i,minimum in ipairs(M.Min)do if level>=minimum then index=i end end
- return M.Order[index],index
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_v66_EndlessParking"><Properties><string name="Name">EndlessParking</string><ProtectedString name="Source"><![CDATA[-- Endgame parking is intentionally level 25-30, independent of the visitor's level.
+local M={NORMAL_CLASS='super',MIN_REQUIRED=25,MAX_REQUIRED=30}
+function M.classFor()return M.NORMAL_CLASS,5 end
+function M.normalRequirement(rng,slot)
+ if slot==1 then return M.MIN_REQUIRED end
+ if slot==7 then return M.MAX_REQUIRED end
+ return rng:NextInteger(M.MIN_REQUIRED,M.MAX_REQUIRED)
 end
 function M.challenge(level)return math.max(31,math.floor(level)+1)end
 return M
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_v66_ShelfTypography"><Properties><string name="Name">ShelfTypography</string><ProtectedString name="Source"><![CDATA[-- Physical SurfaceGui plates cannot overlap neighboring labels in screen pixels.
-local M={}
-function M.attach(panel,face,lines)
- local gui=Instance.new('SurfaceGui');gui.Name='ShelfTypography';gui.AutoLocalize=false;gui.Face=face
- gui.SizingMode=Enum.SurfaceGuiSizingMode.PixelsPerStud;gui.PixelsPerStud=65;gui.LightInfluence=0;gui.MaxDistance=85;gui.Parent=panel
- for i,text in ipairs(lines)do
-  local label=Instance.new('TextLabel');label.Name='ShelfLine'..i;label.Position=UDim2.new(0,5,(i-1)/#lines,2);label.Size=UDim2.new(1,-10,1/#lines,-4)
-  label.BackgroundColor3=Color3.fromRGB(10,18,29);label.BackgroundTransparency=0;label.TextColor3=i==1 and Color3.fromRGB(240,246,255)or Color3.fromRGB(255,222,112)
-  label.Font=Enum.Font.GothamBold;label.TextScaled=true;label.TextWrapped=false;label.Text=text;label.Parent=gui
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_v66_ShelfTypography"><Properties><string name="Name">ShelfTypography</string><ProtectedString name="Source"><![CDATA[-- Fixed readable text with a measured, compact background; proximity/screen overlap is client-only.
+local M={MAX_WIDTH=220,MAX_DISTANCE=28}
+function M.dimensions(sizes)
+ local width,height=72,10
+ for _,size in ipairs(sizes)do width=math.max(width,size.X+16);height+=size.Y+3 end
+ return math.min(M.MAX_WIDTH+16,width),height
+end
+function M.fit(gui)
+ local frame=gui:FindFirstChild('Card');if not frame then return end
+ local sizes={};local labels={}
+ for _,label in ipairs(frame:GetChildren())do if label:IsA('TextLabel')then labels[#labels+1]=label end end
+ table.sort(labels,function(a,b)return a.LayoutOrder<b.LayoutOrder end)
+ local Text=game:GetService('TextService')
+ for _,label in ipairs(labels)do
+  local ok,size=pcall(function()return Text:GetTextSize(label.Text,label.TextSize,label.Font,Vector2.new(M.MAX_WIDTH,1000))end)
+  sizes[#sizes+1]=ok and size or Vector2.new(math.min(M.MAX_WIDTH,(utf8.len(label.Text)or #label.Text)*label.TextSize*.58),label.TextSize*2)
  end
- return gui
+ local width,height=M.dimensions(sizes);gui.Size=UDim2.fromOffset(width,height)
+ local y=5
+ for i,label in ipairs(labels)do label.Position=UDim2.fromOffset(8,y);label.Size=UDim2.fromOffset(width-16,sizes[i].Y+2);y+=sizes[i].Y+3 end
+end
+function M.attach(panel,face,lines)
+ panel.Transparency=1;panel.CanCollide=false;panel.CanQuery=false
+ local gui=Instance.new('BillboardGui');gui.Name='ShelfTypography';gui.AutoLocalize=false;gui.Adornee=panel
+ gui.Size=UDim2.fromOffset(180,48);gui.MaxDistance=M.MAX_DISTANCE;gui.AlwaysOnTop=false;gui.LightInfluence=0;gui.StudsOffset=Vector3.new(0,.10,0);gui.Parent=panel
+ local frame=Instance.new('Frame');frame.Name='Card';frame.Size=UDim2.fromScale(1,1);frame.BorderSizePixel=0;frame.BackgroundColor3=Color3.fromRGB(10,18,29);frame.BackgroundTransparency=.12;frame.Parent=gui
+ local corner=Instance.new('UICorner');corner.CornerRadius=UDim.new(0,5);corner.Parent=frame
+ for i,text in ipairs(lines)do
+  local label=Instance.new('TextLabel');label.Name='ShelfLine'..i;label.LayoutOrder=i
+  label.BackgroundTransparency=1;label.TextColor3=i==1 and Color3.fromRGB(245,250,255)or Color3.fromRGB(255,224,125)
+  label.Font=Enum.Font.GothamBold;label.TextScaled=false;label.TextSize=i==1 and 15 or 14;label.TextWrapped=true;label.Text=text;label.Parent=frame
+ end
+ M.fit(gui);return gui
+end
+function M.overlap(a,b)
+ return a.x<b.x+b.w+6 and b.x<a.x+a.w+6 and a.y<b.y+b.h+6 and b.y<a.y+a.h+6
+end
+function M.start(guiRoot)
+ local entries=setmetatable({},{__mode='k'});local links={};local live=true
+ local function watch(gui)
+  if gui.Name~='ShelfTypography'or not gui:IsA('BillboardGui')or entries[gui]then return end
+  local state={connections={}};entries[gui]=state
+  local function bind(label)
+   if label:IsA('TextLabel')then state.connections[#state.connections+1]=label:GetPropertyChangedSignal('Text'):Connect(function()M.fit(gui)end)end
+  end
+  for _,label in ipairs(gui:GetDescendants())do bind(label)end
+  state.connections[#state.connections+1]=gui.DescendantAdded:Connect(function(label)bind(label);M.fit(gui)end)
+  state.connections[#state.connections+1]=gui.Destroying:Connect(function()for _,c in ipairs(state.connections)do c:Disconnect()end;entries[gui]=nil end)
+  M.fit(gui)
+ end
+ links[#links+1]=workspace.DescendantAdded:Connect(watch)
+ for _,gui in ipairs(workspace:GetDescendants())do watch(gui)end
+ local elapsed=0
+ links[#links+1]=game:GetService('RunService').Heartbeat:Connect(function(dt)
+  elapsed+=dt;if elapsed<.15 then return end;elapsed=0
+  local camera=workspace.CurrentCamera;if not camera then return end
+  local candidates={}
+  for gui in pairs(entries)do
+   local anchor=gui.Adornee
+   if gui.Parent and anchor and anchor.Parent then
+    local distance=(camera.CFrame.Position-anchor.Position).Magnitude
+    local screen,shown=camera:WorldToViewportPoint(anchor.Position+Vector3.new(0,.1,0))
+    gui.Enabled=false
+    if shown and distance<=M.MAX_DISTANCE then candidates[#candidates+1]={gui=gui,distance=distance,x=screen.X-gui.Size.X.Offset/2,y=screen.Y-gui.Size.Y.Offset/2,w=gui.Size.X.Offset,h=gui.Size.Y.Offset}end
+   end
+  end
+  table.sort(candidates,function(a,b)return a.distance<b.distance end)
+  local visible={}
+  for _,item in ipairs(candidates)do
+   local blocked=false;for _,other in ipairs(visible)do if M.overlap(item,other)then blocked=true;break end end
+   if not blocked and #visible<8 then item.gui.Enabled=true;visible[#visible+1]=item end
+  end
+ end)
+ local function stop()live=false;for _,c in ipairs(links)do c:Disconnect()end;for gui,state in pairs(entries)do for _,c in ipairs(state.connections)do c:Disconnect()end;if gui.Parent then gui.Enabled=true end end end
+ if guiRoot then guiRoot.Destroying:Connect(stop)end
+ return stop
 end
 return M
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_v66_PetMount"><Properties><string name="Name">PetMount</string><ProtectedString name="Source"><![CDATA[-- Cache local support bounds; moving/rotating the car never requires rescanning its art.
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_v66_PetMount"><Properties><string name="Name">PetMount</string><ProtectedString name="Source"><![CDATA[-- Ground pets sit on the rear deck/cargo bed, behind the driver's head. Flyers hover over the roof.
+-- Local support geometry is cached until tuning or support parts change.
 local M={};local cache=setmetatable({},{__mode='k'})
-function M.support(vehicle,body)
- local roof=vehicle:FindFirstChild('RoofPanel',true)or vehicle:FindFirstChild('TailDeck',true)or body
- local tuning=vehicle:FindFirstChild('Steal60Tuning');local state=cache[vehicle]
- if state and state.body==body and state.roof==roof and state.tuning==tuning then return state.x,state.y end
- local localRoof=body.CFrame:PointToObjectSpace(roof.Position)
- local x=localRoof.X;local height=localRoof.Y+roof.Size.Y*.5
- if tuning then for _,piece in ipairs(tuning:GetChildren())do if piece:IsA('BasePart')and piece.Transparency<1 then
-  for _,sx in ipairs({-1,1})do for _,sy in ipairs({-1,1})do for _,sz in ipairs({-1,1})do
-   local corner=body.CFrame:PointToObjectSpace(piece.CFrame:PointToWorldSpace(piece.Size*Vector3.new(sx,sy,sz)*.5))
-   if math.abs(corner.X-x)<1.8 and math.abs(corner.Z)<1.5 then height=math.max(height,corner.Y)end
-  end end end
+local function bounds(part,body)
+ local low=Vector3.new(math.huge,math.huge,math.huge);local high=Vector3.new(-math.huge,-math.huge,-math.huge)
+ for _,sx in ipairs({-1,1})do for _,sy in ipairs({-1,1})do for _,sz in ipairs({-1,1})do
+  local p=body.CFrame:PointToObjectSpace(part.CFrame:PointToWorldSpace(part.Size*Vector3.new(sx,sy,sz)*.5))
+  low=Vector3.new(math.min(low.X,p.X),math.min(low.Y,p.Y),math.min(low.Z,p.Z));high=Vector3.new(math.max(high.X,p.X),math.max(high.Y,p.Y),math.max(high.Z,p.Z))
  end end end
- cache[vehicle]={body=body,roof=roof,tuning=tuning,x=x,y=height}
+ return low,high
+end
+function M.support(vehicle,body,flying)
+ local deck=vehicle:FindFirstChild('CargoFloor',true)or vehicle:FindFirstChild('TailDeck',true)
+ local roof=vehicle:FindFirstChild('RoofPanel',true)or deck or body
+ local support=not flying and deck or roof
+ local tuning=vehicle:FindFirstChild('Steal60Tuning');local states=cache[vehicle]or{};cache[vehicle]=states
+ local key=flying and'fly'or'ground';local state=states[key]
+ if state and state.body==body and state.support==support and state.tuning==tuning then return state.x,state.y end
+ local x=body.CFrame:PointToObjectSpace(support.Position).X
+ local _,top=bounds(support,body);local height=top.Y
+ if not flying and not deck then x=math.min(x,-body.Size.X*.32)end
+ if tuning then for _,piece in ipairs(tuning:GetChildren())do if piece:IsA('BasePart')and piece.Transparency<1 then
+  local lo,hi=bounds(piece,body)
+  if hi.X>=x-1.3 and lo.X<=x+1.3 and hi.Z>=-.9 and lo.Z<=.9 then height=math.max(height,hi.Y)end
+ end end end
+ states[key]={body=body,support=support,tuning=tuning,x=x,y=height}
  return x,height
 end
 function M.frame(vehicle,body,offset,flying)
- local x,y=M.support(vehicle,body)
+ local x,y=M.support(vehicle,body,flying)
  return body.CFrame*CFrame.new(x,y+(flying and 2.2 or offset)+.18,0)*CFrame.Angles(0,-math.pi/2,0)
 end
 return M
@@ -6623,14 +6751,163 @@ function M.start(gui)
   local viewport=camera.ViewportSize
   for frame,scale in pairs(frames)do if frame.Parent and frame.Visible then
    local size=frame.AbsoluteSize;local current=math.max(.01,scale.Scale)
-   local reserve=frame.Name=='Steal60Handbook'and 124 or 24
+   local header=viewport.X<1160 and 100 or 10
+   local reserve=header+(frame.Name=='Steal60Handbook'and 124 or 24)
    local nextScale=M.scaleFor(viewport.X,viewport.Y,size.X/current,size.Y/current,reserve)
    -- The handbook's top anchor reserves the entire controls strip below it.
    if frame.Name=='Steal60Handbook'then nextScale=math.min(1,nextScale)end
+   local bottom=frame.Name=='Steal60Handbook'and 124 or 24
+   frame.AnchorPoint=Vector2.new(.5,.5);frame.Position=UDim2.fromOffset(viewport.X*.5,header+math.max(1,viewport.Y-header-bottom)*.5)
    if math.abs(scale.Scale-nextScale)>.005 then scale.Scale=nextScale end
   end end
  end)
  gui.Destroying:Connect(function()live=false;for _,c in ipairs(links)do c:Disconnect()end end)
+end
+return M
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_v66_LeaderboardView"><Properties><string name="Name">LeaderboardView</string><ProtectedString name="Source"><![CDATA[-- A padded canvas in front of the side pillars; separate columns never concatenate/crop names.
+local M={Geometry={x=29.9,v=27,y=6.8,width=23.8,height=9.4},WIDTH=1200,HEIGHT=500}
+local C=Color3.fromRGB
+local function label(parent,name,text,x,y,w,h,size,color,align)
+ local t=Instance.new('TextLabel');t.Name=name;t.Position=UDim2.fromOffset(x,y);t.Size=UDim2.fromOffset(w,h);t.BackgroundTransparency=1;t.Text=text
+ t.Font=Enum.Font.GothamBold;t.TextSize=size;t.TextColor3=color;t.TextXAlignment=align or Enum.TextXAlignment.Left;t.TextYAlignment=Enum.TextYAlignment.Center;if name=='PlayerName'then t:SetAttribute('Steal60Literal',true)end;t.Parent=parent;return t
+end
+function M.attach(tv)
+ local gui=Instance.new('SurfaceGui');gui.Name='WorldTop100';gui.AutoLocalize=false;gui.Face=Enum.NormalId.Left
+ gui.SizingMode=Enum.SurfaceGuiSizingMode.FixedSize;gui.CanvasSize=Vector2.new(M.WIDTH,M.HEIGHT);gui.LightInfluence=0;gui.AlwaysOnTop=false;gui.Parent=tv
+ local panel=Instance.new('Frame');panel.Name='LeaderboardBackground';panel.Size=UDim2.fromScale(1,1);panel.BorderSizePixel=0;panel.BackgroundColor3=C(10,20,33);panel.Parent=gui
+ local line=Instance.new('Frame');line.Size=UDim2.new(1,-48,0,5);line.Position=UDim2.fromOffset(24,12);line.BackgroundColor3=C(90,229,198);line.BorderSizePixel=0;line.Parent=panel
+ local heading=label(panel,'Heading','СЕЗОННЫЙ ТОП-10',32,24,860,44,36,C(255,221,133))
+ label(panel,'SeasonLength','30 ДНЕЙ',914,28,250,36,24,C(132,230,217),Enum.TextXAlignment.Right)
+ label(panel,'Subtitle','МОНЕТЫ, ЗАРАБОТАННЫЕ ЗА СЕЗОН',32,70,1136,24,19,C(171,199,219))
+ label(panel,'RankHeader','№',40,102,70,24,17,C(145,183,204))
+ label(panel,'PlayerHeader','ИГРОК',126,102,660,24,17,C(145,183,204))
+ label(panel,'ScoreHeader','ЗАРАБОТАНО',828,102,320,24,17,C(145,183,204),Enum.TextXAlignment.Right)
+ local rows={}
+ for rank=1,10 do
+  local strip=Instance.new('Frame');strip.Name='EntryPanel'..rank;strip.Position=UDim2.fromOffset(28,136+(rank-1)*31);strip.Size=UDim2.fromOffset(1144,28);strip.BorderSizePixel=0
+  strip.BackgroundColor3=rank<=3 and C(26,48,65)or rank%2==0 and C(18,34,49)or C(13,27,42);strip.Parent=panel
+  local ink=rank==1 and C(255,219,121)or rank<=3 and C(161,233,231)or C(233,242,250)
+  local place=label(strip,'Rank',string.format('%02d',rank),12,0,68,28,22,ink)
+  local name=label(strip,'PlayerName','',98,0,670,28,22,ink);name:SetAttribute('Steal60Literal',true);name.TextTruncate=Enum.TextTruncate.AtEnd
+  local score=label(strip,'Score','',780,0,350,28,22,ink,Enum.TextXAlignment.Right)
+  score.TextScaled=true;local cap=Instance.new('UITextSizeConstraint');cap.MinTextSize=14;cap.MaxTextSize=22;cap.Parent=score
+  rows[rank]={rank=place,name=name,score=score,strip=strip}
+ end
+ local footer=label(panel,'Footer','НАЖМИ E / КЛИКНИ · ОТКРЫТЬ ТОП-100',32,462,1136,28,20,C(113,233,204),Enum.TextXAlignment.Center)
+ local empty=label(panel,'SeasonEmptyState','СЕЗОН ПОКА ПУСТОЙ\nПервым заработай монеты и возглавь рейтинг!',180,190,840,190,30,C(171,229,220),Enum.TextXAlignment.Center);empty.TextWrapped=true;empty.BackgroundColor3=C(10,20,33);empty.BackgroundTransparency=0
+ return {rows=rows,footer=footer,heading=heading,empty=empty,gui=gui}
+end
+function M.setRow(view,index,entry)
+ local row=view.rows[index];if not row then return end
+ row.strip.Visible=entry~=nil
+ if not entry then row.name.Text='';row.score.Text='';return end
+ row.rank.Text=string.format('%02d',entry.rank)
+ row.name.Text=tostring(entry.name) -- full Unicode name, no byte substring
+ local value=tostring(math.floor(entry.score));local formatted=value:reverse():gsub('(%d%d%d)','%1 '):reverse():gsub('^ ','')
+ row.score.Text='$ '..formatted
+end
+function M.looking(origin,look,point)
+ local delta=point-origin
+ return delta.Magnitude<28 and delta.Magnitude>.01 and look:Dot(delta.Unit)>.45
+end
+function M.start(rootGui)
+ local boards=setmetatable({},{__mode='k'});local player=game:GetService('Players').LocalPlayer;local links={}
+ local function watch(object)if object.Name=='WorldTop100'and object:IsA('SurfaceGui')then boards[object]=true end end
+ links[#links+1]=workspace.DescendantAdded:Connect(watch)
+ for _,object in ipairs(workspace:GetDescendants())do watch(object)end
+ local elapsed=0
+ links[#links+1]=game:GetService('RunService').Heartbeat:Connect(function(dt)
+  elapsed+=dt;if elapsed<.2 then return end;elapsed=0
+  local camera=workspace.CurrentCamera;local hum=player.Character and player.Character:FindFirstChildOfClass('Humanoid');local reading=false
+  if camera and hum and not hum.SeatPart then
+   for gui in pairs(boards)do local panel=gui.Parent
+    if panel and panel:IsA('BasePart')and M.looking(camera.CFrame.Position,camera.CFrame.LookVector,panel.Position)then reading=true;break end
+   end
+  end
+  player:SetAttribute('Steal60ReadingLeaderboard',reading)
+ end)
+ rootGui.Destroying:Connect(function()for _,c in ipairs(links)do c:Disconnect()end;player:SetAttribute('Steal60ReadingLeaderboard',nil)end)
+end
+return M
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_v66_RoadEventSchedule"><Properties><string name="Name">RoadEventSchedule</string><ProtectedString name="Source"><![CDATA[-- Neighboring districts start with opposite events and alternate thereafter: no random police streak.
+local M={START_DELAY=3,DURATION=65,GAP=6}
+function M.kind(index,cycle)return(index+cycle)%2==0 and'police'or'repair'end
+return M
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_v66_RoadsideFacing"><Properties><string name="Name">RoadsideFacing</string><ProtectedString name="Source"><![CDATA[-- Cosmetic client-only facing: each player sees the officer/worker facing them.
+local M={}
+function M.frame(origin,target)
+ local flat=Vector3.new(target.X,origin.Y,target.Z)
+ if(flat-origin).Magnitude<.25 then return nil end
+ return CFrame.lookAt(origin,flat)
+end
+function M.start(gui)
+ local Collection=game:GetService('CollectionService');local player=game:GetService('Players').LocalPlayer
+ local models=setmetatable({},{__mode='k'});local links={}
+ local function add(model)models[model]=true end
+ links[#links+1]=Collection:GetInstanceAddedSignal('S60RoadsideNPC'):Connect(add)
+ links[#links+1]=Collection:GetInstanceRemovedSignal('S60RoadsideNPC'):Connect(function(model)models[model]=nil end)
+ for _,model in ipairs(Collection:GetTagged('S60RoadsideNPC'))do add(model)end
+ local elapsed=0
+ links[#links+1]=game:GetService('RunService').Heartbeat:Connect(function(dt)
+  elapsed+=dt;if elapsed<.12 then return end;elapsed=0
+  local root=player.Character and player.Character:FindFirstChild('HumanoidRootPart');if not root then return end
+  for model in pairs(models)do if model.Parent and model.PrimaryPart then
+   local origin=model:GetPivot().Position
+   local cf=M.frame(origin,root.Position);if cf then model:PivotTo(cf)end
+  elseif not model.Parent then models[model]=nil end end
+ end)
+ gui.Destroying:Connect(function()
+  for _,c in ipairs(links)do c:Disconnect()end
+  for model in pairs(models)do local base=model:GetAttribute('RoadsideBasePivot');if model.Parent and base then model:PivotTo(base)end end
+ end)
+end
+return M
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_v66_EngineAudio"><Properties><string name="Name">EngineAudio</string><ProtectedString name="Source"><![CDATA[-- One quiet engine loop, local to the actual driver. No voice/siren fallback list.
+local M={ASSET='rbxassetid://13114759',MAX_VOLUME=.025}
+function M.parameters(speed,maximum,driving)
+ if not driving then return 0,.72 end
+ local ratio=math.clamp(math.abs(speed or 0)/math.max(1,maximum or 42),0,1)
+ return .012+.013*ratio,.72+.50*ratio
+end
+function M.start(gui)
+ local Players=game:GetService('Players');local SoundService=game:GetService('SoundService');local Run=game:GetService('RunService')
+ local Content=game:GetService('ContentProvider');local Drive=require(script.Parent.DriveState);local player=Players.LocalPlayer
+ local sound=Instance.new('Sound');sound.Name='Steal60QuietEngine';sound.SoundId=M.ASSET;sound.Volume=0;sound.Looped=true;sound.PlaybackSpeed=.72;sound.Parent=SoundService
+ local live=true;local ready=false;local denied=false;local links={}
+ local quietUntil=0;local muted=setmetatable({},{__mode='k'})
+ local function quietCharacter()
+  if player:GetAttribute('PoliceActive')then quietUntil=os.clock()+5 end
+  local char=player.Character
+  if os.clock()<quietUntil and char then
+   for _,s in ipairs(char:GetDescendants())do if s:IsA('Sound')and(s.Name=='Died'or s.Name=='FreeFalling')then
+    if s.Volume>0 then muted[s]=s.Volume;s.Volume=0 end;s:Stop()
+   end end
+  else
+   for s,volume in pairs(muted)do if s.Parent and s.Volume==0 then s.Volume=volume end;muted[s]=nil end
+  end
+ end
+ links[#links+1]=sound.Loaded:Connect(function()if live and not denied then ready=true end end)
+ task.spawn(function()
+  local ok=pcall(function()Content:PreloadAsync({sound},function(_,status)
+   if not live then return end
+   if status==Enum.AssetFetchStatus.Failure or status==Enum.AssetFetchStatus.TimedOut then denied=true;ready=false;sound:Stop()end
+  end)end)
+  if live then ready=not denied and ok and sound.IsLoaded end
+ end)
+ local elapsed=0
+ links[#links+1]=Run.Heartbeat:Connect(function(dt)
+  elapsed+=dt;if elapsed<.08 then return end;local step=elapsed;elapsed=0
+  quietCharacter()
+  local car=Drive.current(player)
+  if not car or not ready then sound.Volume=0;if sound.IsPlaying then sound:Stop()end;return end
+  local body=car:FindFirstChild('Body',true)or car.PrimaryPart
+  local speed=body and body.AssemblyLinearVelocity.Magnitude or(car:GetAttribute('ArcadeSpeed')or 0)
+  local volume,pitch=M.parameters(speed,car:GetAttribute('MaxSpeed')or 42,true)
+  if not sound.IsPlaying then sound:Play()end
+  sound.Volume=math.min(M.MAX_VOLUME,sound.Volume+(volume-sound.Volume)*(1-math.exp(-step*6)))
+  sound.PlaybackSpeed=pitch
+ end)
+ gui.Destroying:Connect(function()for s,volume in pairs(muted)do if s.Parent and s.Volume==0 then s.Volume=volume end end;live=false;for _,c in ipairs(links)do c:Disconnect()end;sound:Stop();sound:Destroy()end)
 end
 return M
 ]]></ProtectedString></Properties></Item></Item>
@@ -6671,6 +6948,10 @@ local function startOptional(name,...)
 end
 startOptional('HUDLayout',gui)
 startOptional('InterfaceAccess',gui)
+startOptional('ShelfTypography',gui)
+startOptional('RoadsideFacing',gui)
+startOptional('EngineAudio',gui)
+startOptional('LeaderboardView',gui)
 startOptional('MusicDirector',gui)
 startOptional('LanguageController',gui)
 startOptional('ClientPerformance')
@@ -8053,7 +8334,7 @@ mission.AnchorPoint=Vector2.new(1,0);mission.Position=UDim2.new(1,-18,0,66)
 mission.Size=UDim2.fromOffset(300,88)
 mission.BackgroundColor3=C(15,24,35);mission.BackgroundTransparency=.09;mission.BorderSizePixel=0
 mission.Parent=gui;corner(mission,12);stroke(mission,C(100,170,202))
-local eyebrow=text(mission,UDim2.new(1,-24,0,18),UDim2.fromOffset(14,10),"60 СЕК   /   АВТОПРИКЛЮЧЕНИЕ",C(115,205,230),Enum.Font.GothamBold)
+local eyebrow=text(mission,UDim2.new(1,-24,0,18),UDim2.fromOffset(14,10),"STEAL60 · МАРШРУТ",C(115,205,230),Enum.Font.GothamBold)
 eyebrow.TextSize=12
 eyebrow.Size=UDim2.fromOffset(170,18)
 -- Detailed text panels are opt-in; the route and objective remain visible.
@@ -8199,8 +8480,16 @@ RunService.RenderStepped:Connect(function(dt)
     displayedNeedle=(displayedNeedle+diff*math.min(1,dt*12))%360
     guideArrow.Rotation=displayedNeedle
     guideText.Text=("%s · %d ст."):format(guideCaption,math.floor(garageDistance))
-    headGuide.Position=UDim2.fromOffset(math.clamp(screenPos.X,55,camera.ViewportSize.X-55),math.clamp(screenPos.Y,70,camera.ViewportSize.Y-200))
-    headGuide.Visible=true
+    local showGuide=true;local gx=math.clamp(screenPos.X,55,math.max(55,camera.ViewportSize.X-55));local gy=math.clamp(screenPos.Y,55,math.max(55,camera.ViewportSize.Y-200))
+    local coach=gui:FindFirstChild('Steal60LessonCoach')
+    if coach and coach.Visible then
+        local a,b=coach.AbsolutePosition,coach.AbsoluteSize
+        if gx>a.X-65 and gx<a.X+b.X+65 and gy>a.Y-55 and gy<a.Y+b.Y+55 then
+            if a.Y+b.Y+105<camera.ViewportSize.Y-180 then gy=a.Y+b.Y+55 else showGuide=false end
+        end
+    end
+    headGuide.Position=UDim2.fromOffset(gx,gy)
+    headGuide.Visible=showGuide
 end)
 local speed=Instance.new("Frame");speed.Name="SpeedWidget"
 speed.AnchorPoint=Vector2.new(1,1);speed.Position=UDim2.new(1,-18,1,-20)
@@ -8626,23 +8915,23 @@ local function openBook()
   local d=label(row,UDim2.new(),UDim2.new(1,0,0,0),13,C(205,222,236));d.Text=chapter.body;d.AutomaticSize=Enum.AutomaticSize.Y;d.ZIndex=22
  end
 end
-local help=button(gui,'РУКОВОДСТВО',UDim2.new(.5,-70,1,-146),UDim2.fromOffset(140,32),openBook)
-local resume=button(gui,'ПОКАЗАТЬ ЦЕЛЬ',UDim2.new(.5,-70,1,-186),UDim2.fromOffset(140,32),function()collapsed=false end)
+local help=button(gui,'РУКОВОДСТВО',UDim2.new(1,-14,0,8),UDim2.fromOffset(96,28),openBook)
+help.AnchorPoint=Vector2.new(1,0);help.ZIndex=120
+local resume=button(gui,'ПОКАЗАТЬ ЦЕЛЬ',UDim2.new(1,-122,0,8),UDim2.fromOffset(132,28),function()collapsed=false end)
+resume.AnchorPoint=Vector2.new(1,0);resume.ZIndex=120
 local highlight=Instance.new('Highlight');highlight.Name='TutorialTargetGlow';highlight.FillColor=C(95,255,177)
 highlight.FillTransparency=.75;highlight.OutlineColor=C(150,255,205);highlight.DepthMode=Enum.HighlightDepthMode.AlwaysOnTop;highlight.Parent=gui
 local function draw()
  if book and not book.Parent then book=nil end
  local step=snapshot.id and Config.ById[snapshot.id]
- local busy=player:GetAttribute('Steal60MenuOpen')==true or player:GetAttribute('HackActive')==true or player:GetAttribute('CosmeticPreviewToken')~=nil
+ local busy=player:GetAttribute('Steal60AudioPanelOpen')==true or player:GetAttribute('Steal60ReadingLeaderboard')==true or player:GetAttribute('Steal60MenuOpen')==true or player:GetAttribute('HackActive')==true or player:GetAttribute('CosmeticPreviewToken')~=nil
  coach.Visible=step~=nil and not collapsed and not book and not busy
- local refCar=player:FindFirstChild('Steal60DriveCar');local driving=refCar and refCar.Value~=nil
- local screen=workspace.CurrentCamera;local roomy=not screen or screen.ViewportSize.Y>=500
- help.Visible=roomy and not busy and not book and not driving;resume.Visible=roomy and step~=nil and collapsed and not busy and not book and not driving
+ help.Visible=not busy and not book and not player:GetAttribute('Steal60ToastActive');resume.Visible=step~=nil and collapsed and not busy and not book and not player:GetAttribute('Steal60ToastActive')
  local ref=player:FindFirstChild('TutorialTarget');highlight.Adornee=ref and ref.Value or nil
  highlight.Enabled=step~=nil and not busy and not book and highlight.Adornee~=nil
  if not step then return end
  local camera=workspace.CurrentCamera;local compact=camera and camera.ViewportSize.Y<500
- coach.Position=UDim2.new(.5,0,0,player:GetAttribute('Steal60DevelopmentNotice')and 110 or(compact and(camera.ViewportSize.Y<420 and 14 or 72)or 110));coach.Size=UDim2.new(.88,0,0,compact and 78 or 112)
+ coach.Position=UDim2.new(.5,0,0,player:GetAttribute('Steal60DevelopmentNotice')and 140 or 100);coach.Size=UDim2.new(.88,0,0,compact and 78 or 112)
  cap.MaxSize=Vector2.new(460,compact and 78 or 112)
  body.TextSize=compact and 11 or 13
  title.TextSize=compact and 13 or 15
@@ -9044,37 +9333,39 @@ local function mastery(category,data)
    if yes==true and def and def.category=="hero" then unlocked=true;break end
   end
  end
- local b=box(scroller,hero and 100 or 118,C(30,49,63))
+ local b=box(scroller,216,C(30,49,63))
  local title=hero and "МАСТЕРСТВО ГЕРОЯ" or "МАСТЕРСТВО ПИТОМЦА"
  text(b,title,UDim2.new(1,-25,0,24),UDim2.fromOffset(14,8),15,C(245,249,252),true)
- text(b,("+%d%% / +%d%% ко ВСЕМ монетам и доходу кассы"):format(level,max),
+ text(b,(level>=max and"Бонус: +%d п.п. / +%d п.п."or"Бонус: +%d п.п. / +%d п.п. · следующий +1 п.п."):format(level,max),
   UDim2.new(1,-25,0,24),UDim2.fromOffset(14,29),13,C(126,244,190),true)
  if not unlocked then
   text(b,hero and "Сначала купи любой скин героя." or "Сначала открой питомца — один раз за монеты или алмазы.",
    UDim2.new(1,-25,0,32),UDim2.fromOffset(14,61),12,C(178,196,213))
   return
  end
+ local effects=(data.masteryEffects or{})[category]
+ if effects then text(b,('Сейчас: %s\nДалее: %s'):format(effects.current,effects.next),UDim2.new(1,-28,0,104),UDim2.fromOffset(14,57),12,C(214,229,236))end
  if level>=max then
-  text(b,"МАКСИМАЛЬНЫЙ УРОВЕНЬ · открыто навсегда",UDim2.new(1,-25,0,29),UDim2.fromOffset(14,63),13,C(253,216,117),true)
+  text(b,"МАКСИМАЛЬНЫЙ УРОВЕНЬ · открыто навсегда",UDim2.new(1,-25,0,29),UDim2.fromOffset(14,172),13,C(253,216,117),true)
   return
  end
  local startX=14
  if hero then
   local gems=Config.heroUpgradeDiamonds(level)
   local coins=Config.heroUpgradeCoins(level)
-  button(b,("+1%% · %s $"):format(fmt(coins)),UDim2.new(.5,-18,0,34),UDim2.fromOffset(startX,62),function()
+  button(b,("+1 п.п. · %s $"):format(fmt(coins)),UDim2.new(.5,-18,0,34),UDim2.fromOffset(startX,170),function()
    send("upgradeHeroCoins","hero",nil)
   end,C(146,229,177),(tonumber(data.money) or 0)>=coins)
-  button(b,("+1%% · %d 💎"):format(gems),UDim2.new(.5,-18,0,34),UDim2.new(.5,4,0,62),function()
+  button(b,("+1 п.п. · %d 💎"):format(gems),UDim2.new(.5,-18,0,34),UDim2.new(.5,4,0,170),function()
    send("upgradeHeroDiamonds","hero",nil)
   end,C(129,218,250),(tonumber(data.diamonds) or 0)>=gems)
  else
   local coin=Config.petUpgradeCoins(level)
   local gem=Config.petUpgradeDiamonds(level)
-  button(b,("+1%% · %s $"):format(fmt(coin)),UDim2.new(.5,-18,0,34),UDim2.fromOffset(startX,66),function()
+  button(b,("+1 п.п. · %s $"):format(fmt(coin)),UDim2.new(.5,-18,0,34),UDim2.fromOffset(startX,170),function()
    send("upgradePetCoins","pet",nil)
   end,C(146,229,177),(tonumber(data.money) or 0)>=coin)
-  button(b,("+1%% · %d 💎"):format(gem),UDim2.new(.5,-18,0,34),UDim2.new(.5,4,0,66),function()
+  button(b,("+1 п.п. · %d 💎"):format(gem),UDim2.new(.5,-18,0,34),UDim2.new(.5,4,0,170),function()
    send("upgradePetDiamonds","pet",nil)
   end,C(129,218,250),(tonumber(data.diamonds) or 0)>=gem)
  end
@@ -9340,12 +9631,12 @@ local function itemCard(def,data)
   local desc=text(b,def.description,UDim2.new(1,-x-12,0,wide and 82 or 90),UDim2.fromOffset(x,wide and 66 or 49),wide and 13 or 11,C(192,212,229))
   desc.TextYAlignment=Enum.TextYAlignment.Top
   if isHero then
-   text(b,"ОДЕЖДА ROBLOX · ЗА АЛМАЗЫ",UDim2.new(1,-x-12,0,21),UDim2.fromOffset(x,wide and 157 or 142),wide and 11 or 10,def.accent or colorAccent,true)
+   text(b,def.priceCoins and "ОДЕЖДА ROBLOX · ЗА МОНЕТЫ"or"ОДЕЖДА ROBLOX · ЗА АЛМАЗЫ",UDim2.new(1,-x-12,0,21),UDim2.fromOffset(x,wide and 157 or 142),wide and 11 or 10,def.accent or colorAccent,true)
   elseif isCar then
    text(b,selectedCarId and "ДЛЯ ВЫБРАННОЙ МАШИНЫ" or "СНАЧАЛА ВЫБЕРИ МАШИНУ",
     UDim2.new(1,-x-12,0,21),UDim2.fromOffset(x,wide and 157 or 142),11,C(121,236,196),true)
   elseif isPet then
-   text(b,def.movement=="fly" and "ЛЕТАЕТ ЗА ВЛАДЕЛЬЦЕМ" or "ЕДЕТ НА КРЫШЕ",
+   text(b,def.movement=="fly" and "ЛЕТАЕТ ЗА ВЛАДЕЛЬЦЕМ" or "ЕДЕТ СЗАДИ НА МАШИНЕ",
     UDim2.new(1,-x-12,0,21),UDim2.fromOffset(x,wide and 157 or 142),11,C(121,236,196),true)
   end
  else
@@ -9389,6 +9680,10 @@ local function itemCard(def,data)
     else send("equip",def.category,def.id) end
    end,C(120,229,185))
   end
+ elseif def.priceCoins then
+  button(b,(isCar and'КУПИТЬ И УСТАНОВИТЬ · %s $'or'КУПИТЬ НАВСЕГДА · %s $'):format(fmt(def.priceCoins)),UDim2.new(1,-22,0,34),UDim2.fromOffset(11,actionY),function()
+   send('buyCoins',def.category,def.id,isCar and selectedCarId or nil)
+  end,C(146,229,177),(tonumber(data.money)or 0)>=def.priceCoins)
  elseif isHero then
   button(b,("КУПИТЬ НАВСЕГДА · %d 💎"):format(def.price),UDim2.new(1,-22,0,34),UDim2.fromOffset(11,actionY),function()
    send("buyDiamonds",def.category,def.id,isCar and selectedCarId or nil)
@@ -9417,6 +9712,7 @@ render=function()
  for _,child in ipairs(scroller:GetChildren()) do if child~=layout then child:Destroy() end end
  if state=="hero" or state=="pet" then
   if state=="hero"then
+   itemCard(Config.ById[Config.COIN_HERO_ID],data) -- first, before mastery and paid catalog entries
    local ownAvatar=box(scroller,89,C(30,57,68))
    text(ownAvatar,"МОЙ ROBLOX-АВАТАР",UDim2.new(.53,-14,0,26),UDim2.fromOffset(12,7),14,C(229,243,239),true)
    text(ownAvatar,"Вернуть свою одежду, лицо и аксессуары. Костюмы остаются в коллекции.",UDim2.new(.53,-14,0,44),UDim2.fromOffset(12,34),11,C(182,211,216))
@@ -9436,7 +9732,7 @@ render=function()
  if state=="hero" then
   local total=0
   for _,def in ipairs(Config.List) do if def.category=="hero"and not def.hiddenFromShop then total+=1 end end
-  local pages=math.max(1,math.ceil(total/HERO_PAGE_SIZE))
+  local pages=math.max(1,math.ceil((total-1)/HERO_PAGE_SIZE))
   heroPage=math.clamp(heroPage,1,pages)
   notice(("ОБРАЗЫ ROBLOX · %d разных образов · %d/%d"):format(total,heroPage,pages))
   local pager=box(scroller,44,C(27,53,69))
@@ -9468,6 +9764,7 @@ render=function()
  for _,def in ipairs(Config.List) do
   if (def.category==state or(state=="paint"and def.category=="skin"))and not(state=="hero"and def.hiddenFromShop)then
    if state=="hero" then
+    if def.featuredCoins then continue end
     heroIndex+=1
     if heroIndex>(heroPage-1)*HERO_PAGE_SIZE and heroIndex<=heroPage*HERO_PAGE_SIZE then itemCard(def,data) end
    elseif state=="pet" then
@@ -11434,17 +11731,8 @@ local function spawnInSlot(slot)
   if slot.part:GetAttribute('Index')==8 then
    required=Policy.challenge(highest)
   else
-   -- Roll only eligible body/rarity pairs in the highest unlocked class.
-   local candidates={}
-   for _,candidate in ipairs(list)do for _,r in ipairs(Rarity.Order)do
-    if HackRequirements.get(classIndex,candidate,r)<=skill then
-     candidates[#candidates+1]={def=candidate,rarity=r,weight=CarClasses[classId].rarityWeights[r]or 0}
-    end
-   end end
-   local total=0;for _,candidate in ipairs(candidates)do total+=candidate.weight end
-   local pick=rng:NextNumber()*total
-   for _,candidate in ipairs(candidates)do pick-=candidate.weight;if pick<=0 then carDef=candidate.def;rarity=candidate.rarity;break end end
-   required=HackRequirements.get(classIndex,carDef,rarity)
+   required=Policy.normalRequirement(rng,slot.part:GetAttribute('Index')) -- all seven ordinary slots require 25..30; no skill bypass
+
   end
  end
  local variant = rollVariant()
@@ -11643,7 +11931,7 @@ function ParkingService.init()
       local skill,highest=skillAt(slot);local class=Policy.classFor(skill)
       local hard=slot.part:GetAttribute('Index')==8
       if (hard and car:GetAttribute('RequiredHack')~=Policy.challenge(highest))or
-       (not hard and(car:GetAttribute('ClassId')~=class or(car:GetAttribute('RequiredHack')or 1)>skill))then
+       (not hard and(car:GetAttribute('ClassId')~=class or(car:GetAttribute('RequiredHack')or 0)<Policy.MIN_REQUIRED or(car:GetAttribute('RequiredHack')or 0)>Policy.MAX_REQUIRED))then
        carSlot[car]=nil;slot.car=nil;CarFactory.release(car);spawnInSlot(slot)
       end
      end
@@ -12213,7 +12501,11 @@ local Navigator=require(script.Parent.NPCNavigator)
 local M={};local folder;local vendorTemplates={};local lastTheme=0;local lastHair=0
 local vendorProfiles={coins='mechanic',diamonds='dealer',cosmetics='stylist',workshop='workshop'}
 local guardProfile={id="salon_guard_v58",outfitQuery="navy security uniform",outfitFallbackQuery="navy police uniform",color=Color3.fromRGB(31,50,75),pantsColor=Color3.fromRGB(24,31,44)}
-local vendorSeeds={guard=505,coins=101,diamonds=202,cosmetics=404,workshop=303}
+local roadsideProfiles={
+ trafficOfficer={id='traffic_officer_v66',outfitQuery='navy police uniform',outfitFallbackQuery='police officer uniform',color=Color3.fromRGB(29,49,76),pantsColor=Color3.fromRGB(23,34,51)},
+ roadWorker={id='road_worker_v66',outfitQuery='orange construction reflective vest',outfitFallbackQuery='construction worker uniform',color=Color3.fromRGB(242,139,35),pantsColor=Color3.fromRGB(31,44,57)},
+}
+local vendorSeeds={trafficOfficer=606,roadWorker=707,guard=505,coins=101,diamonds=202,cosmetics=404,workshop=303}
 local themes={'mechanic','dealer','workshop','hacker','racer'}
 local hairLooks={
  {hair=8022080793,face=4258680288},{hair=10376943185,face=138940480674278},
@@ -12269,18 +12561,20 @@ function M.newRig(topColor,role)
  if role and vendorTemplates[role]then return vendorTemplates[role]:Clone()end
  local rng=role and Random.new(vendorSeeds[role]or 1)or Random.new()
  local profile
- if role then profile=role=='guard'and guardProfile or Config.CatalogLooks[vendorProfiles[role]or'mechanic']
+ if role then profile=roadsideProfiles[role]or role=='guard'and guardProfile or Config.CatalogLooks[vendorProfiles[role]or'mechanic']
  else lastTheme=freshIndex(rng,#themes,lastTheme);profile=Config.CatalogLooks[themes[lastTheme]]end
  local desc=description(profile,rng,not role,true);if not desc then return nil end
  if role then
   -- Open, readable faces: do not stack catalog headgear and legacy handmade props.
   desc.HatAccessory='';desc.FaceAccessory='';desc.NeckAccessory=''
+  if roadsideProfiles[role]then desc.HairAccessory=''else
   desc.HairAccessory=tostring(role=='cosmetics'and 89315454377282 or(role=='diamonds'and 10376943185 or 8022080793))
+  end
  end
  local rig=build(desc)
  if not rig then
   local retry=description(profile,rng,false,true)
-  retry.HatAccessory='';retry.FaceAccessory='';retry.HairAccessory='63690008'
+  retry.HatAccessory='';retry.FaceAccessory='';retry.HairAccessory=roadsideProfiles[role]and''or'63690008'
   rig=build(retry)
  end
  if not rig then return nil end
@@ -12351,71 +12645,33 @@ local BLUE = Color3.fromRGB(50, 90, 255)
 local DARK = Color3.fromRGB(40, 40, 50)
 
 local function buildCar()
-    local m = Instance.new("Model")
-    m.Name = "Полиция · Патруль ГТ"
-    local white = Color3.fromRGB(225,233,239)
-    local blue = Color3.fromRGB(27,48,86)
-    local navy = Color3.fromRGB(21,30,47)
-    local steel = Color3.fromRGB(111,135,148)
-    local glass = Color3.fromRGB(37,67,95)
-    local function piece(name,size,pos,color,material)
-        local part = P.part(m,name,size,pos,color,material or Enum.Material.SmoothPlastic,false)
-        part.CastShadow = true
-        return part
+    -- Use the same sloped body, glass, wheels and cabin detail as the collectible catalog.
+    local m=require(Shared.CarVisualLibrary).build({id='patrol_visual_v66',name='Полиция · Патруль ГТ',shape='executive',feature='modern'},'premium')
+    m.Name='Полиция · Патруль ГТ'
+    local white=Color3.fromRGB(231,239,243);local blue=Color3.fromRGB(25,56,99);local navy=Color3.fromRGB(19,31,48)
+    for _,p in ipairs(m:GetDescendants())do if p:IsA('BasePart')then
+        if p:GetAttribute('Paintable')then p.Color=white end
+        p.CanCollide=false;p.CanTouch=false;p.CanQuery=false;p.Anchored=true
+    end end
+    local length=m:GetAttribute('DesignLength');local width=m:GetAttribute('DesignWidth')
+    local roof=m:FindFirstChild('RoofPanel');local top=roof and roof.Position.Y+roof.Size.Y/2 or 4.2
+    local function piece(name,size,pos,color,material)return P.part(m,name,size,pos,color,material or Enum.Material.Metal,false)end
+    for _,side in ipairs({-1,1})do
+        piece('PoliceBodyStripe',Vector3.new(length*.74,.34,.07),Vector3.new(-.15,1.8,side*width*.445),blue)
+        piece('PoliceDoorPanel',Vector3.new(3.1,.56,.075),Vector3.new(-.15,1.95,side*width*.455),blue)
+        local badge=piece('PatrolBadge',Vector3.new(2.45,.44,.07),Vector3.new(-.15,1.98,side*width*.465),blue)
+        local gui=Instance.new('SurfaceGui');gui.AutoLocalize=false;gui.Face=side==1 and Enum.NormalId.Back or Enum.NormalId.Front;gui.LightInfluence=0;gui.PixelsPerStud=45;gui.SizingMode=Enum.SurfaceGuiSizingMode.PixelsPerStud;gui.Parent=badge
+        local text=Instance.new('TextLabel');text.Size=UDim2.fromScale(1,1);text.BackgroundTransparency=1;text.Font=Enum.Font.GothamBold;text.TextScaled=true;text.TextColor3=white;text.Text='ПАТРУЛЬ 60';text.Parent=gui
+        piece('PushBumperPost',Vector3.new(.20,.72,.17),Vector3.new(length*.52,1.38,side*width*.25),navy)
+        piece('LightbarEndCap',Vector3.new(1.1,.28,.12),Vector3.new(roof and roof.Position.X or-.6,top+.24,side*width*.26),navy)
     end
-    piece("Undercarriage",Vector3.new(12.2,.47,5.8),Vector3.new(0,.84,0),navy,Enum.Material.Metal)
-    piece("LowerBody",Vector3.new(12.1,1.35,5.85),Vector3.new(0,1.68,0),white)
-    piece("Hood",Vector3.new(3.9,.36,5.45),Vector3.new(4.0,2.53,0),white)
-    piece("Trunk",Vector3.new(2.3,.38,5.42),Vector3.new(-4.8,2.55,0),white)
-    piece("Roof",Vector3.new(4.9,.25,4.4),Vector3.new(-.65,4.25,0),white)
-    piece("CabinDark",Vector3.new(4.7,1.44,4.40),Vector3.new(-.55,3.40,0),glass,Enum.Material.Glass).Transparency=.18
-    piece("Windshield",Vector3.new(.19,1.20,4.25),CFrame.new(1.93,3.34,0)*CFrame.Angles(0,0,math.rad(24)),glass,Enum.Material.Glass).Transparency=.16
-    piece("RearWindow",Vector3.new(.18,1.12,4.12),CFrame.new(-3.04,3.37,0)*CFrame.Angles(0,0,math.rad(-24)),glass,Enum.Material.Glass).Transparency=.17
-    for _,side in ipairs({-1,1}) do
-        piece("SatinSideStripe",Vector3.new(11.6,.48,.12),Vector3.new(0,1.71,side*2.96),blue,Enum.Material.Metal)
-        piece("DoorBlackBelt",Vector3.new(4.7,.11,.18),Vector3.new(-.55,2.61,side*2.96),navy,Enum.Material.Metal)
-        piece("SideWindow",Vector3.new(3.96,.90,.12),Vector3.new(-.60,3.48,side*2.23),glass,Enum.Material.Glass).Transparency=.13
-        piece("B_Pillar",Vector3.new(.15,1.09,.18),Vector3.new(-1.30,3.51,side*2.30),navy,Enum.Material.Metal)
-        piece("SideMirror",Vector3.new(.62,.28,.50),Vector3.new(1.69,2.94,side*2.68),navy,Enum.Material.Metal)
-        piece("FrontFender",Vector3.new(2.35,.64,.33),Vector3.new(3.28,1.92,side*2.88),white)
-        piece("RearFender",Vector3.new(1.90,.65,.33),Vector3.new(-4.05,1.92,side*2.88),white)
-        for _,wx in ipairs({-3.73,3.62}) do
-            local tire = piece("SportTire",Vector3.new(.90,1.85,1.85),CFrame.new(wx,.95,side*3.0)*CFrame.Angles(0,math.pi/2,0),Color3.fromRGB(24,28,34))
-            tire.Shape = Enum.PartType.Cylinder
-            local rim = piece("ForgedRim",Vector3.new(.95,1.14,1.14),CFrame.new(wx,.95,side*3.44)*CFrame.Angles(0,math.pi/2,0),steel,Enum.Material.Metal)
-            rim.Shape = Enum.PartType.Cylinder
-            local center = piece("Hub",Vector3.new(.98,.33,.33),CFrame.new(wx,.95,side*3.52)*CFrame.Angles(0,math.pi/2,0),navy,Enum.Material.Metal)
-            center.Shape = Enum.PartType.Cylinder
-        end
-        piece("WhiteHeadlight",Vector3.new(.16,.38,1.65),Vector3.new(6.15,2.08,side*1.92),Color3.fromRGB(198,237,250),Enum.Material.Neon)
-        piece("RedTaillight",Vector3.new(.16,.35,1.60),Vector3.new(-6.16,2.20,side*1.92),Color3.fromRGB(252,62,68),Enum.Material.Neon)
-        piece("SideDoorHandle",Vector3.new(.50,.10,.12),Vector3.new(-.65,2.65,side*3.03),steel,Enum.Material.Metal)
-    end
-    piece("PushBumper",Vector3.new(.40,.64,4.5),Vector3.new(6.31,1.10,0),navy,Enum.Material.Metal)
-    piece("FrontAirGrille",Vector3.new(.20,.60,3.0),Vector3.new(6.19,1.70,0),navy,Enum.Material.Metal)
-    piece("RearDiffuser",Vector3.new(.28,.42,4.1),Vector3.new(-6.20,1.12,0),navy,Enum.Material.Metal)
-    local red = piece("RedLight",Vector3.new(1.1,.30,1.28),Vector3.new(-.65,4.60,1.00),RED,Enum.Material.Neon)
-    local blueLight = piece("BlueLight",Vector3.new(1.1,.30,1.28),Vector3.new(-.65,4.60,-1.00),BLUE,Enum.Material.Neon)
-    piece("LightbarFrame",Vector3.new(1.25,.14,3.4),Vector3.new(-.65,4.44,0),navy,Enum.Material.Metal)
-    -- Clear signage with no external images. 3D-native SurfaceGui on side panels.
-    for _,side in ipairs({-1,1}) do
-        local labelPart = piece("PatrolBadge",Vector3.new(2.35,.58,.14),Vector3.new(-.18,1.77,side*3.06),navy,Enum.Material.Metal)
-        local gui = Instance.new("SurfaceGui");gui.AutoLocalize=false
-        gui.Face = side == 1 and Enum.NormalId.Front or Enum.NormalId.Back
-        gui.LightInfluence = 0
-        gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
-        gui.PixelsPerStud = 18
-        gui.Parent = labelPart
-        local label = Instance.new("TextLabel")
-        label.BackgroundTransparency=1
-        label.Size=UDim2.fromScale(1,1)
-        label.Text="ПАТРУЛЬ 60"
-        label.Font=Enum.Font.GothamBlack
-        label.TextScaled=true
-        label.TextColor3=white
-        label.Parent=gui
-    end
-    m.WorldPivot = CFrame.new()
+    piece('PushBumper',Vector3.new(.20,.18,width*.60),Vector3.new(length*.52,1.70,0),navy)
+    local lightX=roof and roof.Position.X or-.6
+    piece('LightbarFrame',Vector3.new(1.30,.12,width*.55),Vector3.new(lightX,top+.10,0),navy)
+    piece('RedLight',Vector3.new(1.12,.24,width*.22),Vector3.new(lightX,top+.29,width*.13),RED,Enum.Material.Neon)
+    piece('BlueLight',Vector3.new(1.12,.24,width*.22),Vector3.new(lightX,top+.29,-width*.13),BLUE,Enum.Material.Neon)
+    piece('RoofAntenna',Vector3.new(.055,.65,.055),Vector3.new(lightX-.9,top+.38,.5),navy)
+    m.WorldPivot=CFrame.new()
     return m
 end
 
@@ -13701,11 +13957,12 @@ local function buildSalon(rec)
     -- The TOP-100 panel is THE ENTIRE RIGHT SIDE WINDOW next to the cashier.
     -- Its surface faces inward (-X); the corresponding glazing/mullions are not
     -- generated in SalonArtDirector. Nothing sticks out into the car forecourt.
-    local paneX=31.78 -- cashier-side wall; W's u-axis is world X on both plots
-    local paneV=27 -- wall section stretches from v=12.6 to v=41.4
-    local paneY=6.8
-    local paneWidth=28.6 -- usable horizontal length along the wall (world Z)
-    local paneHeight=9.4
+    local geometry=require(Shared.LeaderboardView).Geometry
+    local paneX=geometry.x -- cashier-side wall; W's u-axis is world X on both plots
+    local paneV=geometry.v -- wall section stretches from v=12.6 to v=41.4
+    local paneY=geometry.y
+    local paneWidth=geometry.width -- usable horizontal length along the wall (world Z)
+    local paneHeight=geometry.height
     local tv=P.part(model,"Правая_Стена_Топ100",Vector3.new(.24,paneHeight,paneWidth),
         W(paneX,paneV,paneY),Color3.fromRGB(9,16,28),Enum.Material.SmoothPlastic,false)
     tv.CastShadow=false
@@ -13718,76 +13975,13 @@ local function buildSalon(rec)
         P.part(model,"Экран_рамка_верт",Vector3.new(.30,paneHeight+.22,.16),
             W(paneX,paneV+dv,paneY),edgeColor,Enum.Material.Metal,false)
     end
-    local tvGui=Instance.new("SurfaceGui");tvGui.AutoLocalize=false
-    tvGui.Name="WorldTop100"
-    tvGui.Face=Enum.NormalId.Left
-    tvGui.SizingMode=Enum.SurfaceGuiSizingMode.PixelsPerStud
-    tvGui.PixelsPerStud=50
-    tvGui.LightInfluence=0
-    tvGui.AlwaysOnTop=false
-    tvGui.Parent=tv
-    local panel=Instance.new("Frame")
-    panel.Name="LeaderboardBackground"
-    panel.BackgroundColor3=Color3.fromRGB(12,22,38)
-    panel.BorderSizePixel=0;panel.Size=UDim2.fromScale(1,1);panel.Parent=tvGui
-    local glow=Instance.new("UIStroke")
-    glow.Color=Color3.fromRGB(43,186,194);glow.Thickness=3;glow.Transparency=.25;glow.Parent=panel
-    local bar=Instance.new("Frame")
-    bar.Size=UDim2.new(1,0,0,9);bar.BackgroundColor3=Color3.fromRGB(66,215,201)
-    bar.BorderSizePixel=0;bar.Parent=panel
-    local top=Instance.new("TextLabel")
-    top.Size=UDim2.new(1,-52,0,53)
-    top.Position=UDim2.fromOffset(24,13)
-    top.BackgroundTransparency=1;top.TextXAlignment=Enum.TextXAlignment.Left
-    top.Text="★  ТОП-10 УГОНЩИКОВ  /  30 ДНЕЙ"
-    top.Font=Enum.Font.GothamBlack;top.TextSize=30
-    top.TextColor3=Color3.fromRGB(244,205,118);top.Parent=panel
-    local subtitle=Instance.new("TextLabel")
-    subtitle.Size=UDim2.new(1,-52,0,25);subtitle.Position=UDim2.fromOffset(26,60)
-    subtitle.BackgroundTransparency=1;subtitle.TextXAlignment=Enum.TextXAlignment.Left
-    subtitle.Text="МОНЕТЫ, ЗАРАБОТАННЫЕ ЗА СЕЗОН  ·  СЕЗОННЫЙ РЕЙТИНГ"
-    subtitle.Font=Enum.Font.GothamMedium;subtitle.TextSize=17
-    subtitle.TextColor3=Color3.fromRGB(141,188,205);subtitle.Parent=panel
-    local rows={}
-    for rank=1,10 do
-        local strip=Instance.new("Frame")
-        strip.Name="EntryPanel"..rank
-        strip.Size=UDim2.new(1,-50,0,31)
-        strip.Position=UDim2.fromOffset(25,92+(rank-1)*33)
-        strip.BorderSizePixel=0
-        strip.BackgroundColor3=rank<=3 and Color3.fromRGB(31,50,67) or (rank%2==0 and Color3.fromRGB(23,37,54) or Color3.fromRGB(18,30,47))
-        strip.Parent=panel
-        local c=Instance.new("UICorner");c.CornerRadius=UDim.new(0,4);c.Parent=strip
-        local line=Instance.new("TextLabel")
-        line.Name="Rank"..rank
-        line.Size=UDim2.new(1,-18,1,0);line.Position=UDim2.fromOffset(9,0)
-        line.BackgroundTransparency=1;line.TextXAlignment=Enum.TextXAlignment.Left
-        line.Font=Enum.Font.GothamBold;line.TextSize=22
-        line.TextColor3=rank<=3 and Color3.fromRGB(249,207,118) or Color3.fromRGB(223,236,242)
-        line.Text="";line.Parent=strip;rows[rank]=line
-    end
-    local footer=Instance.new("TextLabel")
-    footer.Size=UDim2.new(1,-40,0,29)
-    footer.Position=UDim2.new(0,22,1,-37)
-    footer.BackgroundTransparency=1;footer.Font=Enum.Font.GothamBold
-    footer.TextColor3=Color3.fromRGB(93,224,194);footer.TextSize=20
-    footer.TextXAlignment=Enum.TextXAlignment.Center
-    footer.Text="НАЖМИ E / КЛИКНИ · ОТКРЫТЬ ТОП-100";footer.Parent=panel
-    local empty=Instance.new("TextLabel")
-    empty.Name="SeasonEmptyState";empty.Position=UDim2.new(.07,0,.30,0)
-    empty.Size=UDim2.new(.86,0,.38,0)
-    empty.BackgroundColor3=Color3.fromRGB(12,22,38)
-    empty.Text="СЕЗОН ПОКА ПУСТОЙ\nПервым заработай монеты и возглавь рейтинг!"
-    empty.TextColor3=Color3.fromRGB(151,227,209)
-    empty.Font=Enum.Font.GothamBold;empty.TextSize=30
-    empty.TextWrapped=true;empty.Parent=panel
-    rec.seasonTV={rows=rows,footer=footer,heading=top,empty=empty}
+    rec.seasonTV=require(Shared.LeaderboardView).attach(tv)
     local tvPrompt=Instance.new("ProximityPrompt")
     tvPrompt.Name="OpenSeasonTop100"
     tvPrompt.ActionText="Открыть топ-100"
     tvPrompt.ObjectText="Сезонный рейтинг"
     tvPrompt.KeyboardKeyCode=Enum.KeyCode.E
-    tvPrompt.HoldDuration=0;tvPrompt.MaxActivationDistance=17
+    tvPrompt.HoldDuration=0;tvPrompt.MaxActivationDistance=17;tvPrompt.UIOffset=Vector2.new(0,160)
     tvPrompt.RequiresLineOfSight=false
     tvPrompt.Parent=tv
     Security.prompt(tvPrompt,function(plr)
@@ -13912,7 +14106,7 @@ local function renderShelf(rec)
             local anchor=shape("Метка дохода",Vector3.new(.15,.15,.15),Vector3.new(0,.89,0),color)
             anchor.Transparency=1
             local lvl=math.clamp(math.floor(tonumber((data.lootRanks or {})[item.id]) or 0),0,5)
-            local plate=P.part(rec.shelfFolder,'IncomePlate',Vector3.new(8.9,1.35,.16),toWorld(rec,-27+col*10.8,37.55,2.72+row*rowStep),Color3.fromRGB(10,18,29),Enum.Material.SmoothPlastic,false)
+            local plate=P.part(rec.shelfFolder,'IncomePlate',Vector3.new(.16,.16,.16),toWorld(rec,-27+col*10.8,37.55,2.72+row*rowStep),Color3.fromRGB(10,18,29),Enum.Material.SmoothPlastic,false)
             require(Shared.ShelfTypography).attach(plate,rec.side==1 and Enum.NormalId.Front or Enum.NormalId.Back,{
                 def.name..' ★'..lvl..'/5','+'..fmt(Balance.baseIncome(def.income*(1+.2*lvl))*3600)..' $/ч'})
         end
@@ -14447,8 +14641,8 @@ local function menuData(player)
             for _,category in ipairs({'hero','pet'})do
                 local key=category=='hero'and'heroSkinBonusLevel'or'petBonusLevel'
                 local nextData=table.clone(data);nextData[key]=math.min(category=='hero'and CosmeticConfig.HERO_MAX or CosmeticConfig.PET_MAX,(data[key]or 0)+1)
-                result[category]={current=('Бонус монет +%d%% · Доход в час: %s $'):format(CosmeticConfig.coinBonusPct(data),fmt(computeIncome(data,player)*3600)),
-                    next=('Бонус монет +%d%% · Доход в час: %s $'):format(CosmeticConfig.coinBonusPct(nextData),fmt(computeIncome(nextData,player)*3600))}
+                result[category]={current=('Бонус монет +%d п.п. · Доход в час: %s $'):format(CosmeticConfig.coinBonusPct(data),fmt(computeIncome(data,player)*3600)),
+                    next=('Бонус монет +%d п.п. · Доход в час: %s $'):format(CosmeticConfig.coinBonusPct(nextData),fmt(computeIncome(nextData,player)*3600))}
             end
             return result
         end)(),
@@ -14758,7 +14952,7 @@ function SalonService.init()
                     if screen.empty then screen.empty.Visible=(total==0) end
                     for j,row in ipairs(screen.rows) do
                         local e=entries[j]
-                        row.Text=e and string.format("%02d    %s      ·      $ %s",e.rank,tostring(e.name):sub(1,19),fmt(e.score)) or ""
+                        require(Shared.LeaderboardView).setRow(screen,j,e)
                     end
                     screen.footer.Text="НАЖМИ E / КЛИКНИ · ОТКРЫТЬ ТОП-100"
                 end
@@ -15210,11 +15404,16 @@ local function label(block,face,title,sub,color)
     s.TextXAlignment=Enum.TextXAlignment.Center;s.TextColor3=color;s.Parent=back
 end
 local function sign(parent,x,z,y,width,title,sub,accent)
-    -- X is the thickness: visible from the arriving direction along X.
-    local b=part(parent,"CinematicSign",Vector3.new(.65,5,width),Vector3.new(x,y,z),C(18,23,32),Enum.Material.Metal)
-    label(b,Enum.NormalId.Left,title,sub,accent)
-    label(b,Enum.NormalId.Right,title,sub,accent)
-    glow(parent,"SignEdgeTop",Vector3.new(.73,.16,width),Vector3.new(x,y+2.58,z),accent,false)
+    local h=3.2
+    local b=part(parent,'CinematicSign',Vector3.new(.45,h,width),Vector3.new(x,y,z),C(18,27,37),Enum.Material.Metal)
+    b:SetAttribute('SignGrounded',true)
+    label(b,Enum.NormalId.Left,title,sub,accent);label(b,Enum.NormalId.Right,title,sub,accent)
+    glow(parent,'SignEdgeTop',Vector3.new(.51,.12,width),Vector3.new(x,y+h/2+.05,z),accent,false)
+    local bottom=y-h/2;local height=bottom-.15
+    for _,side in ipairs({-1,1})do
+        part(parent,'SignSupport',Vector3.new(.34,height,.34),Vector3.new(x,.15+height/2,z+side*width*.34),C(71,84,95),Enum.Material.Metal)
+        part(parent,'SignFooting',Vector3.new(.8,.3,.8),Vector3.new(x,.15,z+side*width*.34),C(105,112,112),Enum.Material.Concrete)
+    end
     return b
 end
 local function wallSign(parent,x,y,z,width,title,accent)
@@ -15333,8 +15532,8 @@ function Art.decorateCore(core, T)
         end
     end
     -- Small readable welcome sign facing arriving drivers, replaces giant floating text.
-    sign(folder,28,-46,9,13,"СТАРТ / 01","ТВОЙ ГАРАЖ",orange)
-    sign(folder,365,46,10,15,"ПУНКТ ДОСТАВКИ","ДОСТАВЛЯЙ УГНАННЫЕ АВТО",cyan)
+    sign(folder,28,-46,5.4,10,"ГАРАЖИ","ТВОЙ ГАРАЖ",orange)
+    sign(folder,365,46,5.4,12,"ПУНКТ ДОСТАВКИ","ДОСТАВЛЯЙ УГНАННЫЕ АВТО",cyan)
     -- crosswalks and direction stripes on entry road
     for _,x in ipairs({32,355}) do
         for z=-16,16,5 do
@@ -15634,7 +15833,7 @@ function Art.decorateDistrict(model,index,x0,x1,x2)
     -- Color-coded landmark every ~200 studs, themed street furniture.
     for x=x1+170,x2-30,200 do
         local z=-43
-        sign(d,x,z,9,12,"60 / "..index,t.subtitle,t.accent)
+        sign(d,x,z,5.4,10,'РАЙОН '..districtNumber,require(game:GetService('ReplicatedStorage').Shared.Config.Districts)[index].name,t.accent)
         if index==1 then
             part(d,"YardCrate",Vector3.new(7,5,7),Vector3.new(x+10,2.5,-51),C(98,70,53),Enum.Material.WoodPlanks)
             part(d,"Crate",Vector3.new(5,4,5),Vector3.new(x+14,7,-52),C(139,109,73),Enum.Material.Wood)
@@ -16095,7 +16294,7 @@ end
 return RoadEventService
 ]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_CHALLENGE_V4"><Properties><string name="Name">RoadChallengeService</string><ProtectedString name="Source"><![CDATA[-- STEAL60 / ROAD CHALLENGES v4
 -- All event creation, driving checks, and rewards are authoritative on the server.
--- No external meshes, images, asset IDs, or paid assets.
+-- Vehicle/machinery props are native parts; roadside outfits reuse the existing NPC loader.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
@@ -16241,7 +16440,7 @@ local function createRoadEvent(s, kind)
             point.Color=light.Color;point.Range=18;point.Brightness=1;point.Parent=light
         end
     else
-        part(model,"AsphaltPatch",Vector3.new(30,.07,12),Vector3.new(x,0.28,centerZ),Color3.fromRGB(32,32,35),Enum.Material.Asphalt,false)
+        part(model,"AsphaltPatch",Vector3.new(35,.07,12),Vector3.new(x+14,0.28,centerZ),Color3.fromRGB(32,32,35),Enum.Material.Asphalt,false)
     end
     require(script.Parent.RoadsideArt).decorate(model,kind,x,side)
     s.road = {model=model, kind=kind, x=x, side=side, id=id, expires=os.clock()+65}
@@ -16362,16 +16561,16 @@ local function onDistrictLoaded(index,model)
     active[index]=s
     decorateRoadSignals(index,model)
     task.spawn(function()
-        task.wait(9) -- park spawns finish before selection
+        local Schedule=require(Shared.RoadEventSchedule)
+        task.wait(Schedule.START_DELAY)
+        local cycle=0
         while active[index]==s and model.Parent do
             runVIP(s)
-            task.wait(15)
-            if active[index]~=s then break end
-            createRoadEvent(s,random:NextNumber()<.55 and "police" or "repair")
-            task.wait(65)
+            createRoadEvent(s,Schedule.kind(index,cycle));cycle+=1
+            task.wait(Schedule.DURATION)
             if active[index]~=s then break end
             clearRoad(s)
-            task.wait(55)
+            task.wait(Schedule.GAP)
         end
     end)
 end
@@ -16473,7 +16672,7 @@ end
 local function resolveName(id)
     local online=Players:GetPlayerByUserId(id)
     if online then return online.DisplayName end
-    return names[id] or ("Игрок #"..id)
+    return names[id] or ("#"..id)
 end
 local function queueName(id)
     if names[id] or nameLoading[id] then return end
@@ -16825,7 +17024,7 @@ local function onAction(player,action,category,id,targetCarId)
  end
  if category=='vehicle'then return end
  if action=="preview"then startPreview(player,category,def,targetCarId);return end
- if category=="hero"and action=="buyCoins"then Net.notify(player,"Образы продаются за алмазы. Выбери покупку за 💎.","info");return end
+ if category=="hero"and action=="buyCoins"and not(def and def.priceCoins)then Net.notify(player,"Образы продаются за алмазы. Выбери покупку за 💎.","info");return end
  if category=="hero"and def and(action=="buy"or action=="buyCoins"or action=="buyDiamonds"or action=="equip")then
   if def.hiddenFromShop and action~="equip"then Net.notify(player,"Этот старый вариант снят с продажи. Выбери образ из новой витрины.","info");return end
   if not Wardrobe.isReady(def)then Net.notify(player,"Каталожный образ ещё не загрузился. Покупка не выполнена.","info");return end
@@ -16924,7 +17123,7 @@ local function onAction(player,action,category,id,targetCarId)
   if not cost then Net.notify(player,"Герой: максимальное мастерство","info");return end
   if not charge("coins",cost) then return end
   data.heroSkinBonusLevel=oldLevel+1
-  message=("Герой: +%d%% ко всем монетам, включая кассу."):format(data.heroSkinBonusLevel)
+  message=("Герой: +%d п.п. к бонусу монет и кассы."):format(data.heroSkinBonusLevel)
   needsSave=true
  elseif action=="upgradeHeroDiamonds" then
   if category~="hero" then return end
@@ -16939,7 +17138,7 @@ local function onAction(player,action,category,id,targetCarId)
   if not cost then Net.notify(player,"Герой: максимальное мастерство.","info");return end
   if not charge("diamonds",cost) then return end
   data.heroSkinBonusLevel=oldLevel+1
-  message=("Герой: +%d%% ко всем монетам, включая кассу."):format(data.heroSkinBonusLevel)
+  message=("Герой: +%d п.п. к бонусу монет и кассы."):format(data.heroSkinBonusLevel)
   needsSave=true
  elseif action=="upgradePetCoins" or action=="upgradePetDiamonds" then
   if category~="pet" or data.petUnlocked~=true then
@@ -16951,7 +17150,7 @@ local function onAction(player,action,category,id,targetCarId)
   if not cost then Net.notify(player,"Питомец: максимальное мастерство.","info");return end
   if not charge(method,cost) then return end
   data.petBonusLevel=oldLevel+1
-  message=("Питомец: +%d%% ко всем монетам и кассе. Облики бесплатны."):format(data.petBonusLevel)
+  message=("Питомец: +%d п.п. к бонусу монет и кассы. Облики бесплатны."):format(data.petBonusLevel)
   needsSave=true
  elseif action=="buy" or action=="buyCoins" or action=="buyDiamonds" then
   if not def or category=="pet" then return end
@@ -16959,7 +17158,7 @@ local function onAction(player,action,category,id,targetCarId)
   local method=action=="buyCoins" and "coins" or "diamonds"
   local cost
   if method=="coins" then cost=def.priceCoins else cost=def.price end
-  if not cost then Net.notify(player,"Эта вещь доступна только за алмазы.","info");return end
+  if not cost then Net.notify(player,"Недоступно за выбранную валюту.","info");return end
   local carPurchase=category=='paint'or category=='skin'or category=='tuning'
   if carPurchase and targetCarId~=nil and(typeof(targetCarId)~='string'or not(data.catalog or{})[targetCarId])then return end
   if not charge(method,cost) then return end
@@ -18219,87 +18418,211 @@ local M={};local C=Color3.fromRGB
 local function piece(model,name,size,at,color,material)
  return P.part(model,name,size,at,color,material or Enum.Material.SmoothPlastic,false)
 end
-local function person(parent,at,police)
- local model=Instance.new('Model');model.Name=police and 'TrafficOfficer' or 'RoadWorker';model.Parent=parent
- model:SetAttribute('FootprintCenter',at);model:SetAttribute('FootprintSize',Vector3.new(3,0,3))
- local navy=C(27,45,72);local cloth=police and navy or C(242,143,38);local skin=C(218,169,125)
- local function p(name,size,x,y,z,color,mat)return piece(model,name,size,CFrame.new(at+Vector3.new(x,y,z)),color,mat)end
- p('UniformTorso',Vector3.new(1.7,1.9,.85),0,3,0,cloth,Enum.Material.Fabric)
- for _,s in ipairs({-1,1})do
-  p('TrouserLeg',Vector3.new(.68,1.75,.74),s*.47,1.32,0,navy,Enum.Material.Fabric)
-  p('Boot',Vector3.new(.76,.48,1.04),s*.47,.33,-.1,C(24,29,36),Enum.Material.Leather)
-  p('Sleeve',Vector3.new(.58,1.45,.67),s*1.12,3.1,0,cloth,Enum.Material.Fabric)
-  p('Hand',Vector3.new(.5,.55,.5),s*1.12,2.1,0,skin)
-  p('ChestPocket',Vector3.new(.50,.40,.10),s*.46,3.25,-.47,police and C(48,65,88)or C(246,205,75),Enum.Material.Fabric)
-  p('PocketSeam',Vector3.new(.50,.045,.13),s*.46,3.45,-.5,C(192,204,205))
-  p('Eye',Vector3.new(.10,.12,.055),s*.23,4.74,-.48,C(25,31,40))
-  if not police then p('ReflectiveVest',Vector3.new(.14,1.5,.08),s*.53,3,-.5,C(231,245,176),Enum.Material.Neon)end
+local function person(parent,at,police)return require(script.Parent.RoadsideCharacters).create(parent,at,police)end
+local function backhoe(parent,at)
+ local model=Instance.new('Model');model.Name='DetailedBackhoe';model.Parent=parent
+ model:SetAttribute('FootprintCenter',at);model:SetAttribute('FootprintSize',Vector3.new(20,0,8.5))
+ local yellow=C(237,171,42);local dark=C(29,38,45);local steel=C(126,143,150);local glass=C(116,181,201)
+ local function p(name,size,x,y,z,color,material,rotation)
+  return piece(model,name,size,CFrame.new(at+Vector3.new(x,y,z))*(rotation or CFrame.new()),color,material)
  end
- p('Belt',Vector3.new(1.78,.22,.91),0,2.30,0,C(25,30,38),Enum.Material.Leather)
- p('Buckle',Vector3.new(.27,.22,.10),0,2.3,-.5,C(207,209,183),Enum.Material.Metal)
- p('Neck',Vector3.new(.5,.3,.5),0,4.06,0,skin)
- local head=p('Head',Vector3.new(1.05,1.1,.95),0,4.65,0,skin);head.Shape=Enum.PartType.Ball
- p('Nose',Vector3.new(.18,.19,.14),0,4.60,-.49,skin)
- p('Mouth',Vector3.new(.27,.045,.03),0,4.40,-.46,C(125,76,57))
- p(police and 'UniformCap' or 'HardHat',Vector3.new(1.17,.35,1.07),0,5.17,0,police and navy or C(255,204,57))
- p('HatVisor',Vector3.new(1.08,.08,.52),0,5.03,-.52,police and C(17,25,38)or C(236,178,40))
- if police then
-  p('CapBadge',Vector3.new(.25,.23,.06),0,5.17,-.55,C(248,206,90),Enum.Material.Metal)
-  p('OfficerBadge',Vector3.new(.23,.32,.08),-.45,3.50,-.54,C(248,206,90),Enum.Material.Metal)
-  p('Radio',Vector3.new(.27,.55,.22),.61,3.67,-.55,C(22,29,35))
-  for y=2.65,3.65,.25 do p('UniformButton',Vector3.new(.07,.07,.07),0,y,-.47,C(218,218,187),Enum.Material.Metal)end
-  local baton=CFrame.new(at+Vector3.new(1.12,2.1,-.40))*CFrame.Angles(math.rad(-65),0,0)
-  piece(model,'BatonHandle',Vector3.new(.18,.55,.18),baton,C(20,26,32))
-  for i=0,5 do piece(model,'TrafficBatonStripe',Vector3.new(.21,.15,.21),baton*CFrame.new(0,.36+i*.15,0),i%2==0 and C(247,247,239)or C(27,35,44))end
- else
-  p('ReflectiveBelt',Vector3.new(1.78,.13,.10),0,2.8,-.48,C(231,245,176),Enum.Material.Neon)
-  piece(model,'ShovelHandle',Vector3.new(.13,2.7,.13),CFrame.new(at+Vector3.new(1.12,1.4,-.6)),C(132,93,55),Enum.Material.Wood)
-  p('ShovelBlade',Vector3.new(.9,.8,.13),1.12,.45,-.6,C(106,118,126),Enum.Material.Metal)
+ local function rod(name,a,b,thickness,color)
+  local delta=b-a
+  return piece(model,name,Vector3.new(thickness,thickness,delta.Magnitude),CFrame.lookAt(at+(a+b)*.5,at+b),color or steel,Enum.Material.Metal)
  end
- return model
-end
-local function roller(parent,at)
- local model=Instance.new('Model');model.Name='DetailedRoadRoller';model.Parent=parent
- model:SetAttribute('FootprintCenter',at);model:SetAttribute('FootprintSize',Vector3.new(14,0,7))
- local yellow=C(235,169,45);local dark=C(35,43,50)
- local function p(name,size,x,y,z,color,material)return piece(model,name,size,CFrame.new(at+Vector3.new(x,y,z)),color,material)end
- p('Chassis',Vector3.new(10,1.1,4.6),0,2.0,0,dark,Enum.Material.Metal)
- p('EngineHousing',Vector3.new(4.0,2.3,4.5),-2.4,3.1,0,yellow,Enum.Material.Metal)
+ p('LowerChassis',Vector3.new(10.4,.65,4.8),0,1.1,0,dark,Enum.Material.Metal)
+ p('MainFrame',Vector3.new(9.4,.95,4.1),0,1.8,0,yellow,Enum.Material.Metal)
+ p('SlopedEngineHood',Vector3.new(3.8,1.5,3.5),2.15,2.65,0,yellow,Enum.Material.Metal,CFrame.Angles(0,0,-.10))
+ p('FrontGrille',Vector3.new(.18,1.15,2.65),4.13,2.6,0,dark,Enum.Material.Metal)
+ for z=-1.1,1.1,.22 do p('RadiatorSlat',Vector3.new(.07,1.02,.07),4.25,2.6,z,steel,Enum.Material.Metal)end
+ p('FrontBumper',Vector3.new(.40,.44,4.5),4.37,1.35,0,dark,Enum.Material.Metal)
+ p('CabFloor',Vector3.new(3.5,.24,4.3),-1.9,2.35,0,dark,Enum.Material.Metal)
+ p('OperatorSeat',Vector3.new(1.2,.24,1.2),-2.1,3.0,0,C(34,42,49),Enum.Material.Fabric)
+ p('OperatorBackrest',Vector3.new(.25,1.3,1.23),-2.65,3.55,0,C(34,42,49),Enum.Material.Fabric)
+ p('SteeringColumn',Vector3.new(.14,.75,.14),-.75,3.12,0,steel,Enum.Material.Metal,CFrame.Angles(0,0,-.3))
+ local wheel=p('SteeringWheel',Vector3.new(.13,.63,.63),-.62,3.55,0,dark,Enum.Material.Rubber,CFrame.Angles(0,0,.4));wheel.Shape=Enum.PartType.Cylinder
  for _,side in ipairs({-1,1})do
-  for j=-4,4 do p('EngineVent',Vector3.new(.13,1.05,.09),-2.4+j*.32,3.25,side*2.29,dark)end
-  p('AccessStep',Vector3.new(2.2,.18,.85),.7,1.5,side*2.6,C(114,123,126),Enum.Material.Metal)
-  p('DrumFork',Vector3.new(3.1,.7,.4),4,1.7,side*2.62,yellow,Enum.Material.Metal)
-  for _,x in ipairs({-.4,2})do p('CabPillar',Vector3.new(.18,3.5,.18),x,4.25,side*1.8,dark,Enum.Material.Metal)end
-  local glass=p('CabGlass',Vector3.new(2.2,2.2,.08),.8,4.75,side*1.82,C(110,174,195),Enum.Material.Glass);glass.Transparency=.35
-  for _,x in ipairs({-4.4,4.3})do
-   local drum=piece(model,'SteelDrum',Vector3.new(5.8,2.9,2.9),CFrame.new(at+Vector3.new(x,1.65,0))*CFrame.Angles(0,math.pi/2,0),C(113,126,129),Enum.Material.Metal);drum.Shape=Enum.PartType.Cylinder
-   p('AxleCap',Vector3.new(.5,.8,.15),x,1.65,side*2.98,dark,Enum.Material.Metal)
+  for _,x in ipairs({-3.40,-.40})do p('CabPillar',Vector3.new(.18,3.35,.18),x,4.15,side*1.82,dark,Enum.Material.Metal)end
+  p('CabDoorGlass',Vector3.new(2.75,2.05,.08),-1.9,4.42,side*1.84,glass,Enum.Material.Glass).Transparency=.30
+  p('CabDoorBottom',Vector3.new(2.75,.63,.10),-1.9,3.0,side*1.85,yellow,Enum.Material.Metal)
+  p('CabDoorHandle',Vector3.new(.12,.12,.35),-.79,3.95,side*1.93,steel,Enum.Material.Metal)
+  p('DoorLowerRail',Vector3.new(2.9,.11,.15),-1.9,3.40,side*1.87,dark,Enum.Material.Metal)
+  p('MirrorStem',Vector3.new(.12,.12,.75),-.22,5.18,side*2.15,dark,Enum.Material.Metal)
+  p('ExteriorMirror',Vector3.new(.25,.55,.15),-.22,5.15,side*2.6,dark,Enum.Material.Metal)
+  p('MirrorGlass',Vector3.new(.045,.42,.12),-.06,5.15,side*2.60,glass,Enum.Material.Glass)
+  for step=0,2 do p('AccessStep',Vector3.new(1.25,.12,.55),-1.4,1.05+step*.42,side*(2.6-step*.18),steel,Enum.Material.DiamondPlate)end
+  for _,axle in ipairs({{x=-3.25,r=1.65},{x=2.85,r=1.18}})do
+   local tire=p('IndustrialTire',Vector3.new(1.05,axle.r*2,axle.r*2),axle.x,axle.r+.10,side*2.9,dark,Enum.Material.Rubber,CFrame.Angles(0,math.pi/2,0));tire.Shape=Enum.PartType.Cylinder
+   local rim=p('PaintedWheelRim',Vector3.new(.10,axle.r*1.25,axle.r*1.25),axle.x,axle.r+.1,side*3.46,yellow,Enum.Material.Metal,CFrame.Angles(0,math.pi/2,0));rim.Shape=Enum.PartType.Cylinder
+   local hub=p('SteelWheelHub',Vector3.new(.14,.48,.48),axle.x,axle.r+.1,side*3.54,steel,Enum.Material.Metal,CFrame.Angles(0,math.pi/2,0));hub.Shape=Enum.PartType.Cylinder
+   for j=0,13 do
+    local a=j*math.pi*2/14
+    p('TireChevron',Vector3.new(.45,.17,1.08),axle.x+math.cos(a)*axle.r,axle.r+.1+math.sin(a)*axle.r,side*2.9,C(43,49,49),Enum.Material.Rubber,CFrame.Angles(0,0,a-math.pi/2))
+   end
+   for j=0,5 do local a=j*math.pi/3
+    p('WheelBolt',Vector3.new(.10,.11,.10),axle.x+math.cos(a)*axle.r*.38,axle.r+.1+math.sin(a)*axle.r*.38,side*3.55,C(218,224,216),Enum.Material.Metal)
+   end
   end
+  p('RearFender',Vector3.new(3.7,.20,1.25),-3.2,3.62,side*2.8,yellow,Enum.Material.Metal)
+  p('RearFenderLip',Vector3.new(3.8,.3,.12),-3.2,3.50,side*3.42,dark,Enum.Material.Rubber)
+  local pivot=Vector3.new(.20,2.0,side*2.05);local elbow=Vector3.new(4.8,2.75,side*2.05);local tip=Vector3.new(6.3,.92,side*2.05)
+  rod('FrontLoaderBoom',pivot,elbow,.38,yellow);rod('FrontLoaderLink',elbow,tip,.34,yellow)
+  rod('LoaderHydraulicCylinder',Vector3.new(1.0,1.7,side*2.05),Vector3.new(3.3,2.45,side*2.05),.24,dark)
+  rod('LoaderHydraulicRod',Vector3.new(3.3,2.45,side*2.05),elbow,.13,steel)
+  for _,point in ipairs({pivot,elbow,tip})do p('LoaderHinge',Vector3.new(.16,.34,.34),point.X,point.Y,point.Z,steel,Enum.Material.Metal)end
+  p('Headlight',Vector3.new(.16,.43,.58),4.26,3.03,side*1.48,C(255,239,180),Enum.Material.Neon)
+  p('Taillight',Vector3.new(.12,.30,.47),-5.19,2.35,side*1.60,C(239,70,57),Enum.Material.Neon)
  end
- p('CabRoof',Vector3.new(3.6,.25,4.4),.8,6.15,0,yellow,Enum.Material.Metal)
- p('DriverSeat',Vector3.new(1.3,1.2,1.3),.7,3.5,0,dark,Enum.Material.Fabric)
- p('SteeringColumn',Vector3.new(.2,.8,.2),1.7,3.7,0,dark)
- p('Exhaust',Vector3.new(.3,2.2,.3),-3.2,5.2,1.5,dark,Enum.Material.Metal)
- p('AmberBeacon',Vector3.new(.6,.55,.6),.8,6.55,0,C(255,173,35),Enum.Material.Neon)
- for _,s in ipairs({-1,1})do p('WorkLamp',Vector3.new(.13,.45,.55),2.7,3.1,s*1.8,C(255,243,195),Enum.Material.Neon)end
+ p('Windshield',Vector3.new(.08,2.33,3.52),-.30,4.37,0,glass,Enum.Material.Glass,CFrame.Angles(0,0,.06)).Transparency=.27
+ p('RearCabGlass',Vector3.new(.08,2.22,3.5),-3.52,4.37,0,glass,Enum.Material.Glass).Transparency=.3
+ p('CabRoof',Vector3.new(4.0,.27,4.32),-1.9,6.02,0,yellow,Enum.Material.Metal)
+ p('AmberBeacon',Vector3.new(.58,.45,.58),-1.9,6.39,0,C(255,170,24),Enum.Material.Neon)
+ p('ExhaustPipe',Vector3.new(.23,2.3,.23),.8,4.12,1.43,dark,Enum.Material.Metal)
+ p('ExhaustCap',Vector3.new(.36,.12,.36),.8,5.29,1.43,dark,Enum.Material.Metal)
+ p('LoaderBucketBase',Vector3.new(2.45,.18,5.25),7.03,.55,0,C(93,109,114),Enum.Material.Metal)
+ p('LoaderBucketBack',Vector3.new(.24,1.5,5.25),5.95,1.15,0,yellow,Enum.Material.Metal,CFrame.Angles(0,0,-.15))
+ for _,side in ipairs({-1,1})do p('BucketSideCheek',Vector3.new(2.35,1.0,.16),6.96,.94,side*2.65,yellow,Enum.Material.Metal)end
+ for j=-3,3 do p('FrontLoaderTooth',Vector3.new(.55,.20,.24),8.40,.42,j*.7,steel,Enum.Material.Metal)end
+ local rearA=Vector3.new(-4.8,2.1,0);local rearB=Vector3.new(-6.4,4.8,0);local rearC=Vector3.new(-8.1,1.3,0)
+ rod('RearExcavatorBoom',rearA,rearB,.57,yellow);rod('RearExcavatorStick',rearB,rearC,.43,yellow)
+ rod('RearHydraulicCylinder',Vector3.new(-4.5,2.5,.36),Vector3.new(-5.7,4.3,.36),.28,dark)
+ rod('RearHydraulicRod',Vector3.new(-5.7,4.3,.36),rearB+Vector3.new(0,0,.36),.14,steel)
+ p('RearDiggingBucket',Vector3.new(1.5,.75,1.7),-8.55,.72,0,steel,Enum.Material.Metal,CFrame.Angles(0,0,.3))
+ for j=-1,1 do p('DiggingTooth',Vector3.new(.44,.20,.20),-9.35,.40,j*.55,steel,Enum.Material.Metal)end
+ for _,side in ipairs({-1,1})do
+  rod('StabilizerArm',Vector3.new(-4.6,1.4,side*1.9),Vector3.new(-5.2,.43,side*3.7),.28,yellow)
+  p('StabilizerFoot',Vector3.new(1.0,.15,.75),-5.2,.32,side*3.7,dark,Enum.Material.Metal)
+ end
  return model
 end
+
 function M.decorate(parent,kind,x,side)
  if kind=='police'then
   local car=require(script.Parent.PoliceService).buildDisplayCar()
   car:PivotTo(CFrame.new(x+28,.25,side*10.5));car.Parent=parent
-  car:SetAttribute('FootprintCenter',Vector3.new(x+28,0,side*10.5));car:SetAttribute('FootprintSize',Vector3.new(14,0,7))
+  car:SetAttribute('FootprintCenter',Vector3.new(x+28,0,side*10.5));car:SetAttribute('FootprintSize',Vector3.new(15.2,0,8.2))
   person(parent,Vector3.new(x+18,.25,side*6.0),true)
  else
-  roller(parent,Vector3.new(x+28,.25,side*10.5))
-  person(parent,Vector3.new(x+18,.25,side*6.0),false)
-  piece(parent,'OpenAsphaltBed',Vector3.new(12,.12,8),Vector3.new(x+3,.3,side*10.5),C(94,68,47),Enum.Material.Ground)
-  for j=1,7 do piece(parent,'ExposedGravel',Vector3.new(.8,.25,.7),Vector3.new(x-2+j*.9,.46,side*10.5+(j%3-1)*2.1),C(121,119,109),Enum.Material.Pebble)end
+  backhoe(parent,Vector3.new(x+28,.25,side*10.5))
+  person(parent,Vector3.new(x+13,.25,side*6.0),false)
+  piece(parent,'OpenAsphaltBed',Vector3.new(16,.12,8),Vector3.new(x+14,.3,side*10.5),C(94,68,47),Enum.Material.Ground)
+  for j=1,7 do piece(parent,'ExposedGravel',Vector3.new(.8,.25,.7),Vector3.new(x+6+j*1.8,.46,side*10.5+(j%3-1)*2.1),C(121,119,109),Enum.Material.Pebble)end
   for _,z in ipairs({side*3.0,side*18.0})do
    piece(parent,'WorkFenceRail',Vector3.new(10,.30,.20),Vector3.new(x+20,1.8,z),C(238,169,53),Enum.Material.Metal)
    for j=0,4 do piece(parent,'WorkFenceUpright',Vector3.new(.23,2.4,.3),Vector3.new(x+15+j*2.5,1.2,z),j%2==0 and C(250,236,189)or C(238,137,37),Enum.Material.Metal)end
   end
  end
+end
+return M
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_v66_RoadsideCharacters"><Properties><string name="Name">RoadsideCharacters</string><ProtectedString name="Source"><![CDATA[-- Real clothed R15 NPCs use the same catalog/body pipeline as existing vendors.
+-- A rounded, fully dressed native fallback appears immediately while outfit assets load.
+local P=require(script.Parent.TrackParts)
+local Collection=game:GetService('CollectionService')
+local M={};local C=Color3.fromRGB
+local function part(parent,name,size,cf,color,material,shape)
+ local p=P.part(parent,name,size,cf,color,material or Enum.Material.SmoothPlastic,false)
+ p.CastShadow=true;if shape then p.Shape=shape end;return p
+end
+local function mount(model,anchor,name,size,offset,color,material,shape)
+ local p=part(model,name,size,anchor.CFrame*offset,color,material,shape)
+ if not anchor.Anchored then p.Anchored=false;p.Massless=true;local weld=Instance.new('WeldConstraint');weld.Part0=anchor;weld.Part1=p;weld.Parent=p end
+ return p
+end
+local function uniform(model,police)
+ local head=model:FindFirstChild('Head');local torso=model:FindFirstChild('UpperTorso')or model:FindFirstChild('Torso')
+ local waist=model:FindFirstChild('LowerTorso')or torso
+ local hand=model:FindFirstChild('RightHand')or model:FindFirstChild('Right Arm')or torso
+ if not head or not torso then return end
+ local navy=C(23,43,70);local gold=C(238,199,93);local cloth=police and navy or C(246,143,39)
+ local front=-torso.Size.Z*.5-.035;local width=torso.Size.X
+ for _,side in ipairs({-1,1})do
+  mount(model,torso,'UniformPocket',Vector3.new(width*.28,.36,.06),CFrame.new(side*width*.25,-.10,front),police and C(37,59,86)or C(228,113,28),Enum.Material.Fabric)
+  mount(model,torso,'PocketStitch',Vector3.new(width*.29,.035,.08),CFrame.new(side*width*.25,.09,front-.018),C(178,192,193),Enum.Material.Fabric)
+  mount(model,torso,'ShoulderEpaulet',Vector3.new(.46,.08,.39),CFrame.new(side*width*.45,torso.Size.Y*.45,0),police and C(46,69,91)or cloth,Enum.Material.Fabric)
+  if not police then
+   mount(model,torso,'ReflectiveVestStripe',Vector3.new(.15,torso.Size.Y*.92,.075),CFrame.new(side*width*.30,0,front-.05),C(235,244,181),Enum.Material.Neon)
+  end
+ end
+ mount(model,waist,'DutyBelt',Vector3.new(waist.Size.X*1.06,.18,waist.Size.Z*1.09),CFrame.new(0,-waist.Size.Y*.25,0),C(21,27,35),Enum.Material.Fabric)
+ mount(model,waist,'BeltBuckle',Vector3.new(.24,.18,.08),CFrame.new(0,-waist.Size.Y*.25,-waist.Size.Z*.55-.04),gold,Enum.Material.Metal)
+ local capColor=police and navy or C(255,197,48)
+ mount(model,head,police and'UniformCap'or'HardHat',Vector3.new(head.Size.X*1.23,.40,head.Size.Z*1.24),CFrame.new(0,head.Size.Y*.55,.02),capColor,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+ mount(model,head,'HatVisor',Vector3.new(head.Size.X*1.15,.08,.64),CFrame.new(0,head.Size.Y*.43,-head.Size.Z*.48-.22),police and C(13,25,42)or C(235,164,24),Enum.Material.SmoothPlastic)
+ if police then
+  mount(model,head,'CapBand',Vector3.new(head.Size.X*1.12,.10,.10),CFrame.new(0,head.Size.Y*.48,-head.Size.Z*.57),C(122,152,172),Enum.Material.Metal)
+  mount(model,head,'CapBadge',Vector3.new(.24,.28,.09),CFrame.new(0,head.Size.Y*.62,-head.Size.Z*.57),gold,Enum.Material.Metal)
+  mount(model,torso,'OfficerBadge',Vector3.new(.22,.31,.07),CFrame.new(-width*.25,.32,front-.08),gold,Enum.Material.Metal)
+  mount(model,torso,'Tie',Vector3.new(.14,.64,.055),CFrame.new(0,.04,front-.08),C(10,23,36),Enum.Material.Fabric)
+  mount(model,torso,'Radio',Vector3.new(.24,.42,.18),CFrame.new(width*.4,.32,front-.10),C(18,26,34),Enum.Material.Metal)
+  mount(model,torso,'RadioAntenna',Vector3.new(.045,.32,.045),CFrame.new(width*.4,.66,front-.10),C(24,29,33),Enum.Material.Metal)
+  for _,side in ipairs({-1,1})do mount(model,waist,'BeltPouch',Vector3.new(.29,.36,.20),CFrame.new(side*width*.40,-waist.Size.Y*.25,-waist.Size.Z*.55),navy,Enum.Material.Fabric)end
+  local baton=CFrame.new(0,-.20,-.25)*CFrame.Angles(math.rad(-65),0,0)
+  mount(model,hand,'BatonHandle',Vector3.new(.16,.48,.16),baton,C(18,25,32),Enum.Material.Rubber)
+  for i=0,7 do mount(model,hand,'TrafficBatonStripe',Vector3.new(.19,.14,.19),baton*CFrame.new(0,.31+i*.14,0),i%2==0 and C(245,246,233)or C(24,31,42))end
+ else
+  for _,x in ipairs({-.38,0,.38})do mount(model,head,'HelmetRib',Vector3.new(.10,.14,.84),CFrame.new(x,head.Size.Y*.74,.02),C(244,178,29))end
+  mount(model,head,'SafetyGlasses',Vector3.new(head.Size.X*.94,.24,.10),CFrame.new(0,.04,-head.Size.Z*.52),C(115,174,188),Enum.Material.Glass).Transparency=.45
+  mount(model,torso,'ReflectiveBelt',Vector3.new(width*.93,.13,.08),CFrame.new(0,-torso.Size.Y*.30,front-.05),C(235,244,181),Enum.Material.Neon)
+  for _,name in ipairs({'LeftHand','RightHand'})do local glove=model:FindFirstChild(name);if glove then glove.Color=C(67,74,75)end end
+  local shaft=CFrame.new(.08,-.62,-.20)*CFrame.Angles(0,0,-.10)
+  mount(model,hand,'ShovelHandle',Vector3.new(.11,2.1,.11),shaft,C(135,99,58),Enum.Material.Wood)
+  mount(model,hand,'ShovelBlade',Vector3.new(.68,.70,.10),shaft*CFrame.new(0,-1.15,0),C(114,132,138),Enum.Material.Metal)
+ end
+ model:SetAttribute('FullRoadsideUniform',true)
+end
+local function mark(model,at,police)
+ model.Name=police and'TrafficOfficer'or'RoadWorker';model.ModelStreamingMode=Enum.ModelStreamingMode.Atomic
+ model:SetAttribute('FootprintCenter',at);model:SetAttribute('FootprintSize',Vector3.new(3.6,0,3))
+ model:SetAttribute('RoadsideBasePivot',model:GetPivot());model:SetAttribute('RoadsideKind',police and'police'or'repair')
+ Collection:AddTag(model,'S60RoadsideNPC')
+end
+function M.fallback(parent,at,police)
+ local model=Instance.new('Model');model.Parent=parent
+ local navy=C(25,43,65);local coat=police and C(31,54,84)or C(239,128,28);local skin=C(228,181,143)
+ local function p(name,size,x,y,z,col,mat,shape)return part(model,name,size,CFrame.new(at+Vector3.new(x,y,z)),col,mat,shape)end
+ local root=p('HumanoidRootPart',Vector3.new(.2,.2,.2),0,3,0,navy);root.Transparency=1;model.PrimaryPart=root;model.WorldPivot=CFrame.new(at+Vector3.new(0,3,0))
+ p('UpperTorso',Vector3.new(1.78,1.48,.84),0,3.35,0,coat,Enum.Material.Fabric)
+ p('LowerTorso',Vector3.new(1.49,.55,.78),0,2.35,0,navy,Enum.Material.Fabric)
+ for _,side in ipairs({-1,1})do
+  p('Shoulder',Vector3.new(.62,.66,.69),side*1.08,3.78,0,coat,Enum.Material.Fabric,Enum.PartType.Ball)
+  p('UpperSleeve',Vector3.new(.58,.79,.64),side*1.12,3.40,0,coat,Enum.Material.Fabric)
+  p('Elbow',Vector3.new(.54,.44,.59),side*1.12,2.96,-.01,coat,Enum.Material.Fabric,Enum.PartType.Ball)
+  p('LowerSleeve',Vector3.new(.51,.65,.58),side*1.12,2.65,-.04,coat,Enum.Material.Fabric)
+  p(side==1 and'RightHand'or'LeftHand',Vector3.new(.49,.48,.49),side*1.12,2.17,-.06,skin,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+  p('TrouserThigh',Vector3.new(.64,.89,.69),side*.43,1.72,0,navy,Enum.Material.Fabric)
+  p('Knee',Vector3.new(.62,.34,.66),side*.43,1.22,-.02,navy,Enum.Material.Fabric,Enum.PartType.Ball)
+  p('TrouserCalf',Vector3.new(.58,.70,.64),side*.43,.86,0,navy,Enum.Material.Fabric)
+  p('Boot',Vector3.new(.69,.43,.98),side*.43,.30,-.14,C(24,30,35),Enum.Material.Rubber)
+  p('BootSole',Vector3.new(.72,.09,1.01),side*.43,.11,-.14,C(14,19,23),Enum.Material.Rubber)
+ end
+ p('Neck',Vector3.new(.45,.35,.45),0,4.19,0,skin)
+ local head=p('Head',Vector3.new(1.08,1.15,1.02),0,4.73,-.015,skin)
+ local mesh=Instance.new('SpecialMesh');mesh.MeshType=Enum.MeshType.Head;mesh.Parent=head
+ local face=Instance.new('Decal');face.Name='FriendlyFace';face.Face=Enum.NormalId.Front;face.Texture='rbxasset://textures/face.png';face.Parent=head
+ uniform(model,police)
+ model:PivotTo(CFrame.lookAt(root.Position,root.Position+Vector3.new(-1,0,0)))
+ model:SetAttribute('RoadsideAppearance','NativeRounded');mark(model,at,police)
+ return model
+end
+function M.create(parent,at,police)
+ local fallback=M.fallback(parent,at,police)
+ task.spawn(function()
+  if not parent:IsDescendantOf(workspace)then return end
+  local ok,rig=pcall(function()return require(script.Parent.OwnerService).newRig(nil,police and'trafficOfficer'or'roadWorker')end)
+  if not ok or not rig then return end
+  if not parent.Parent then rig:Destroy();return end
+  local hum=rig:FindFirstChildOfClass('Humanoid');local root=rig:FindFirstChild('HumanoidRootPart')
+  if not hum or not root then rig:Destroy();return end
+  hum.WalkSpeed=0;hum.AutoRotate=false;hum.DisplayDistanceType=Enum.HumanoidDisplayDistanceType.None
+  for _,p in ipairs(rig:GetDescendants())do if p:IsA('BasePart')then p.CanCollide=false;p.CanTouch=false;p.CanQuery=false;p.Massless=true;p.Anchored=false end end
+  root.Anchored=true
+  uniform(rig,police)
+  local pivot=at+Vector3.new(0,hum.HipHeight+root.Size.Y/2,0)
+  rig:PivotTo(CFrame.lookAt(pivot,pivot+Vector3.new(-1,0,0)));rig.Parent=parent
+  rig:SetAttribute('RoadsideAppearance','R15Catalog');mark(rig,at,police)
+  if fallback.Parent then fallback:Destroy()end
+ end)
+ return fallback
 end
 return M
 ]]></ProtectedString></Properties></Item></Item>

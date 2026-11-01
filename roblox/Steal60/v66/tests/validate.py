@@ -39,9 +39,15 @@ assert 'local TARGET_PROTECTION = 2 * 60' in sources['SalonService']
 assert 'local THEFT_COOLDOWN = 5 * 60' in sources['SalonService']
 assert 'Net.notifyKey(player' in sources['DriveService']
 # All new sources are installed at their expected paths.
-for name in ['DeliveryBonus','EndlessParking','PetMount','ShelfTypography','Grammar','Messages','ProgressionConfig','InterfaceAccess']:
+for name in ['DeliveryBonus','EndlessParking','PetMount','ShelfTypography','Grammar','Messages','ProgressionConfig','InterfaceAccess']+([]if a.integration_only else ['LeaderboardView','RoadEventSchedule','RoadsideFacing','EngineAudio']):
  assert parents[name]=='Shared'
 assert parents['RoadsideArt']=='Services'
+if not a.integration_only:
+ assert parents['RoadsideCharacters']=='Services'
+ assert 'createRoadEvent(s,Schedule.kind(index,cycle))' in sources['RoadChallengeService']
+ assert 'Policy.normalRequirement(rng,' in sources['ParkingService']
+ assert 'data.masteryEffects' in sources['CosmeticHUD']
+ assert sources['CosmeticHUD'].index('itemCard(Config.ById[Config.COIN_HERO_ID],data)') < sources['CosmeticHUD'].index('local ownAvatar=')
 print('PASS: installer paths, infinite bounds, audio ingress and reset configuration',flush=True)
 
 catalog={}
@@ -78,6 +84,8 @@ with tempfile.TemporaryDirectory(prefix='steal60-v66-')as temp:
    changes=json.dumps(allowed[name],separators=(',',':')).replace('"growth":','growth=').replace('"base":','base=').replace('"income":','income=').replace('"doubleIncome":','doubleIncome=').replace('"speed":','speed=').replace('"botSpeed":','botSpeed=')
    parts.append(f'local previous=(function()\n{old[name]}\nend)();local current=require({json.dumps(name)});local changes={changes}\nfor _,u in ipairs(previous)do local v=current.ById[u.id];check(v~=nil,"upgrade ID retained");for _,k in ipairs({{"base","growth","max"}})do local expected=(changes[u.id]or{{}})[k]or u[k];check(v[k]==expected,"only authorized price/cap changes")end;if not changes[u.id]then for level=0,u.max-1 do check(previous.cost(u.id,level)==current.cost(u.id,level),"unaffected prices unchanged")end end end\n')
   parts.append(f'local oldProducts=(function()\n{old["MonetizationConfig"]}\nend)();local newProducts=require("MonetizationConfig")\nfor _,u in ipairs(oldProducts.Products)do local v=newProducts.ProductById[u.id];check(v.assetId==u.assetId and v.recommendedRobux==u.recommendedRobux,"product IDs and recommended Robux prices retained");check(v.diamonds==u.diamonds*.9,"diamond packs adjusted by exactly ten percent")end\n')
+ if a.baseline:
+  parts.append('local oldCosmetics=(function()\nlocal script=refs.CosmeticConfig\n'+old['CosmeticConfig']+'\nend)();local current=require("CosmeticConfig")\nfor _,def in ipairs(oldCosmetics.List)do local now=current.ById[def.id];check(now~=nil and now.price==def.price and now.priceCoins==def.priceCoins,"old cosmetic IDs and item prices retained")end\ncheck(current.PET_LICENSE_DIAMONDS==oldCosmetics.PET_LICENSE_DIAMONDS and current.HERO_MAX==oldCosmetics.HERO_MAX and current.PET_MAX==oldCosmetics.PET_MAX,"pet diamond license and shared mastery caps retained")\n')
  # Exercise the actual server bumper function without loading unrelated server services.
  drive=sources['DriveService'];start=drive.index('local function knockCones');end=drive.index('local function isRoadBlocked',start)
  parts.append('local function horizontal(v)local flat=Vector3.new(v.X,0,v.Z);return flat.Magnitude>.01 and flat.Unit or Vector3.xAxis end\nlocal coneCache={}\n'+drive[start:end])
@@ -124,7 +132,10 @@ with tempfile.TemporaryDirectory(prefix='steal60-v66-')as temp:
  ''')
  data=sources['DataService'];start=data.index('function DataService.addToCatalog(');end=data.index('function DataService.saveNow(',start)
  parts.append('local function attachActualCatalog(DataService)\n'+data[start:end]+'\nend\n')
- if not a.integration_only:parts.append((HERE/'scenarios.luau').read_text())
+ if not a.integration_only:
+  parts.append((HERE/'scenarios.luau').read_text())
+  parts.append(';\n(function()\n'+(HERE/'visual_regressions.luau').read_text()+'\nend)()')
+  parts.append(';\n(function()\n'+(HERE/'economy_cosmetics.luau').read_text()+'\nend)()')
  parts.append((HERE/'delivery_integration.luau').read_text())
  parts.append("print('FINAL COMBINED ASSERTIONS: '..checks)")
  bundle=temp/'run.luau';bundle.write_text('\n'.join(parts))

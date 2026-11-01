@@ -54,7 +54,8 @@ cm.__mul=function(a,b)if b._kind=='Vector3' then return a:PointToWorldSpace(b)en
 cm.__add=function(a,b)return matrix(a.Position+b,table.clone(a.r))end
 local CFrame=CF
 local Color3={}
-function Color3.new(r,g,b)return {R=r,G=g,B=b,_kind='Color3'}end
+function Color3.new(r,g,b)return setmetatable({R=r,G=g,B=b,_kind='Color3'},{__index=Color3})end
+function Color3:Lerp(b,t)return Color3.new(self.R+(b.R-self.R)*t,self.G+(b.G-self.G)*t,self.B+(b.B-self.B)*t)end
 function Color3.fromRGB(r,g,b)return Color3.new(r/255,g/255,b/255)end
 local Vector2={new=function(x,y)return {X=x,Y=y}end}
 local UDim={new=function(s,o)return {Scale=s,Offset=o}end}
@@ -66,7 +67,7 @@ local Enum=setmetatable({},{__index=function(t,k)local e=setmetatable({},{__inde
 local task={spawn=function(fn,...)fn(...)end,wait=function()return .01 end,defer=function(fn)queue[#queue+1]=fn end,delay=function()end}
 local methods={};local instmt={};local Instance={}
 function Instance.new(class)
- return setmetatable({_kind='Instance',props={ClassName=class,Name=class,Size=V.new(1,1,1),CFrame=CF.new(),Text='',ActionText='',ObjectText='',Anchored=true,Transparency=0},children={},attrs={},changed={},attrSignals={},events={DescendantAdded=signal(),Destroying=signal(),Activated=signal(),PlayerAdded=signal(),PlayerRemoving=signal(),Heartbeat=signal()}},instmt)
+ return setmetatable({_kind='Instance',props={ClassName=class,Name=class,Size=V.new(1,1,1),CFrame=CF.new(),Text='',ActionText='',ObjectText='',Anchored=true,Transparency=0},children={},attrs={},changed={},attrSignals={},events={Loaded=signal(),Ended=signal(),InputBegan=signal(),DescendantAdded=signal(),Destroying=signal(),Activated=signal(),PlayerAdded=signal(),PlayerRemoving=signal(),Heartbeat=signal()}},instmt)
 end
 instmt.__index=function(o,k)
  if methods[k]then return methods[k]end
@@ -113,15 +114,24 @@ local typeof=function(v)return type(v)=='table'and v._kind or type(v)end
 local services={};local game={JobId='mock-job'}
 function game:GetService(n)return assert(services[n],'unmocked service '..n)end
 local workspace=Instance.new('Workspace');services.Workspace=workspace
-for _,n in ipairs({'ReplicatedStorage','Players','Lighting','CollectionService','RunService'})do services[n]=Instance.new(n)end
+for _,n in ipairs({'ReplicatedStorage','Players','Lighting','CollectionService','RunService','UserInputService','GuiService','SoundService'})do services[n]=Instance.new(n)end
 local Players=services.Players;local player=Instance.new('Player');player.Name='HarDvRaiN';player.UserId=123;player.Parent=Players;Players.LocalPlayer=player
 function Players:GetPlayers()return {player}end
 local playerGui=Instance.new('PlayerGui');playerGui.Name='PlayerGui';playerGui.Parent=player
 local gui=Instance.new('ScreenGui');gui.Parent=playerGui
 local remotes=Instance.new('Folder');remotes.Name='Remotes';remotes.Parent=services.ReplicatedStorage
 local setLanguage=Instance.new('RemoteEvent');setLanguage.Name='SetLanguage';setLanguage.Parent=remotes;function setLanguage:FireServer()end
-local tags={}
-function services.CollectionService:AddTag(object,tag)tags[tag]=tags[tag]or{};table.insert(tags[tag],object)end
+local tags={};local tagAdded={};local tagRemoved={}
+function services.CollectionService:AddTag(object,tag)tags[tag]=tags[tag]or{};if not table.find(tags[tag],object)then table.insert(tags[tag],object);if tagAdded[tag]then tagAdded[tag]:Fire(object)end end end
+function services.CollectionService:GetTagged(tag)local out={};for _,object in ipairs(tags[tag]or{})do if object.Parent then out[#out+1]=object end end;return out end
+function services.CollectionService:GetInstanceAddedSignal(tag)tagAdded[tag]=tagAdded[tag]or signal();return tagAdded[tag]end
+function services.CollectionService:GetInstanceRemovedSignal(tag)tagRemoved[tag]=tagRemoved[tag]or signal();return tagRemoved[tag]end
+services.TextService={GetTextSize=function(_,text,size,font,bounds)local pixels=(utf8.len(text)or #text)*size*.56;return Vector2.new(math.min(bounds.X,pixels),math.ceil(size*1.2)*math.max(1,math.ceil(pixels/bounds.X)))end}
+services.ContentProvider={PreloadAsync=function(_,sounds,callback)for _,sound in ipairs(sounds)do sound.IsLoaded=true;if callback then callback(sound.SoundId,Enum.AssetFetchStatus.Success)end end end}
+function methods:Play()self.IsPlaying=true end
+function methods:Stop()self.IsPlaying=false end
+function methods:FindFirstAncestorOfClass(class)local at=self.Parent;while at do if at:IsA(class)then return at end;at=at.Parent end end
+
 local dataStores={};local failStores={};local guid=0
 local function deepCopy(v)if type(v)~='table'then return v end;local out={};for k,x in pairs(v)do out[k]=deepCopy(x)end;return out end
 services.HttpService={GenerateGUID=function()guid+=1;return 'mock-guid-'..guid end}
@@ -143,3 +153,5 @@ end
 local checks=0
 local function check(condition,message)checks+=1;assert(condition,message)end
 local ColorSequence={new=function(...)return {...}end};local NumberSequence={new=function(...)return {...}end};local NumberRange={new=function(...)return {...}end}
+
+local NumberSequenceKeypoint={new=function(t,v)return {Time=t,Value=v}end}

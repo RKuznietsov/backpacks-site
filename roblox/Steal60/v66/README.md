@@ -1,6 +1,8 @@
 # Steal60 v66 · RU / EN
 
-**Исправлена доставка после обновления по аудиту.** Восстановлен рабочий обработчик Main, ошибочно удалённый вместе с отладочным блоком. Машина теперь запускает выдачу каталога/монет/XP/добычи и продвижение обучения. Скачайте текущий файл, остановите Play и замените старый контейнер установщика; профиль сбрасывать не нужно. [Проверка полной цепочки](RESULTS.md).
+**Обновлено по скриншотам и новым замечаниям:** компактные полки, исправленное оформление лидерборда, руководство сверху, подробные дорожные события, машины 25–30 в районах 6+, тихий двигатель и питомцы сзади машины. Добавлены три покупки за монеты и новая кривая мастерства: [что изменено](VISUAL-UPDATE.md), [цены и расчёты](ECONOMY.md).
+
+**Исправление доставки сохранено.** Восстановлен рабочий обработчик Main, ошибочно удалённый вместе с отладочным блоком. Машина теперь запускает выдачу каталога/монет/XP/добычи и продвижение обучения. Скачайте текущий файл, остановите Play и замените старый контейнер установщика; профиль сбрасывать не нужно. [Проверка полной цепочки](RESULTS.md).
 
 Обновлено после [проверки замечаний v64](AUDIT-v64.md). Экономика, немедленное сохранение улучшений, US English, числовые формы и управление геймпадом доработаны; имя установщика и ветка сохранены.
 
@@ -15,29 +17,31 @@
 3. В Explorer нажмите правой кнопкой на Workspace → **Insert from File…** и выберите скачанный `Steal60_v66.rbxmx` (либо перетащите файл в Studio). Появится `Steal60_v66_RU_EN`.
 4. Нажмите Play. В Output должна появиться строка `[Steal60 v66] Установлено…`. В рантайме контейнер распределяет модули по сервисам и удаляет себя; Main запускается последним.
 5. После Stop изменения рантайма откатываются Studio. Сохраните/публикуйте Place с контейнером установщика в режиме редактирования: он нужен для установки при следующих запусках. Не импортируйте второй контейнер поверх первого.
-6. В игре кнопка RU/EN переключает язык, кнопка с нотой открывает отдельную громкость музыки и выключатель. Громкость не меняет громкость полиции. Настройки сохраняются вместе с профилем.
+6. В игре кнопка RU/EN переключает язык, кнопка с нотой открывает отдельную громкость музыки и выключатель. Прежние звуки тревоги/полиции удалены; тихий двигатель работает отдельно только за рулём. Настройки сохраняются вместе с профилем.
 
 Для настоящих сохранений в Studio нужны опубликованный Experience и включённый **Enable Studio Access to API Services**. При недоступном DataStore сохраняется поведение v65: временный профиль только в Studio, с соответствующим сообщением в Output; это не проверка сохранения между сеансами.
 
 ## Что изменено
 
 - Исходный текст отделён от последнего отображённого перевода; собственные отложенные сигналы не перезаписывают источник. Отслеживаются весь PlayerGui, подсказки и подгруженные вывески. Добавлен перевод составных строк эффектов.
-- Подсказки пешего/автомобильного управления находятся над MENU и видны только в обучении или справочнике. Справочник оставляет место нижней полосе; дополнительные кнопки обучения скрываются на низких экранах.
+- Подсказки пешего/автомобильного управления находятся над MENU и видны только в обучении или справочнике. Справочник оставляет место нижней полосе; кнопка руководства находится справа сверху над RU/EN и музыкой.
 - Улучшения показывают текущий и следующий суммарный эффект и фактический доход кассы в час, рассчитанный серверной формулой. `botSpeed` сохранён как ключ покупки: монетный уровень даёт +3 п.п., алмазный +4 п.п. к выплате за доставку. `secondBot` даёт +15 п.п. для rare/epic/legendary, включая старое право владения. Возврат машины, помощник и уведомления сохранены; скорость возврата фиксирована на базовых 42 с ограничением максимальной скорости.
 - Сервер проверяет пересечение переднего бампера с конусом 30 раз/с; конус сразу смещается вперёд/в сторону и получает серверную скорость. Это не клиентский запрос награды/столкновения.
-- Доход и детали на полках подписаны отдельными контрастными строками на физических панелях SurfaceGui с дальностью 85 studs; экранные Billboard-подписи заменены, чтобы соседние полки не накладывались при удалении камеры.
-- Громкость и выключение музыки сохраняются отдельно. Питомцы опираются на реальную крышу/заднюю площадку с учётом геометрии тюнинга; локальные опорные координаты кэшируются.
+- На полках убраны большие физические плашки: фон измеряется по тексту, шрифт фиксирован, доход/детали идут отдельными строками. Компактные Billboard-карточки видны до 28 studs; клиент исключает их экранные пересечения.
+- Громкость и выключение музыки сохраняются отдельно. Наземные питомцы опираются на заднюю площадку/грузовую платформу за головой водителя, летающие парят над крышей. Учтены геометрия поверхности и тюнинг; локальные опорные координаты кэшируются.
 - Обновлены пропорции кабин, крыши и стёкла. Каталог и средства просмотра тюнинга сохранены.
 - Различаются силуэты магазинов/домов и дворы пяти тем: промдвор, городской двор с качелями, огород с сараем, бассейн с перголой, курортное кафе. Крупные постройки и дворы занимают отдельные участки; при построении проверяется отсутствие пересечений их участков.
-- Полицейский пост использует подробную патрульную машину и отдельного полицейского в форме с жезлом. Ремонт использует каток, рабочего с лопатой, ограждения и вскрытый асфальт. Свободная полоса и серверная проверка объезда сохранены.
+- Полицейский пост использует подробный кузов из конструктора каталога и одетого полицейского с жезлом. Ремонт использует подробный экскаватор-погрузчик, рабочего с лопатой, ограждения и вскрытый асфальт. NPC смотрят на своего игрока; события появляются через 3 с и чередуются. Свободная полоса и серверная проверка объезда сохранены.
 - Конечные стены/ограничения пяти районов убраны. После 5 идут 6, 7 и далее со стабильным случайным выбором одной из пяти тем. Загрузчик держит соседние районы игроков, удалённые выгружает через прежнюю задержку 8 секунд. Защита от телепортации и проверка навыка сохранены.
-- В общих парковках районов 6+ обычные машины берутся из максимального класса, доступного ближайшему к месту игроку; допустимость модели и редкости проверяется по его навыку. Место №8 — сложная машина: требование не ниже `max(31, навык+1)`, с учётом находящихся рядом игроков. При взаимодействии сервер повторно повышает требование для конкретного игрока; исходная полицейская механика недостаточного навыка не обходится. Парковки общие, а не отдельные клиентские копии.
+- В общих парковках районов 6+ семь обычных машин класса super требуют 25–30, независимо от навыка посетителя; места №1/7 гарантируют 25/30. Место №8 — сложная машина `max(31, навык+1)`, с учётом игроков рядом и персональным повышением при взаимодействии. Низкий навык не обходит исходную проверку; полицейский возврат сохранён.
 - Золотое «В разработке» / «In development» появляется на секунду при въезде в 6+ и каждые 25 секунд. При активном модальном окне/взломе показ откладывается; управление надпись не перехватывает. На узких экранах маршрутная панель сдвигается ниже надписи.
 - `HarDvRaiN` получает однократный сброс прогресса **только в Studio** с новым флагом `studioFreshStartV66`. Очищаются монеты/касса, покупки, улучшения, коллекции, косметика, питомцы, полки и обучение. Алмазы, взлом/опыт, журнал платежей и настройки остаются. Код старого тестового подарка алмазов удалён. Live-хранилище остаётся `Steal60_PlayerData_v1`, Studio-хранилище — прежнее `Steal60_PlayerData_Studio_v62`.
 
+- Лидерборд перенесён перед колоннами, получил отступы и отдельные колонки имени/суммы. Имена игроков не переводятся. Добавлены рабочий за 4 млн, простой цвет за 750 тыс. и аура за 1,5 млн монет; лицензия питомца — 5 млн, мастерство растёт по квадратичной кривой. [Подробные цены](ECONOMY.md).
+
 ## Проверки и границы результата
 
-См. [сверку замечаний и новые цены](AUDIT-v64.md), [RESULTS.md](RESULTS.md) и [исходный журнал](tests/validation-output.txt). Компилировались **все 109 скриптов из конечного XML**, а сценарии выполнялись заново для этой сборки.
+См. [сверку замечаний и новые цены](AUDIT-v64.md), [RESULTS.md](RESULTS.md) и [исходный журнал](tests/validation-output.txt). Компилировались **все 114 скриптов из конечного XML**, а сценарии выполнялись заново для этой сборки.
 
 **Roblox Engine/Studio в облачной среде отсутствует.** Автоматические сценарии используют Luau и явно обозначенные тестовые двойники Roblox API. Они не подтверждают качество изображения, живую физику/репликацию, доступность аудио и внешних NPC-ассетов, настоящий DataStore или Marketplace. Перед публикацией игры выполните Studio-проверки из RESULTS.md. Ветка GitHub публикует установщик, но не публикует Roblox Experience.
 
@@ -47,6 +51,8 @@ Delivery hotfix: the Main delivery-reward callback was accidentally removed duri
 
 This is one bilingual installer rebuilt from the attached v65. Open [Steal60_v66.rbxmx](Steal60_v66.rbxmx) on GitHub and click **Download raw file**. Stop Studio, keep only one Steal60 installer container in Workspace, disable an already-installed old `ServerScriptService/Main`, and insert the downloaded file into Workspace using **Insert from File…**. Play to install; the new Main is enabled last. Keep the installer in the edit-time Place when saving/publishing because Play-time changes are reverted by Studio.
 
-RU/EN is an in-game toggle. The music-note button opens separately saved music volume/mute controls. Existing vehicle IDs, save-store names, purchased levels and v65 payment/recovery mechanisms are retained. Approved economic adjustments are listed in [AUDIT-v64.md](AUDIT-v64.md). Helper speed purchase keys become additive delivery payout bonuses (+3 pp coin level, +4 pp diamond level; secondBot +15 pp for rare+). Districts continue beyond five with streamed cleanup, highest-unlocked-class ordinary cars and an intentionally harder police-trigger target. See the Russian change list above for all twelve requested changes.
+RU/EN is an in-game toggle. The music-note button opens separately saved music volume/mute controls. Existing vehicle IDs, save-store names, purchased levels and v65 payment/recovery mechanisms are retained. Approved economic adjustments are listed in [AUDIT-v64.md](AUDIT-v64.md). Helper speed purchase keys become additive delivery payout bonuses (+3 pp coin level, +4 pp diamond level; secondBot +15 pp for rare+). Districts continue beyond five with streamed cleanup, seven ordinary level-25–30 cars and one intentionally harder police-trigger target. See the Russian change list above for all twelve requested changes.
 
-The updated build adds immediate upgrade saves, separate currency cooldowns, a soft cap on base income before bonuses, lower ladder costs, American English, number inflection, adaptive modal scaling and native gamepad input. All 109 final XML scripts compile; current-run Luau tests cover the new logic with explicit Roblox API test doubles. **No actual Roblox Engine was available.** Studio visuals, physics, live DataStore and Marketplace integration remain unverified. [RESULTS.md](RESULTS.md) provides the evidence and Studio acceptance checklist.
+The latest screenshot update and coin progression prices are described in [VISUAL-UPDATE.md](VISUAL-UPDATE.md) and [ECONOMY.md](ECONOMY.md). A worker outfit costs 4M coins, plain paint 750K, a modest aura 1.5M and the pet license 5M. Walking pets sit at the rear of the car, behind the driver.
+
+The updated build adds immediate upgrade saves, separate currency cooldowns, a soft cap on base income before bonuses, lower ladder costs, American English, number inflection, adaptive modal scaling and native gamepad input. All 114 final XML scripts compile; current-run Luau tests cover the new logic with explicit Roblox API test doubles. **No actual Roblox Engine was available.** Studio visuals, physics, live DataStore and Marketplace integration remain unverified. [RESULTS.md](RESULTS.md) provides the evidence and Studio acceptance checklist.
