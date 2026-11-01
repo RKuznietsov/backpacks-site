@@ -118,6 +118,12 @@ do
   check(profile.money==money and profile.catalog[chosen.id].count==catalogCount and #lootEvents==lootCount,'invalid delivery rejected: '..reason)
   if reason=='untracked'then car.Parent=nil else car:SetAttribute('RejectDrive',true);car.Parent=nil;advance(.3)end
  end
+ local rollbackCar=carFor(who);delivery.track(rollbackCar,who,{carId=chosen.id,classId='junk',rarity='common',variantId=variant,lockQuality=1});who:SetAttribute('HeistCarrying',true)
+ local wrong=Instance.new('Player');wrong.UserId=9999;wrong.Parent=Players
+ check(not delivery.abort(rollbackCar,wrong)and delivery.getCarrying(who)==rollbackCar,'handoff rollback rejects a different owner')
+ check(delivery.abort(rollbackCar,who)and delivery.getCarrying(who)==nil and not who:GetAttribute('HeistCarrying'),'failed handoff can clear its own pending record without a reward')
+ rollbackCar:Destroy();wrong:Destroy();advance(1)
+ check(profile.money==money and profile.catalog[chosen.id].count==catalogCount and #lootEvents==lootCount,'handoff rollback never grants a delivery reward')
  print('PASS: actual Main + DeliveryService + HeistService + TutorialService + loot/catalog logic: four deliveries (seated and exited), rewards, XP/level, shelves, helper, lesson, replay and invalid-delivery rejection')
  for _,name in ipairs(names)do modules[name]=saved[name]end
  task.spawn,task.wait=previousSpawn,previousWait;Players.GetPlayers=previousPlayers;testClock=nil

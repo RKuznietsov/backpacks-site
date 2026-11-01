@@ -25,9 +25,9 @@
   },
   {
     "script": "AvatarPreview",
-    "sha256": "3639165e1ef7369a9bc6fe5e128d7398b276c534584683aea62f0af6e93923ce",
-    "v65_status": "unchanged",
-    "initial_v66_status": "unchanged"
+    "sha256": "bf75dc4977356c812c8a353bff30b5c4445850bac06f5a2c37fb12b535e26c6c",
+    "v65_status": "modified",
+    "initial_v66_status": "modified"
   },
   {
     "script": "AvatarStyleLibrary",
@@ -67,9 +67,9 @@
   },
   {
     "script": "CarGrounding",
-    "sha256": "c479d7abdb62eb7e34a5bf8a005b0e88f7cca8fa2ff844cc5f0f97b21b1e459a",
-    "v65_status": "unchanged",
-    "initial_v66_status": "unchanged"
+    "sha256": "9f29cd10ef613ba7a15bff466c4515de9e01ed81e703a66d76a7d5bea0b0cf25",
+    "v65_status": "modified",
+    "initial_v66_status": "modified"
   },
   {
     "script": "CarPreviewService",
@@ -109,7 +109,7 @@
   },
   {
     "script": "ClientMain",
-    "sha256": "67fc1fe6a4af8285110e4eb61e2486aec2689c25e819f5f9f3b925caa27ef325",
+    "sha256": "46f682b43f546e3a9ac8c086f1c20315762dfe177c03b0e8f9942ce18662111d",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -145,7 +145,7 @@
   },
   {
     "script": "CosmeticHUD",
-    "sha256": "af69f0b513035e90816a9b8d125658a74260ea0b01bf87ba4a761f4af33afc1e",
+    "sha256": "3697c42f3c1f37b1e38f3b33cc2026b70ba4efd5da5c24d0b41a755baa338b19",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -175,9 +175,9 @@
   },
   {
     "script": "DeliveryService",
-    "sha256": "26e0419781eb0eb78dd3b8551a5ea12c43195f0a177f53814dbe0ac8d306f583",
-    "v65_status": "unchanged",
-    "initial_v66_status": "unchanged"
+    "sha256": "384ac14372671bb008fd0620692e2d1ca97157531ad6fa05ae915f6df33d6afb",
+    "v65_status": "modified",
+    "initial_v66_status": "modified"
   },
   {
     "script": "DistrictBuilder",
@@ -199,27 +199,27 @@
   },
   {
     "script": "DriveDynamics",
-    "sha256": "dd8ecde3e3b244ecb968877490eaee87708ae4bb5bf8620914c8f4f2ae513cfe",
-    "v65_status": "unchanged",
-    "initial_v66_status": "unchanged"
+    "sha256": "b8e41d7d8d052e255fbb076c5eacd178f937ada929e9475cc517f1f55de2390a",
+    "v65_status": "modified",
+    "initial_v66_status": "modified"
   },
   {
     "script": "DrivePresentation",
-    "sha256": "5ebfbab9551d691694ac4f1bf6af96f05069373bf4cdd83f24a8ca820de23424",
-    "v65_status": "unchanged",
-    "initial_v66_status": "unchanged"
+    "sha256": "2151356016b317b1f13e2352a45bf5ee0930962f10e716c521a00a300ec354a0",
+    "v65_status": "modified",
+    "initial_v66_status": "modified"
   },
   {
     "script": "DriveService",
-    "sha256": "24795549225ecd333628a8ffe9892df5f8f21e55099758f1b4d865ca26a0b3ab",
+    "sha256": "2a8e2ac5ce6843931deef657f4b77b072ecaebe0fe11ab8c846a0cdd0bf9158e",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
   {
     "script": "DriveState",
-    "sha256": "f0fd4234c907cfa262b1acb47df6a0acc277c12782d2391d407f3212bca9c6c6",
-    "v65_status": "unchanged",
-    "initial_v66_status": "unchanged"
+    "sha256": "e89163499d3b62e2119d59f39061f742765a1a2172f073312eebebd6b71bf4fe",
+    "v65_status": "modified",
+    "initial_v66_status": "modified"
   },
   {
     "script": "EarningsLedger",
@@ -289,7 +289,7 @@
   },
   {
     "script": "HackService",
-    "sha256": "9c9feda7b59bed9f0c18466a7b1bbe75b716ed77cba54dca3b3a61df899bc115",
+    "sha256": "72826d6d5870c3881d31ae665fbe55208ac82c17ca57944f5d093b5dc0bc0fcd",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -325,7 +325,7 @@
   },
   {
     "script": "LanguageCatalog",
-    "sha256": "477b5d26731e59086a6412e82f067a867ed3fcd1c8a3d710805acb30e62e67ba",
+    "sha256": "9accd0c3db32983c4c93a4273ba8bca49b31fd0d0f0d6c4ecbcf50c3da398d85",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -553,7 +553,7 @@
   },
   {
     "script": "SalonService",
-    "sha256": "bb6a9832bd8e0252f1f25e71240faf8d1626443bd228226f0523182037389729",
+    "sha256": "63248f05791d6e40a8bd9fccf6d7685e7510859f914afcd664c2de479e62fd68",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -565,13 +565,13 @@
   },
   {
     "script": "SecurityService",
-    "sha256": "56d7d2d8f019c0f097d226dcc5c89f52853c8dd42b18386b6a2315c7eb6bc279",
+    "sha256": "4304d35845cf5400485a211641c94e0bacd4efa07f5aa70bfc84b669b80b4d2d",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
   {
     "script": "Settings",
-    "sha256": "7066dfdca34fce40813136ba8f5713392e7ae278d7ed4ad239787ba2f37ec3ba",
+    "sha256": "13bf19da12c46063f0e1eaad812533c10192961f074778ed8afe7b280be21180",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -643,9 +643,9 @@
   },
   {
     "script": "TutorialConfig",
-    "sha256": "5d8e0d03335e6620007653bfa9d2d8a1e9af27b541a56371f7d02ef6a4d2e080",
-    "v65_status": "unchanged",
-    "initial_v66_status": "unchanged"
+    "sha256": "2eb3726c74d1fdc608ca8c2e5471d6b80fb365f511a431fb91d6e97f79406e6c",
+    "v65_status": "modified",
+    "initial_v66_status": "modified"
   },
   {
     "script": "TutorialHUD",

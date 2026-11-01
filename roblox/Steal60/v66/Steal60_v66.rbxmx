@@ -262,7 +262,7 @@ return {
 		SpeedPerLevel = 1,    -- прибавка за уровень прокачки скорости
         Accel = 34,
         Brake = 310, -- S reduces forward speed quickly before reverse starts
-        Coast = 78, -- release gas -> coasts less; starts to settle naturally
+        Coast = 110, -- shorter roll-out after releasing the stick; braking remains separate
 		TurnRate = 1.65,       -- рад/сек
 		ReverseFactor = 0.35, -- задний ход медленнее
 	},
@@ -3634,7 +3634,7 @@ local M={VERSION=4}
 M.Steps={
  {id='start',title='К первой машине',body='Следуй стрелке над головой к подсвеченной машине «ВЗЛОМ 1+». Нажми кнопку у двери или удерживай E.',target='starter'},
  {id='lock',title='Открой замок',body='Попади белой линией в зелёную зону. Нажимай кнопку на экране или F. Промах можно повторить.',target='starter'},
- {id='delivery',title='Отвези авто в гараж',body='Следуй стрелке к своему салону. Поставь машину целиком в зелёную рамку и остановись. На планшете — кнопки справа.',target='delivery'},
+ {id='delivery',title='Отвези авто в гараж',body='Следуй стрелке к своему салону. Поставь машину целиком в зелёную рамку и остановись. На планшете — левый джойстик.',target='delivery'},
  {id='loot',title='Добыча уже на полке',body='Ты получил монеты за доставку, а найденный предмет уже приносит доход на полке. Полки заполняются автоматически. Касса у входа выдаёт накопленные монеты.',target='shelf',lesson=true},
  {id='ride',title='Возьми свою машину',body='Следуй стрелке к машине на витрине. Нажми «Поехать» — теперь на ней можно добираться до новых целей.',target='showcase'},
  {id='income',title='Первое усиление дохода',body='Подойди к отмеченному мастеру на тротуаре. Купи «Увеличить доход» за монеты. Если не хватает — забери деньги в кассе у входа. Остальные возможности есть в руководстве.',target='coins'},
@@ -3666,7 +3666,7 @@ M.Handbook={
  {id='finish',title='Ты готов к большому угону',body='Основы освоены: кража, доставка, свой автомобиль и доход салона. Дальше можно собирать коллекцию, открывать районы, улучшать предметы до звёзд и защищать гараж. Полное руководство доступно по кнопке «РУКОВОДСТВО».',lesson=true},
 }
 M.Handbook[#M.Handbook+1]={title='Долгая прокачка усилений',body='Монетные усиления растут в цене по уровням; за алмазы их можно покупать сразу. Требований по уровню взлома или числу доставок нет. При смене облика бонус сохраняется. Доходные бонусы складываются, поэтому витрина больше не перемножает их в огромные значения. Уже купленные уровни и имущество сохранены.'}
-M.Handbook[#M.Handbook+1]={title='Управление и звук',body='Планшет: газ, задний ход и руль справа, стандартный джойстик слева. Компьютер: W/S, A/D; R — выровнять остановившуюся машину. Примерка длится 20 секунд. Кнопка МУЗЫКА включает/выключает музыку; сирена и сигнализация остаются отдельными эффектами.'}
+M.Handbook[#M.Handbook+1]={title='Управление и звук',body='Планшет: левый стандартный джойстик управляет газом, задним ходом и рулём. Компьютер: W/S, A/D; R — выровнять остановившуюся машину. Примерка длится 20 секунд. Кнопка МУЗЫКА включает/выключает музыку; сирена и сигнализация остаются отдельными эффектами.'}
 M.Handbook[#M.Handbook+1]={title='Полиция, сигнализация и штраф',body='Попытка открыть слишком сложную машину включает сигнализацию и вызывает патруль. Слышны сигнализация и приближающаяся сирена, у патруля мигают огни. При задержании из текущей кассы снимается 5% без верхнего предела. Кошелёк сохраняется; заработок в рейтинге не уменьшается. После возрождения есть короткая пауза до нового взлома.'}
 M.Handbook[#M.Handbook+1]={title='Краска, рисунки и тюнинг',body='Во вкладке КРАСКА находятся цвета и рисунки: они сохраняются отдельно и сочетаются. Во вкладке ТЮНИНГ — десять деталей: спойлер, капот, диски, подсветка, сплиттер, диффузор, пороги, воздухозаборник, выхлоп и зеркала. Каждая деталь покупается за алмазы один раз, затем включается и снимается отдельно для каждой своей модели.',target='cosmetics',lesson=true}
 M.Handbook[#M.Handbook+1]={title='Осмотр машины на дороге',body='Кнопка ПРИМЕРИТЬ на карточке краски, рисунка или тюнинга выставляет отдельную машину на дорогу на 20 секунд. Она показывает выбранную покупку вместе с уже сохранённым оформлением. Примерка не тратит валюту и не заменяет настоящую машину. В каталоге есть кнопка ПОСМОТРЕТЬ НА ДОРОГЕ. По окончании осмотра временная машина исчезает.',target='cosmetics',lesson=true}
@@ -3892,7 +3892,9 @@ local M={}
 function M.start(corrections)
  local Players=game:GetService('Players');local Run=game:GetService('RunService');local Collection=game:GetService('CollectionService')
  local player=Players.LocalPlayer;local Dynamics=require(script.Parent.DriveDynamics);local State=require(script.Parent.DriveState)
- local states={};local obstacles={}
+ local states={};local obstacles={};local cars={}
+ local function refreshCars()cars=Collection:GetTagged('S60DrivableCar')end
+ refreshCars();Collection:GetInstanceAddedSignal('S60DrivableCar'):Connect(refreshCars);Collection:GetInstanceRemovedSignal('S60DrivableCar'):Connect(refreshCars)
  local function refresh()
   table.clear(obstacles)
   for _,part in ipairs(Collection:GetTagged('S60DriveObstacle'))do if not Collection:HasTag(part,'S60KnockdownCone')then obstacles[#obstacles+1]=part end end
@@ -3902,7 +3904,7 @@ function M.start(corrections)
   local state=states[car]
   if state and car:GetAttribute('DriveEpoch')==epoch then state.forward=cf.RightVector;state.speed=0 end
  end)
- Run.PreSimulation:Connect(function(dt)
+ local function updateDriver(dt)
   local car=State.current(player)
   if not car or car:GetAttribute('ClientDriveOwner')~=player.UserId then table.clear(states);return end
   local body=car:FindFirstChild('Body',true)or car.PrimaryPart;local rig=car:FindFirstChild('DriveRig')
@@ -3913,15 +3915,46 @@ function M.start(corrections)
    state=Dynamics.new(body,car:GetAttribute('MaxSpeed'));state.epoch=car:GetAttribute('DriveEpoch');states[car]=state
   end
   local throttle,steer=State.input(car)
-  local velocity,orientation,wheel=Dynamics.step(state,body.Position,throttle,steer,dt,obstacles)
-  body.AssemblyLinearVelocity=velocity;body.AssemblyAngularVelocity=Vector3.zero;heading.CFrame=orientation
-  for _,motor in ipairs(rig:GetChildren())do if motor:IsA('Motor6D')and motor.Name:match('^SteeringMotor_F')then motor.Transform=CFrame.Angles(0,wheel,0)end end
+  local velocity,orientation,wheel=Dynamics.step(state,body.Position,throttle,steer,dt,obstacles,body.CFrame.RightVector)
+  body.AssemblyLinearVelocity=velocity;body.AssemblyAngularVelocity=Vector3.new(0,body.AssemblyAngularVelocity.Y,0);heading.CFrame=orientation
+ end
+ Run.PreSimulation:Connect(function(dt)
+  updateDriver(dt)
+  for _,car in ipairs(cars)do if car.Parent then
+   local body=car:FindFirstChild('Body',true)or car.PrimaryPart;local rig=car:FindFirstChild('DriveRig')
+   if body and rig then
+    local speed=body.AssemblyLinearVelocity:Dot(body.CFrame.RightVector)
+    local _,steer=State.input(car)
+    if car~=State.current(player)then steer=car:GetAttribute('DriveSteer')or 0 end
+    Dynamics.animateWheels(rig,speed,steer,dt)
+   end
+  end end
  end)
  player:SetAttribute('Steal60DriveControllerReady',true)
 end
 return M
 ]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_STEAL60_V58_DriveState"><Properties><string name="Name">DriveState</string><ProtectedString name="Source"><![CDATA[-- Resolve seating continuously, including the brief SeatPart replication race on touch devices.
 local M={};local inputCar;local throttle,steer=0,0
+local controls;local loading=false
+function M.startControls(player)
+ if loading then return end;loading=true
+ task.spawn(function()
+  local scripts=player:WaitForChild('PlayerScripts',15)
+  local module=scripts and scripts:WaitForChild('PlayerModule',15)
+  if module then
+   local ok,result=pcall(function()return require(module):GetControls()end)
+   if ok then controls=result end
+  end
+  loading=false
+ end)
+end
+function M.touchInput(seat)
+ if controls then
+  local ok,move=pcall(function()return controls:GetMoveVector()end)
+  if ok and typeof(move)=='Vector3'then return math.clamp(-move.Z,-1,1),math.clamp(move.X,-1,1)end
+ end
+ return math.clamp(seat.ThrottleFloat or 0,-1,1),math.clamp(seat.SteerFloat or 0,-1,1)
+end
 function M.setInput(car,t,s)inputCar=car;throttle=t or 0;steer=s or 0 end
 function M.input(car)if car==inputCar then return throttle,steer end;return 0,0 end
 function M.current(player)
@@ -3933,7 +3966,7 @@ function M.current(player)
  local ref=player:FindFirstChild('Steal60DriveCar');car=ref and ref.Value
  if car and car.Parent and car:GetAttribute('Drivable')and car:GetAttribute('DriverId')==player.UserId then
   local rig=car:FindFirstChild('DriveRig');seat=rig and rig:FindFirstChild('DriverSeat')
-  if seat and seat.Occupant==hum then return car,seat end
+  if seat and(seat.Occupant==hum or(car:GetAttribute('DriverSeatedId')==player.UserId and not hum.SeatPart))then return car,seat end
  end
  return nil
 end
@@ -4191,7 +4224,7 @@ local Shared=script.Parent
 local Settings=require(Shared.Config.Settings)
 local Layout=require(Shared.TrackLayout)
 local Road=require(Shared.RoadSteering)
-local M={}
+local M={};local wheelStates=setmetatable({},{__mode='k'})
 local function flat(v)local p=Vector3.new(v.X,0,v.Z);return p.Magnitude>.001 and p.Unit or Vector3.xAxis end
 function M.new(body,maximum)return{forward=flat(body.CFrame.RightVector),speed=0,maxSpeed=math.min(maximum or Settings.Drive.BaseSpeed,Settings.MaxCarSpeed)}end
 function M.orientation(forward)return CFrame.fromMatrix(Vector3.zero,flat(forward),Vector3.yAxis)end
@@ -4213,9 +4246,10 @@ function M.blocked(from,to,obstacles)
  end end
  return false
 end
-function M.step(state,position,throttle,steer,dt,obstacles)
+function M.step(state,position,throttle,steer,dt,obstacles,observedForward)
  dt=math.clamp(dt,0,.08);throttle=math.clamp(throttle,-1,1);steer=math.clamp(steer,-1,1)
  local drive=Settings.Drive;local target=throttle*state.maxSpeed*(throttle<0 and drive.ReverseFactor or 1)
+ if observedForward then state.forward=flat(observedForward)end
  local acceleration=throttle==0 and drive.Coast or(state.speed*target<0 and drive.Brake or drive.Accel)
  state.speed+=math.clamp(target-state.speed,-acceleration*dt,acceleration*dt)
  local grip=math.clamp(math.abs(state.speed)/16,0,1)
@@ -4225,12 +4259,28 @@ function M.step(state,position,throttle,steer,dt,obstacles)
   local x,z,direction=Road.guide(position.Z,state.forward.X,state.forward.Z,state.speed,dt,state.roadDirection)
   state.forward=Vector3.new(x,0,z);state.roadDirection=direction
  end
- local velocity=state.forward*state.speed;local limit=position.X<Settings.Track.SalonZoneLength and 43.5 or 28.5
+ -- Velocity follows the actual nose. The orientation solver turns toward the next heading.
+ -- Sending velocity along a future heading while the body still faces sideways looks like ice.
+ local velocity=(observedForward and flat(observedForward)or state.forward)*state.speed;local limit=position.X<Settings.Track.SalonZoneLength and 43.5 or 28.5
  local horizon=math.max(dt,1/60)
  local vx=math.clamp(velocity.X,(-45-position.X)/horizon,(Layout.trackEnd()-9-position.X)/horizon)
  local vz=math.clamp(velocity.Z,(-limit-position.Z)/horizon,(limit-position.Z)/horizon)
  if M.blocked(position,position+Vector3.new(vx,0,vz)*horizon,obstacles)then state.speed=0;vx=0;vz=0 end
  return Vector3.new(vx,0,vz),M.orientation(state.forward),-math.rad(27)*steer*grip
+end
+function M.animateWheels(rig,speed,steer,dt)
+ local state=wheelStates[rig]
+ if not state or state.elapsed>=1 then
+  local previous=state;state={motors={},distance=previous and previous.distance or 0,elapsed=0}
+  for _,motor in ipairs(rig:GetChildren())do if motor:IsA('Motor6D')and motor.Name:match('^SteeringMotor_')then state.motors[#state.motors+1]=motor end end
+  wheelStates[rig]=state
+ end
+ state.elapsed+=dt;state.distance=state.distance+speed*math.clamp(dt,0,.1)
+ local angle=-math.rad(27)*steer*math.clamp(math.abs(speed)/16,0,1)
+ for _,motor in ipairs(state.motors)do if motor.Parent then
+  local radius=math.max(.1,motor:GetAttribute('WheelRadius')or .65)
+  motor.Transform=CFrame.Angles(0,motor.Name:match('^SteeringMotor_F')and angle or 0,0)*CFrame.Angles(0,0,-state.distance/radius)
+ end end
 end
 return M
 ]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_STEAL60_V61_AuraSpecial"><Properties><string name="Name">AuraSpecial</string><ProtectedString name="Source"><![CDATA[-- Bounded reusable effects. World-space samples fade behind a walking player; no parts are spawned per frame.
@@ -4296,30 +4346,73 @@ function M.step(root,folder,t,speed,teleported)
  end end
 end
 return M
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_STEAL60_V61_AvatarPreview"><Properties><string name="Name">AvatarPreview</string><ProtectedString name="Source"><![CDATA[-- Rebuild a static mannequin from its joints before measuring a portrait.
--- Stray streamed accessories never dictate the camera distance.
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_STEAL60_V61_AvatarPreview"><Properties><string name="Name">AvatarPreview</string><ProtectedString name="Source"><![CDATA[-- Static mannequins must solve both legacy motors and modern attachment-based avatar joints.
 local M={}
 local function visibleBody(p,model)
  return p:IsA('BasePart')and p.Parent==model and p.Name~='HumanoidRootPart'and p.Transparency<1
 end
-function M.prepare(model)
- local root=model:FindFirstChild('HumanoidRootPart')or model.PrimaryPart or model:FindFirstChild('Torso')
- if not root then return end
- local joints={}
- for _,j in ipairs(model:GetDescendants())do
-  if(j:IsA('Motor6D')or j:IsA('Weld'))and j.Part0 and j.Part1 then joints[#joints+1]=j end
+local function joint(j)
+ if j:IsA('Motor6D')or j:IsA('Weld')or j:IsA('AnimationConstraint')then
+  local ok,a,b,c0,c1=pcall(function()return j.Part0,j.Part1,j.C0,j.C1 end)
+  if ok and a and b and c0 and c1 then return{a=a,b=b,c0=c0,c1=c1}end
  end
- local placed={[root]=true}
- -- Solve both directions: AccessoryWeld convention often starts at Handle.
- for _=1,24 do
+ if j:IsA('AnimationConstraint')or j:IsA('RigidConstraint')then
+  local ok,a,b=pcall(function()return j.Attachment0,j.Attachment1 end)
+  if ok and a and b and a.Parent and b.Parent and a.Parent:IsA('BasePart')and b.Parent:IsA('BasePart')then
+   return{a=a.Parent,b=b.Parent,c0=a.CFrame,c1=b.CFrame}
+  end
+ end
+end
+local function solve(joints,placed)
+ for _=1,32 do
   local changed=false
   for _,j in ipairs(joints)do
-   local a,b=j.Part0,j.Part1;local transform=j:IsA('Motor6D')and j.Transform or CFrame.identity
-   if placed[a]and not placed[b]then b.CFrame=a.CFrame*j.C0*transform*j.C1:Inverse();placed[b]=true;changed=true
-   elseif placed[b]and not placed[a]then a.CFrame=b.CFrame*j.C1*transform:Inverse()*j.C0:Inverse();placed[a]=true;changed=true end
+   if placed[j.a]and not placed[j.b]then j.b.CFrame=j.a.CFrame*j.c0*j.c1:Inverse();placed[j.b]=true;changed=true
+   elseif placed[j.b]and not placed[j.a]then j.a.CFrame=j.b.CFrame*j.c1*j.c0:Inverse();placed[j.a]=true;changed=true end
   end
   if not changed then break end
  end
+end
+local function completeHead(model)
+ local torso=model:FindFirstChild('UpperTorso')or model:FindFirstChild('Torso')
+ if not torso then return end
+ local head=model:FindFirstChild('Head')
+ if not head or not head:IsA('BasePart')then
+  head=Instance.new('Part');head.Name='Head';head.Size=Vector3.new(1.5,1,1)
+  local hand=model:FindFirstChild('LeftHand')or model:FindFirstChild('RightHand')
+  head.Color=hand and hand.Color or Color3.fromRGB(235,193,158);head.Parent=model
+  local mesh=Instance.new('SpecialMesh');mesh.MeshType=Enum.MeshType.Head;mesh.Parent=head
+  local face=Instance.new('Decal');face.Name='face';face.Texture='rbxasset://textures/face.png';face.Face=Enum.NormalId.Front;face.Parent=head
+  for name,position in pairs({HairAttachment=Vector3.new(0,.5,0),HatAttachment=Vector3.new(0,.5,0),FaceFrontAttachment=Vector3.new(0,0,-.5),FaceCenterAttachment=Vector3.zero,NeckRigAttachment=Vector3.new(0,-.5,0)})do
+   local a=Instance.new('Attachment');a.Name=name;a.Position=position;a.Parent=head
+  end
+  head:SetAttribute('PreviewFallbackHead',true)
+ end
+ head.Transparency=0;head.LocalTransparencyModifier=0
+ if head.Size.Y<.45 then head.Size=Vector3.new(math.max(1.2,head.Size.X),1,math.max(.9,head.Size.Z))end
+ local relative=torso.CFrame:PointToObjectSpace(head.Position)
+ local center=torso.Size.Y*.5+head.Size.Y*.5-.04
+ if relative.Y<center-.12 or relative.Y>center+.65 then head.CFrame=torso.CFrame*CFrame.new(0,center,0)end
+ return head
+end
+function M.prepare(model)
+ local root=model:FindFirstChild('HumanoidRootPart')or model.PrimaryPart or model:FindFirstChild('Torso')or model:FindFirstChild('UpperTorso')
+ if not root then return end
+ local joints={};local attachments={}
+ for _,obj in ipairs(model:GetDescendants())do local record=joint(obj);if record then joints[#joints+1]=record end end
+ -- Rig attachments also solve streamed avatar templates before their constraint references arrive.
+ for _,part in ipairs(model:GetChildren())do if part:IsA('BasePart')then
+  for _,a in ipairs(part:GetChildren())do if a:IsA('Attachment')and a.Name:match('RigAttachment$')then
+   local previous=attachments[a.Name]
+   if previous and previous.Parent~=part then joints[#joints+1]={a=previous.Parent,b=part,c0=previous.CFrame,c1=a.CFrame}
+   else attachments[a.Name]=a end
+  end end
+ end end
+ local placed={[root]=true};solve(joints,placed)
+ local head=completeHead(model);if head then placed[head]=true end
+ -- Rebuild accessories after fixing the head; stale Handle poses must not stay inside the neck.
+ for part in pairs(placed)do if part.Parent~=model then placed[part]=nil end end
+ solve(joints,placed)
  for _,accessory in ipairs(model:GetChildren())do if accessory:IsA('Accessory')then
   local handle=accessory:FindFirstChild('Handle');local matched=false
   if handle and not placed[handle]then
@@ -4379,8 +4472,8 @@ function M.surface(position,exclude)
  if hit and hit.Instance and(hit.Instance.Name=='Road'or hit.Instance.Name=='Intersection')then return hit.Position.Y end
  return .2
 end
-function M.place(car,surfaceY)
- local delta=(surfaceY or .2)+.055-M.bottom(car)
+function M.place(car,surfaceY,clearance)
+ local delta=(surfaceY or .2)+(clearance or .055)-M.bottom(car)
  if math.abs(delta)>.001 then car:PivotTo(car:GetPivot()+Vector3.new(0,delta,0))end
  local body=car:FindFirstChild('Body',true)or car.PrimaryPart
  return body and body.Position.Y or car:GetPivot().Position.Y
@@ -6406,6 +6499,10 @@ return {
     ["МАСТЕРСТВО ГЕРОЯ ↓"] = "HERO MASTERY ↓",
     ["МАСТЕРСТВО ПИТОМЦА ↓"] = "PET MASTERY ↓",
     ["Примерь ауру на 20 секунд и пройдись. У ветра — воздушный шлейф и завихрения, у остальных — свои эффекты."] = "Try an aura for 20 seconds and walk around. Wind has a flowing wake and swirls; other auras have their own effects.",
+    ["Левый стик — газ и руль · ↻ — выровнять"] = "Left stick — throttle and steering · ↻ — recover",
+    ["Не удалось подготовить машину. Попробуй снова."] = "The car could not be prepared. Please try again.",
+    ["Следуй стрелке к своему салону. Поставь машину целиком в зелёную рамку и остановись. На планшете — левый джойстик."] = "Follow the arrow to your garage. Park the entire car inside the green frame and stop. On a tablet, use the left joystick.",
+    ["Планшет: левый стандартный джойстик управляет газом, задним ходом и рулём. Компьютер: W/S, A/D; R — выровнять остановившуюся машину. Примерка длится 20 секунд. Кнопка МУЗЫКА включает/выключает музыку; сирена и сигнализация остаются отдельными эффектами."] = "Tablet: use the standard left joystick for throttle, reverse and steering. Computer: W/S and A/D; R recovers a stopped car. Previews last 20 seconds. The MUSIC button toggles music; sirens and alarms are separate effects.",
 }
 ]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_STEAL60_V64_LanguageController"><Properties><string name="Name">LanguageController</string><ProtectedString name="Source"><![CDATA[-- Local text binding keeps each player's world signs in their own language.
 local M={}
@@ -7393,7 +7490,8 @@ local function runMinigame(params)
     local finished=false
     local waiting=false
     local victoryShown=false
-    local renderConn,inputConn
+    local renderConn,inputConn,watchdogConn,destroyConn,visibleConn,menuConn
+    local requestId=0;local pendingCommand
     local Access=require(Shared.InterfaceAccess)
 
     local root=Instance.new("Frame")
@@ -7611,16 +7709,17 @@ local function runMinigame(params)
     action.TextSize=15
     action.Parent=root;corner(action,9)
 
-    local function close()
+    local function close(skipDestroy)
         if finished then return end
         finished=true
         if renderConn then renderConn:Disconnect() end
         if inputConn then inputConn:Disconnect() end
+        for _,connection in pairs({watchdogConn,destroyConn,visibleConn,menuConn})do if connection then connection:Disconnect()end end
         if activeHackStep then activeHackStep:Disconnect() end
         activeHackStep=nil
         closeHack=nil
         game:GetService('GuiService').SelectedObject=nil
-        root:Destroy()
+        if skipDestroy~=true then root:Destroy()end
     end
     local nextSubmitAt=0;local pendingAt=0;local lastSync=0
 
@@ -7659,13 +7758,18 @@ local function runMinigame(params)
             end
         end
     end
+    local function sendCommand(actionName)
+        waiting=true;pendingAt=workspace:GetServerTimeNow();nextSubmitAt=pendingAt+.20
+        requestId+=1;pendingCommand={action=actionName,id=requestId,round=current.round}
+        HackTap:FireServer(actionName,current.sessionId,requestId,current.round)
+    end
     local function submit(actionName)
         if victoryShown then close();return end
         if finished or waiting or workspace:GetServerTimeNow()<math.max(current.startAt or 0,nextSubmitAt)then return end
         if current.mode=="memory"then
             if workspace:GetServerTimeNow()<(current.startAt or 0)+HackModes.memoryDuration(current.zone)then return end
             if not actionName or not actionName:match("^memory_[1234]$")then return end
-            waiting=true;pendingAt=workspace:GetServerTimeNow();nextSubmitAt=pendingAt+.20;HackTap:FireServer(actionName,current.sessionId);return
+            sendCommand(actionName);return
         end
         local isWire=current.mode=="wires"
         if isWire then
@@ -7673,17 +7777,25 @@ local function runMinigame(params)
         elseif actionName~="tap" then
             return
         end
-        waiting=true
         status.Text="ПРОВЕРКА..."
-        pendingAt=workspace:GetServerTimeNow();nextSubmitAt=pendingAt+.20
-        HackTap:FireServer(actionName,current.sessionId)
+        sendCommand(actionName)
     end
     local function cancelAction(reason)
         if finished then return end
-        if reason~='replace'and not victoryShown then HackCancel:FireServer(current.sessionId);player:SetAttribute('HackActive',false)end
-        close()
+        local cancelServer=reason~='replace'and not victoryShown;local token=current.sessionId
+        close(reason=='destroyed')
+        if cancelServer then player:SetAttribute('HackActive',false);HackCancel:FireServer(token)end
     end
     closeHack=cancelAction
+    destroyConn=root.Destroying:Connect(function()if not finished then cancelAction('destroyed')end end)
+    visibleConn=root:GetPropertyChangedSignal('Visible'):Connect(function()if root.Visible==false and not finished then cancelAction('hidden')end end)
+    menuConn=player:GetAttributeChangedSignal('Steal60MenuOpen'):Connect(function()if player:GetAttribute('Steal60MenuOpen')then cancelAction()end end)
+    watchdogConn=RunService.Heartbeat:Connect(function()
+        if finished or victoryShown then return end
+        local now=workspace:GetServerTimeNow()
+        if waiting and now-pendingAt>8 then cancelAction();return end
+        if now-lastSync>(waiting and 1 or 2.5)then lastSync=now;HackTap:FireServer('sync',current.sessionId)end
+    end)
     for _,buttons in ipairs({wireButtons,memoryButtons})do
         for i,b in ipairs(buttons)do b.Selectable=true;b.NextSelectionLeft=buttons[(i-2)%#buttons+1];b.NextSelectionRight=buttons[i%#buttons+1]end
     end
@@ -7697,6 +7809,13 @@ local function runMinigame(params)
     cancel.Activated:Connect(cancelAction)
     activeHackStep=HackStep.OnClientEvent:Connect(function(state)
         if finished or type(state)~="table"or(state.sessionId and current.sessionId and state.sessionId~=current.sessionId)then return end
+        if waiting and state.ack and state.ack<requestId and state.state~='cancelled'and state.state~='alarm'then
+            if state.state=='sync'and pendingCommand then
+                HackTap:FireServer(pendingCommand.action,current.sessionId,pendingCommand.id,pendingCommand.round)
+            end
+            return
+        end
+        pendingCommand=nil
         if state.state=="success" then
             victoryShown=true
             waiting=false
@@ -7754,9 +7873,6 @@ local function runMinigame(params)
     renderConn=RunService.RenderStepped:Connect(function()
         if finished or victoryShown then return end
         local now=workspace:GetServerTimeNow()
-        if waiting and now-pendingAt>.9 and now-lastSync>1 then
-            lastSync=now;HackTap:FireServer('sync',current.sessionId)
-        end
         local t=now-(current.startAt or 0)
         if t<0 then
             if not waiting then status.Text=string.format("ПОДГОТОВКА · %.1f сек",-t) end
@@ -7805,59 +7921,20 @@ HackStart.OnClientEvent:Connect(runMinigame)
 local DriveInput = remotes:WaitForChild("DriveInput")
 local RecoverCar = remotes:WaitForChild("RecoverCar")
 local lastCar, lastSent, driveIndicator = nil, 0, nil
-local touchThrottle, touchSteer = 0, 0
-local touchWidgets = {}
-local heldInputs={}
-UserInputService.InputEnded:Connect(function(input)local fn=heldInputs[input];if fn then heldInputs[input]=nil;fn()end end)
-UserInputService.WindowFocusReleased:Connect(function()for input,fn in pairs(heldInputs)do heldInputs[input]=nil;fn()end end)
+DriveState.startControls(player)
 local driveUI = Instance.new("Frame")
 driveUI.Name = "DriveTouchControls"
 driveUI.AnchorPoint = Vector2.new(1, 1)
-driveUI.Position = UDim2.new(1, -14, 1, -16)
-driveUI.Size = UDim2.fromOffset(248, 150)
+driveUI.Position = UDim2.new(1, -14, 1, -150)
+driveUI.Size = UDim2.fromOffset(150, 40)
 driveUI.BackgroundTransparency = 1
 driveUI.Visible = false
 driveUI.Parent = gui
 
-local function driveTouchButton(name, symbol, pos, axis, value)
-    local btn = Instance.new("TextButton")
-    btn.Name = name
-    btn.Position = pos
-    btn.Size = UDim2.fromOffset(72, 65)
-    btn.Text = symbol
-    btn.Font = Enum.Font.GothamBold
-    btn.TextSize = 24
-    btn.TextColor3 = Color3.fromRGB(247, 250, 255)
-    btn.BackgroundColor3 = Color3.fromRGB(28, 45, 60)
-    btn.BackgroundTransparency = .14
-    btn.Parent = driveUI
-    corner(btn, 12)
-    local function press()
-        if axis == "throttle" then touchThrottle = value else touchSteer = value end
-        btn.BackgroundColor3 = Color3.fromRGB(43, 124, 102)
-    end
-    local function release()
-        if axis == "throttle" and touchThrottle == value then touchThrottle = 0 end
-        if axis == "steer" and touchSteer == value then touchSteer = 0 end
-        btn.BackgroundColor3 = Color3.fromRGB(28, 45, 60)
-    end
-    btn.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then heldInputs[input]=release;press() end
-    end)
-    btn.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then heldInputs[input]=nil;release() end
-    end)
-    table.insert(touchWidgets, btn)
-end
-
-driveTouchButton("Left", "◀", UDim2.fromOffset(0, 74), "steer", -1)
-driveTouchButton("Right", "▶", UDim2.fromOffset(80, 74), "steer", 1)
-driveTouchButton("Reverse", "▼", UDim2.fromOffset(160, 74), "throttle", -1)
-driveTouchButton("Go", "▲", UDim2.fromOffset(160, 0), "throttle", 1)
 local recoverButton = Instance.new("TextButton")
 recoverButton.Name = "RecoverVehicle"
-recoverButton.Position = UDim2.fromOffset(0, 12)
-recoverButton.Size = UDim2.fromOffset(150, 45)
+recoverButton.Position = UDim2.fromOffset(0, 0)
+recoverButton.Size = UDim2.fromOffset(150, 40)
 recoverButton.Text = "↻  ВЫРОВНЯТЬ"
 recoverButton.TextColor3 = Color3.fromRGB(240,248,255)
 recoverButton.TextSize = 15
@@ -7940,7 +8017,6 @@ RunService.Heartbeat:Connect(function(dt)
         driveHint.Text=UserInputService.TouchEnabled and'Стик — ходьба · нажми на действие'or'W/A/S/D — ходьба · E — действие'
         if UserInputService:GetLastInputType()==Enum.UserInputType.Gamepad1 then driveHint.Text='Геймпад: стик — ходьба · X — действие · Y — меню'end
         driveHint.Visible=(training or handbook)and not player:GetAttribute('HackActive')and not player:GetAttribute('CosmeticPreviewToken')and(not player:GetAttribute('Steal60MenuOpen')or handbook)
-        touchThrottle, touchSteer = 0, 0
         return
     end
     if not lastDrivingState then
@@ -7954,13 +8030,13 @@ RunService.Heartbeat:Connect(function(dt)
     end
     local menuActive=player:GetAttribute('Steal60MenuOpen')==true or player:GetAttribute('HackActive')==true
     driveUI.Visible = UserInputService.TouchEnabled and not menuActive
-    driveHint.Text=UserInputService.TouchEnabled and'Кнопки газа и руля — езда · R — выровнять'or'W/S — газ · A/D — руль · R — выровнять'
+    driveHint.Text=UserInputService.TouchEnabled and'Левый стик — газ и руль · ↻ — выровнять'or'W/S — газ · A/D — руль · R — выровнять'
     if UserInputService:GetLastInputType()==Enum.UserInputType.Gamepad1 then driveHint.Text='Геймпад: RT/LT — газ/назад · стик — руль · X — выровнять'end
     driveHint.Visible = not player:GetAttribute('HackActive') and
         (player:GetAttribute('TutorialComplete')~=true or player:GetAttribute('Steal60ActiveModal')=='Steal60Handbook') and
         (not menuActive or player:GetAttribute('Steal60ActiveModal')=='Steal60Handbook')
-    if menuActive then touchThrottle,touchSteer=0,0 end
-    local throttle,steer=DriveState.axes(seat.ThrottleFloat,seat.SteerFloat,touchThrottle,touchSteer)
+    local throttle,steer=seat.ThrottleFloat or 0,seat.SteerFloat or 0
+    if UserInputService.TouchEnabled then throttle,steer=DriveState.touchInput(seat)end
     if not UserInputService.TouchEnabled then
         local keyThrottle = (UserInputService:IsKeyDown(Enum.KeyCode.W) or UserInputService:IsKeyDown(Enum.KeyCode.Up)) and 1 or
             ((UserInputService:IsKeyDown(Enum.KeyCode.S) or UserInputService:IsKeyDown(Enum.KeyCode.Down)) and -1 or 0)
@@ -9757,7 +9833,7 @@ local function add3DPreview(container,def)
  image.Position=UDim2.fromOffset(9,9);image.Size=UDim2.fromOffset(176,192)
  image.BackgroundColor3=C(18,28,45);image.BorderSizePixel=0;image.Parent=container;corner(image,10)
  local view=Instance.new("ViewportFrame");view.Name="AvatarPortrait"
- view.Size=UDim2.new(1,0,1,-47);view.BackgroundTransparency=1
+ view.Size=UDim2.new(1,0,1,0);view.BackgroundTransparency=1
  view.Ambient=C(190,201,224);view.LightColor=C(255,246,230)
  view.LightDirection=Vector3.new(-.7,-1,-.9);view.BorderSizePixel=0;view.Parent=image
  local template=catalogPreviews:FindFirstChild(def.catalogLook)
@@ -9970,7 +10046,10 @@ local function itemCard(def,data,parent,width)
   if view then
    view.Size=UDim2.fromOffset(wide and 176 or 111,wide and 170 or 145)
    local canPreview=catalogReady and(not isCar or selectedCarId~=nil)
-   local try=button(view,"ПРИМЕРИТЬ · 20 СЕК",UDim2.new(1,-12,0,36),UDim2.new(0,6,1,-42),function()
+   local tryParent=isHero and b or view
+   local trySize=isHero and UDim2.new(1,-x-12,0,34)or UDim2.new(1,-12,0,36)
+   local tryPosition=isHero and UDim2.fromOffset(x,wide and 144 or 151)or UDim2.new(0,6,1,-42)
+   local try=button(tryParent,"ПРИМЕРИТЬ · 20 СЕК",trySize,tryPosition,function()
     send("preview",def.category,def.id,isCar and selectedCarId or nil)
    end,C(117,223,246),canPreview)
    try.Name="TryOn20Seconds";try.ZIndex=5;try.TextSize=wide and 11 or 10
@@ -9979,9 +10058,7 @@ local function itemCard(def,data,parent,width)
   title.TextYAlignment=Enum.TextYAlignment.Top
   local desc=text(b,def.description,UDim2.new(1,-x-12,0,wide and 68 or 84),UDim2.fromOffset(x,wide and 56 or 55),wide and 13 or 11,C(192,212,229))
   desc.TextYAlignment=Enum.TextYAlignment.Top
-  if isHero then
-   text(b,def.priceCoins and "ОДЕЖДА ROBLOX · ЗА МОНЕТЫ"or"ОДЕЖДА ROBLOX · ЗА АЛМАЗЫ",UDim2.new(1,-x-12,0,21),UDim2.fromOffset(x,wide and 136 or 142),wide and 11 or 10,def.accent or colorAccent,true)
-  elseif isCar then
+  if isCar then
    text(b,selectedCarId and "ДЛЯ ВЫБРАННОЙ МАШИНЫ" or "СНАЧАЛА ВЫБЕРИ МАШИНУ",
     UDim2.new(1,-x-12,0,21),UDim2.fromOffset(x,wide and 136 or 142),11,C(121,236,196),true)
   elseif isPet then
@@ -12377,9 +12454,8 @@ return Net
           <Properties>
             <string name="Name">DriveService</string>
             <ProtectedString name="Source"><![CDATA[local Security=require(script.Parent.SecurityService)
--- Steal60 v15: server-controlled planar arcade vehicle movement.
--- No physical suspension/wheel collision = no sidewalk trampoline or wall-climbing.
--- Model PivotTo moves an upright anchored presentation car; the player sits in a VehicleSeat.
+-- Native planar driving: one motion writer, exact wheel height and server validation.
+-- Body/seat share one assembly; the driver owns physics only after a verified-seat handshake.
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local CollectionService = game:GetService("CollectionService")
@@ -12549,6 +12625,9 @@ function DriveService.disable(car)
         end
     end
     car:SetAttribute("ClientDriveOwner",nil)
+    car:SetAttribute('DriverSeatedId',nil)
+    car:SetAttribute('DriveSteer',nil)
+    CollectionService:RemoveTag(car,'S60DrivableCar')
     car:SetAttribute("DriveEpoch",nil)
     car:SetAttribute("Drivable",nil)
     car:SetAttribute("MaxSpeed",nil)
@@ -12594,10 +12673,12 @@ function DriveService.enable(car,maxSpeed)
             reenter.Enabled=seat.Parent~=nil and seat.Occupant==nil
         end
     end
-    seat:GetPropertyChangedSignal("Occupant"):Connect(function()
+    local function syncOccupant()
         if not seat.Parent or(active[car]and active[car].seat~=seat)then return end
         local state=active[car]
         if state then
+            if state.occupant==seat.Occupant then updateReentry();return end
+            state.occupant=seat.Occupant;epoch+=1;car:SetAttribute('DriveEpoch',epoch)
             state.clientReady=false;state.dynamics=Dynamics.new(body,state.maxSpeed);car:SetAttribute('ClientDriveOwner',nil)
             body.AssemblyLinearVelocity=Vector3.zero;body.AssemblyAngularVelocity=Vector3.zero
             body.Anchored=seat.Occupant==nil
@@ -12606,8 +12687,11 @@ function DriveService.enable(car,maxSpeed)
         end
         updateReentry()
         local owner=Players:GetPlayerByUserId(tonumber(car:GetAttribute('DriverId'))or 0)
-        setReference(owner,seat.Occupant and owner and seat.Occupant.Parent==owner.Character and car or nil)
-    end)
+        local verified=seat.Occupant and owner and seat.Occupant.Parent==owner.Character
+        car:SetAttribute('DriverSeatedId',verified and owner.UserId or nil)
+        setReference(owner,verified and car or nil)
+    end
+    seat:GetPropertyChangedSignal("Occupant"):Connect(syncOccupant)
     Security.prompt(reenter,function(player)
         if not player or not player.Parent or not car.Parent then return end
         if car:GetAttribute("DriverId")~=player.UserId then return end
@@ -12656,6 +12740,8 @@ function DriveService.enable(car,maxSpeed)
             motor.Part0=body;motor.Part1=pivot
             motor.C0=body.CFrame:ToObjectSpace(pivot.CFrame)
             motor.C1=CFrame.identity
+            local radius=.65;for _,p in ipairs(parts)do if p.Name=='Tyre'then radius=math.max(p.Size.Y,p.Size.Z)*.5;break end end
+            motor:SetAttribute('WheelRadius',radius)
             motor.Parent=rig
             for _,part in ipairs(parts) do
                 local weld=Instance.new("WeldConstraint")
@@ -12685,6 +12771,7 @@ function DriveService.enable(car,maxSpeed)
     local height=Instance.new('PlaneConstraint');height.Name='DriveHeight';height.Attachment0=fixed;height.Attachment1=vertical;height.Parent=rig
     local heading=Instance.new('AlignOrientation');heading.Name='DriveHeading';heading.Mode=Enum.OrientationAlignmentMode.OneAttachment
     heading.Attachment0=attachment;heading.MaxTorque=1000000;heading.MaxAngularVelocity=8;heading.Responsiveness=45
+    heading.Responsiveness=200;heading.RigidityEnabled=true
     heading.CFrame=Dynamics.orientation(horizontal(body.CFrame.RightVector));heading.Parent=rig
     epoch+=1;car:SetAttribute('DriveEpoch',epoch);car:SetAttribute('ClientDriveOwner',nil)
     car:SetAttribute("Drivable",true)
@@ -12695,7 +12782,8 @@ function DriveService.enable(car,maxSpeed)
         maxSpeed=math.clamp(maxSpeed or 60,10,Settings.MaxCarSpeed),
         lockedY=groundedY,lastRecovery=-math.huge,
         wheelMotors=steered,visualSteer=0,reportedSpeed=-1,networkClock=0,coneClock=0,lastConePos=body.Position,
-        dynamics=Dynamics.new(body,maxSpeed),heading=heading,lastSafe=body.CFrame,lastObserved=body.Position,lastCheck=os.clock(),budget=12,clientReady=false}
+        dynamics=Dynamics.new(body,maxSpeed),heading=heading,lastSafe=body.CFrame,lastObserved=body.Position,lastCheck=os.clock(),budget=12,clientReady=false,syncSeat=syncOccupant,occupant=false}
+    syncOccupant();CollectionService:AddTag(car,'S60DrivableCar')
     return seat
 end
 
@@ -12710,6 +12798,7 @@ function DriveService.seatPlayer(player,car,done)
   for attempt=1,12 do
    if active[car]~=state or state.seating~=token or not car.Parent or player.Character~=char or hum.Health<=0 then return end
    if state.seat.Occupant==hum then
+    state.syncSeat()
     setReference(player,car);state.seating=nil;if done then done(true)end;return
    end
    if state.seat.Occupant then break end
@@ -12816,6 +12905,7 @@ function DriveService.init()
     RunService.Heartbeat:Connect(function(frameDt)
         for car,s in pairs(active)do
             if not car.Parent or not s.body.Parent or not s.seat.Parent then active[car]=nil;continue end
+            if s.occupant~=s.seat.Occupant then s.syncSeat()end
             local occupant=s.seat.Occupant;local owner=Players:GetPlayerByUserId(s.ownerId or 0)
             if not occupant or not owner or occupant.Parent~=owner.Character then
                 s.body.AssemblyLinearVelocity=Vector3.zero;s.body.AssemblyAngularVelocity=Vector3.zero
@@ -12834,11 +12924,12 @@ function DriveService.init()
             if not s.clientReady then
                 local throttle,steer=0,0
                 if now-s.lastInput<.45 then throttle,steer=s.throttle,s.steer else throttle,steer=s.seat.ThrottleFloat,s.seat.SteerFloat end
-                local velocity,orientation=Dynamics.step(s.dynamics,position,throttle or 0,steer or 0,frameDt,obstacleCache)
-                s.body.AssemblyLinearVelocity=velocity;s.body.AssemblyAngularVelocity=Vector3.zero;s.heading.CFrame=orientation
+                local velocity,orientation=Dynamics.step(s.dynamics,position,throttle or 0,steer or 0,frameDt,obstacleCache,s.body.CFrame.RightVector)
+                s.body.AssemblyLinearVelocity=velocity;s.body.AssemblyAngularVelocity=Vector3.new(0,s.body.AssemblyAngularVelocity.Y,0);s.heading.CFrame=orientation
             end
             s.networkClock+=frameDt;s.coneClock+=frameDt
             if s.networkClock>=.12 then
+                car:SetAttribute('DriveSteer',math.round((s.steer or 0)*100)/100)
                 s.networkClock=0;local speed=Vector3.new(s.body.AssemblyLinearVelocity.X,0,s.body.AssemblyLinearVelocity.Z).Magnitude
                 local reported=math.floor(speed+.5);if reported~=s.reportedSpeed then s.reportedSpeed=reported;car:SetAttribute('ArcadeSpeed',reported)end
             end
@@ -12852,7 +12943,7 @@ function DriveService.init()
             end
         end
     end)
-    print("[Steal60/Drive v62] Native physics with one driver and server validation")
+    print("[Steal60/Drive v66] Native joystick, verified first seating and server validation")
 end
 return DriveService
 ]]></ProtectedString>
@@ -13269,6 +13360,12 @@ function DeliveryService.track(car, player, info)
 
 end
 
+-- Server-only rollback for a failed vehicle handoff; never awards delivery rewards.
+function DeliveryService.abort(car,player)
+ local rec=stolen[car]
+ if not rec or rec.player~=player or rec.busy then return false end
+ stolen[car]=nil;player:SetAttribute('HeistCarrying',false);return true
+end
 function DeliveryService.getCarrying(player)
 	for car, rec in pairs(stolen) do
 		if rec.player == player then
@@ -13384,6 +13481,7 @@ local HackService = {}
 local rng = Random.new()
 local nextSessionId=0
 local sessions = {} -- player -> live server-authoritative session
+local completed = {} -- bounded last terminal response per player; resync never awards a second car
 local policePending = {} -- player -> prevent duplicate dispatch, fine and respawn
 
 -- Variety without difficulty spikes: maximum 3 interactions per vehicle.
@@ -13476,31 +13574,30 @@ local function successFlow(player, car, quality, mode)
     local hum = char and char:FindFirstChildOfClass("Humanoid")
     if not data or not hum or hum.Health <= 0 then
         ParkingService.unlock(car)
-        return
+        return false
     end
     if not Requirements.canHack(data,car:GetAttribute('RequiredHack')or 1)then
-        ParkingService.unlock(car);Net.notify(player,'Нужен фактический уровень взлома '..tostring(car:GetAttribute('RequiredHack')or 1)..'+.','bad');return
+        ParkingService.unlock(car);Net.notify(player,'Нужен фактический уровень взлома '..tostring(car:GetAttribute('RequiredHack')or 1)..'+.','bad');return false
     end
+    -- Prepare native constraints before consuming the parking slot. A rig error must release the lock.
+    car:SetAttribute("DriverId", player.UserId)
+    local seat = DriveService.enable(car, DriveService.maxSpeedFor(data, player))
+    if not seat then return false end
     local info = ParkingService.consume(car)
     if not info then
         Net.notify(player, "Эту машину уже забрали.", "bad")
-        return
-    end
-    car:SetAttribute("DriverId", player.UserId) -- required for secure recovery and cleanup
-    local seat = DriveService.enable(car, DriveService.maxSpeedFor(data, player))
-    if not seat then
-        ParkingService.recycle(car)
-        return
+        return false
     end
     car:SetAttribute("LockQuality", quality)
     car:SetAttribute("HackStyle", mode)
     info.lockQuality = quality
     DeliveryService.track(car, player, info)
     player:SetAttribute("HeistCarrying", true)
-    Tutorial.event(player,"hack_success")
-    OwnerService.spawn(car, info.classId)
-    DriveService.seatPlayer(player,car)
+    pcall(Tutorial.event,player,"hack_success")
+    pcall(OwnerService.spawn,car,info.classId)
+    pcall(DriveService.seatPlayer,player,car)
     Net.notify(player,"Доставь авто в гараж.","hack_success")
+    return true
 end
 
 local function zoneFor(diff, mode)
@@ -13515,10 +13612,16 @@ local function zoneFor(diff, mode)
     return {c=rng:NextNumber(half+.08,1-half-.08),w=diff.width}
 end
 
+local function sendTerminal(player,session,payload)
+ payload.sessionId=session.id;payload.ack=session.lastRequest or 0
+ completed[player]={id=session.id,at=workspace:GetServerTimeNow(),payload=payload}
+ if player.Parent then Net.HackStep:FireClient(player,payload)end
+end
 local function sendStep(player, session, state, quality)
     if not player.Parent then return end
-    Net.HackStep:FireClient(player, {
+    local payload={
         state = state,sessionId=session.id,retryAt=math.max(session.roundStart,session.lastTap+.18),
+        ack=session.lastRequest or 0,
         round = session.round,
         rounds = session.diff.rounds,
         period = session.diff.period,
@@ -13529,7 +13632,8 @@ local function sendStep(player, session, state, quality)
         helpLevel = session.roundMisses,
         memoryIndex = session.memoryIndex or 1,
         quality = quality,
-    })
+    }
+    session.lastReply=payload;Net.HackStep:FireClient(player,payload)
 end
 
 local function finishSession(player,session)
@@ -13542,13 +13646,20 @@ end
 local function cancelSession(player,token)
  local session=sessions[player]
  if session and token and session.id~=token then return end
+ if not session and token then
+  local last=completed[player]
+  if last and last.id==token and workspace:GetServerTimeNow()-last.at<30 then
+   if player.Parent then Net.HackStep:FireClient(player,last.payload)end;return
+  end
+ end
  if session then
   finishSession(player,session)
   local car=session.car
   if car and car.Parent and car:GetAttribute('LockedBy')==player.UserId then ParkingService.unlock(car)end
   Tutorial.event(player,'heist_failed')
  else player:SetAttribute('HackActive',false)end
- if player.Parent then Net.HackStep:FireClient(player,{state='cancelled',sessionId=session and session.id or token})end
+ if session then sendTerminal(player,session,{state='cancelled'})
+ elseif player.Parent then Net.HackStep:FireClient(player,{state='cancelled',sessionId=token})end
 end
 
 local function failSession(player, session, why)
@@ -13557,7 +13668,7 @@ local function failSession(player, session, why)
     HeistService.onFailed(player)
     local data = DataService.get(player)
     Tutorial.event(player,"heist_failed")
-    Net.HackStep:FireClient(player, {state="alarm",sessionId=session.id,reason=why or"Сигнализация!"})
+    sendTerminal(player,session,{state="alarm",reason=why or"Сигнализация!"})
     Net.notify(player, why or "Сигнализация! Повтори попытку позже.", "bad")
     flashAlarm(car, 3.5)
     task.delay(2.5, function()
@@ -13584,7 +13695,7 @@ local function startMinigame(player, car)
     local session = {id=nextSessionId,
         car = car, zones = zones, modes=modes, diff = diff, startedAt = os.clock(),
         round = 1, roundStart = workspace:GetServerTimeNow() + .85,
-        strikes = 0, roundMisses = 0, sumQuality = 0, lastTap = 0,
+        strikes = 0, roundMisses = 0, sumQuality = 0, lastTap = 0,lastRequest=0,lastSeen=workspace:GetServerTimeNow(),
     }
     sessions[player] = session
     session.destroyConnection=car.Destroying:Connect(function()cancelSession(player,session.id)end)
@@ -13593,7 +13704,6 @@ local function startMinigame(player, car)
     Tutorial.event(player,"hack_started")
 
     -- Starts helper return only once, at beginning of new target's hacking.
-    SalonService.onHackStarted(player)
     Net.HackStart:FireClient(player, {
         carName = car.Name,sessionId=session.id,
         mode = modes[1],
@@ -13605,6 +13715,8 @@ local function startMinigame(player, car)
         strikes = 0,
         helpLevel = 0,
     })
+    local helperOK=pcall(SalonService.onHackStarted,player)
+    if not helperOK then warn('[Steal60 hack] Helper return failed; active puzzle remains available')end
 
     -- Safety cleanup only. Ordinary mistimed taps NEVER fail the session.
     task.delay(math.max(120, Settings.Steal.SessionTimeout), function()
@@ -13641,16 +13753,24 @@ local function onPrompt(player, car)
     else startMinigame(player,car)end
 end
 
-local function onTap(player, action, token)
+local function onTap(player, action, token, request, expectedRound)
     local memoryChoice=tonumber(type(action)=="string"and action:match("^memory_([1234])$")or nil)
     local wireChoice=tonumber(type(action)=="string" and action:match("^wire_([123])$") or nil)
     if action ~= "tap" and action ~= "cancel" and action~="sync"and not wireChoice and not memoryChoice then return end
     local s = sessions[player]
     if not s then cancelSession(player,token);return end
     if token and token~=s.id then return end
+    s.lastSeen=workspace:GetServerTimeNow()
     local car=s.car
     if action=='cancel'then cancelSession(player,token);return end
     if action=='sync'then sendStep(player,s,'sync');return end
+    if request then
+        if request<=(s.lastRequest or 0)then
+            if s.lastReply then Net.HackStep:FireClient(player,s.lastReply)else sendStep(player,s,'sync')end;return
+        end
+        s.lastRequest=request
+    end
+    if expectedRound and expectedRound~=s.round then sendStep(player,s,'sync');return end
     if not car or not car.Parent or car:GetAttribute("LockedBy") ~= player.UserId then
         failSession(player, s, "Машина недоступна.")
         return
@@ -13674,10 +13794,7 @@ local function onTap(player, action, token)
     -- On the fourth tap of a difficult round, built-in assistance guarantees
     -- progress (low precision score), so newcomers are never stuck indefinitely.
     local currentMode=s.modes[s.round]
-    if currentMode=="wires" and not wireChoice then return end
-    if currentMode~="wires" and wireChoice then return end
-    if currentMode=="memory"and not memoryChoice then return end
-    if currentMode~="memory"and memoryChoice then return end
+    if(currentMode=="wires"and not wireChoice)or(currentMode~="wires"and wireChoice)or(currentMode=="memory"and not memoryChoice)or(currentMode~="memory"and memoryChoice)then sendStep(player,s,'sync');return end
     local ok,accuracy
     if currentMode=="memory"then
         local complete
@@ -13696,10 +13813,20 @@ local function onTap(player, action, token)
         s.sumQuality += earnedQuality
         s.roundMisses = 0
         if s.round >= s.diff.rounds then
-            finishSession(player,s)
             local quality = math.clamp(s.sumQuality / s.diff.rounds * (1 - .025 * math.min(s.strikes, 5)), 0, 1)
-            Net.HackStep:FireClient(player, {state="success",sessionId=s.id,quality=quality})
-            successFlow(player, car, quality, currentMode)
+            local ok,accepted=pcall(successFlow,player,car,quality,currentMode)
+            finishSession(player,s)
+            if ok and accepted then sendTerminal(player,s,{state='success',quality=quality})
+            else
+                pcall(DriveService.disable,car);pcall(DeliveryService.abort,car,player)
+                if car and car.Parent then
+                    if car:GetAttribute('State')=='stolen'then ParkingService.recycle(car)
+                    else ParkingService.unlock(car);car:SetAttribute('DriverId',nil)end
+                end
+                sendTerminal(player,s,{state='cancelled',reason='Не удалось подготовить машину. Попробуй снова.'})
+                Net.notify(player,'Не удалось подготовить машину. Попробуй снова.','bad')
+                if not ok then warn('[Steal60 hack] Vehicle handoff failed: '..tostring(accepted))end
+            end
         else
             s.round += 1
             s.memoryIndex=1
@@ -13729,12 +13856,20 @@ function HackService.init()
     Net.HackCancel.OnServerEvent:Connect(cancelSession)
     local function bind(player)player.CharacterRemoving:Connect(function()cancelSession(player)end)end
     Players.PlayerAdded:Connect(bind);for _,player in ipairs(Players:GetPlayers())do bind(player)end
+    local elapsed=0
+    game:GetService('RunService').Heartbeat:Connect(function(dt)
+        elapsed+=dt;if elapsed<1 then return end;elapsed=0
+        local now=workspace:GetServerTimeNow()
+        for player,session in pairs(sessions)do if now-(session.lastSeen or now)>12 then cancelSession(player,session.id)end end
+        for player,last in pairs(completed)do if now-last.at>30 then completed[player]=nil end end
+    end)
     -- Only bounded HackTap commands are accepted; rewards remain server-authoritative.
     Players.PlayerRemoving:Connect(function(player)
         policePending[player] = nil
         lastMode[player] = nil
         modeCursor[player] = nil
         cancelSession(player)
+        completed[player]=nil
 
     end)
 end
@@ -13970,6 +14105,7 @@ local Services = script.Parent
 local Net = require(Services.Net)
 local DataService = require(Services.DataService)
 local CarFactory = require(Services.CarFactory)
+local Grounding=require(Shared.CarGrounding)
 local DriveService = require(Services.DriveService)
 local DeliveryService = require(Services.DeliveryService)
 local Monetization = require(Services.MonetizationService)
@@ -14262,6 +14398,7 @@ local function buildSalon(rec)
         local pad=P.part(model,"ExhibitionSpot_"..i,Vector3.new(9.6,.15,18.6),
             W(uv[1],uv[2],.47),Color3.fromRGB(60,72,87),Enum.Material.Metal,false)
         pad:SetAttribute("ExhibitSlot",i)
+        rec.slotSurfaceY[i]=pad.Position.Y+pad.Size.Y*.5
         for _,dx in ipairs({-4.66,4.66}) do
             P.part(model,"SlotEdge",Vector3.new(.12,.16,18.3),W(uv[1]+dx,uv[2],.56),
                 Color3.fromRGB(73,128,146),Enum.Material.SmoothPlastic,false)
@@ -14614,6 +14751,7 @@ local function refreshShowcase(rec)
         if car then
             -- Refresh only the robbery hold time; do not respawn/dress the vehicle.
             CarFactory.updateSalonSecurity(car,math.min(5,(data.upgrades.security or 0)+((data.coinUpgrades or {}).security or 0)))
+            Grounding.place(car,rec.slotSurfaceY[slot],.012)
         else
             local def=Cars.ById[carId]
             local entry=data.catalog[carId]
@@ -14625,6 +14763,7 @@ local function refreshShowcase(rec)
                 car:SetAttribute("SlotIndex",slot)
                 CarFactory.setDisplay(car,math.min(5,(data.upgrades.security or 0)+((data.coinUpgrades or {}).security or 0)))
                 car:PivotTo(rec.slotCFrames[slot])
+                Grounding.place(car,rec.slotSurfaceY[slot],.012)
                 car.Parent=rec.model
                 rec.displays[slot]=car
             end
@@ -15202,6 +15341,7 @@ local function assign(player, data)
 		side = pad.Position.Z >= 0 and 1 or -1,
 		displays = {},
 		slotCFrames = {},
+        slotSurfaceY = {},
 		nextRaid = os.clock() + rng:NextNumber(180, 300),
 		raidActive = false,
 		botBusy = false,
@@ -18396,7 +18536,7 @@ local function finite(n)return type(n)=='number'and n==n and n~=math.huge and n~
 local function stringId(v,maximum)return type(v)=='string'and #v>0 and #v<=(maximum or 80)end
 local function model(v)return typeof(v)=='Instance'and v:IsA('Model')end
 local rules={
- HackTap={12,12,2,function(a,token)return(token==nil or(finite(token)and token>0 and token%1==0))and stringId(a,16)and(a=='tap'or a=='cancel'or a=='sync'or a:match('^wire_[123]$')or a:match('^memory_[1234]$'))end},
+ HackTap={12,12,4,function(a,token,request,round)return(token==nil or(finite(token)and token>0 and token%1==0))and(request==nil or(finite(request)and request>0 and request<=10000000 and request%1==0))and(round==nil or(finite(round)and round>=1 and round<=3 and round%1==0))and stringId(a,16)and(a=='tap'or a=='cancel'or a=='sync'or a:match('^wire_[123]$')or a:match('^memory_[1234]$'))end},
  DriveInput={35,60,5,function(car,t,s,protocol,epoch)return model(car)and finite(t)and finite(s)and math.abs(t)<=1 and math.abs(s)<=1 and(protocol==0 or protocol==60)and finite(epoch)and epoch%1==0 end},
  HackCancel={2,3,1,function(token)return finite(token)and token>0 and token%1==0 end},
  RecoverCar={1,2,1,model},PinCar={2,3,2,function(id,out)return stringId(id)and(out==nil or stringId(out))end},

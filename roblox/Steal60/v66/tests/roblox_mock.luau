@@ -1,4 +1,5 @@
 -- Deliberately small test double, NOT Roblox Engine. No rendering/physics/network emulation.
+function warn(...)print('[mock warn]',...)end
 local nativeOS=os;local testClock
 local os=setmetatable({clock=function()return testClock or nativeOS.clock()end},{__index=nativeOS})
 local queue={};local deferSignals=false
@@ -52,6 +53,7 @@ function CF.lookAt(p,target,up)local z=(p-target).Unit;local x=(up or V.yAxis):C
 cm.__index=function(c,key)if key=='RightVector'then return c:VectorToWorldSpace(V.xAxis)elseif key=='UpVector'then return c:VectorToWorldSpace(V.yAxis)elseif key=='LookVector'then return c:VectorToWorldSpace(-V.zAxis)end;return CF[key]end
 cm.__mul=function(a,b)if b._kind=='Vector3' then return a:PointToWorldSpace(b)end;local r={};for i=0,2 do for j=0,2 do local n=0;for k=0,2 do n+=a.r[i*3+k+1]*b.r[k*3+j+1]end;r[i*3+j+1]=n end end;return matrix(a:PointToWorldSpace(b.Position),r)end
 cm.__add=function(a,b)return matrix(a.Position+b,table.clone(a.r))end
+CF.identity=CF.new()
 local CFrame=CF
 local Color3={}
 function Color3.new(r,g,b)return setmetatable({R=r,G=g,B=b,_kind='Color3'},{__index=Color3})end
@@ -67,7 +69,7 @@ local Enum=setmetatable({},{__index=function(t,k)local e=setmetatable({},{__inde
 local task={spawn=function(fn,...)fn(...)end,wait=function()return .01 end,defer=function(fn)queue[#queue+1]=fn end,delay=function()end}
 local methods={};local instmt={};local Instance={}
 function Instance.new(class)
- return setmetatable({_kind='Instance',props={ClassName=class,Name=class,Size=V.new(1,1,1),AbsoluteSize=Vector2.new(0,0),CFrame=CF.new(),Text='',ActionText='',ObjectText='',Anchored=true,Transparency=0},children={},attrs={},changed={},attrSignals={},events={CharacterRemoving=signal(),CharacterAdded=signal(),RenderStepped=signal(),AncestryChanged=signal(),PromptButtonHoldBegan=signal(),PromptButtonHoldEnded=signal(),Triggered=signal(),Loaded=signal(),Ended=signal(),InputBegan=signal(),DescendantAdded=signal(),Destroying=signal(),Activated=signal(),PlayerAdded=signal(),PlayerRemoving=signal(),Heartbeat=signal()}},instmt)
+ return setmetatable({_kind='Instance',props={ClassName=class,Name=class,Size=V.new(1,1,1),AbsoluteSize=Vector2.new(0,0),CFrame=CF.new(),Text='',ActionText='',ObjectText='',Anchored=true,Transparency=0},children={},attrs={},changed={},attrSignals={},events={PreSimulation=signal(),InputChanged=signal(),InputEnded=signal(),WindowFocusReleased=signal(),GamepadDisconnected=signal(),CharacterRemoving=signal(),CharacterAdded=signal(),RenderStepped=signal(),AncestryChanged=signal(),PromptButtonHoldBegan=signal(),PromptButtonHoldEnded=signal(),Triggered=signal(),Loaded=signal(),Ended=signal(),InputBegan=signal(),DescendantAdded=signal(),Destroying=signal(),Activated=signal(),PlayerAdded=signal(),PlayerRemoving=signal(),Heartbeat=signal()}},instmt)
 end
 instmt.__index=function(o,k)
  if methods[k]then return methods[k]end
@@ -163,3 +165,12 @@ function services.UserInputService:GetLastInputType()return Enum.UserInputType.K
 function services.RunService:IsStudio()return true end
 
 function methods:Clear()self.ClearCount=(self.ClearCount or 0)+1 end
+
+local RaycastParams={new=function()return {}end}
+function workspace:Raycast()return nil end
+function Players:GetPlayerByUserId(id)for _,p in ipairs(self:GetPlayers())do if p.UserId==id then return p end end end
+function services.CollectionService:HasTag(object,tag)return table.find(tags[tag]or{},object)~=nil end
+function services.CollectionService:RemoveTag(object,tag)local list=tags[tag]or{};local i=table.find(list,object);if i then table.remove(list,i);if tagRemoved[tag]then tagRemoved[tag]:Fire(object)end end end
+function methods:SetNetworkOwner(owner)assert(not self.Anchored,'cannot assign ownership to an anchored assembly');self.NetworkOwner=owner end
+function services.UserInputService:IsKeyDown()return false end
+function workspace:GetServerTimeNow()return os.clock()end

@@ -1,6 +1,6 @@
 # Steal60 v66 · RU / EN
 
-Последнее обновление: ателье, главное меню и магазин расширены почти на весь рабочий экран. В ателье — 1–4 колонки карточек, рабочий остаётся первым, мастерство открывается кнопкой сверху. Ветер получил широкий полупрозрачный шлейф как у остальных аур и более заметные завихрения. [Подробности](LARGE-MENU.md).
+Последнее обновление: управление телефоном/планшетом через штатный левый джойстик, без дополнительных стрелок. Усилены подтверждение первой посадки и восстановление взлома; машины опираются колёсами на выставочные площадки. В предпросмотре героя исправлены современные суставы R15, положение головы и высота портрета. [Подробности](MOBILE-FIX.md).
 
 Предыдущие исправления памяти, ошибок Output и двухвалютного магазина сохранены. [Подробности](UPDATE.md).
 
@@ -22,6 +22,8 @@
 4. Нажмите Play. В Output должна появиться строка `[Steal60 v66] Установлено…`. В рантайме контейнер распределяет модули по сервисам и удаляет себя; Main запускается последним.
 5. После Stop изменения рантайма откатываются Studio. Сохраните/публикуйте Place с контейнером установщика в режиме редактирования: он нужен для установки при следующих запусках. Не импортируйте второй контейнер поверх первого.
 6. В игре кнопка RU/EN переключает язык, кнопка с нотой открывает отдельную громкость музыки и выключатель. Полиция использует одну умеренную сирену без дополнительных пугающих звуков; тихий двигатель работает отдельно только за рулём. У двигателя оставлен прежний клип, добавлены подавление металлических щелчков, плавное изменение тона и внутренний участок повтора; реальное звучание требует прослушивания в Studio. Настройки сохраняются вместе с профилем.
+
+После замены установщика опубликуйте Place и проверяйте в **новом сервере**: уже запущенные серверы Roblox продолжают исполнять прежний код.
 
 Для настоящих сохранений в Studio нужны опубликованный Experience и включённый **Enable Studio Access to API Services**. При недоступном DataStore сохраняется поведение v65: временный профиль только в Studio, с соответствующим сообщением в Output; это не проверка сохранения между сеансами.
 
@@ -51,7 +53,7 @@
 
 ## English
 
-Latest update: selection windows fill almost the entire usable canvas; the atelier uses a responsive one-to-four-column grid with a mastery shortcut. Wind has a broad half-transparent shoulder wake and more visible curls. [Details](LARGE-MENU.md). Empty Upgrade/Shop tabs and scaled modal positioning remain fixed. Wind now uses translucent ribbon wakes and rising shoulder swirls. [Evidence](MENU-FIX.md). Memory-puzzle deadlocks, cancellation, NPC cleanup errors and three invalid music IDs remain fixed. Each ordinary upgrade benefit now has coin and diamond buttons on one card. Speed adds +1 for a fixed 20 diamonds per level; Auto Collect costs 300 diamonds. Unlocked hero mastery also works with the player’s own avatar. The basic aura uses translucent wind ribbons and curls, and district junctions have themed corner plazas. See [UPDATE.md](UPDATE.md).
+Latest update: native left-thumbstick touch driving, verified first seating, firmer heading/shorter coast, wheel-based showroom placement, replay-safe hack resync and complete R15 portrait heads. [Details](MOBILE-FIX.md). Selection windows fill almost the entire usable canvas; the atelier uses a responsive one-to-four-column grid with a mastery shortcut. Wind has a broad half-transparent shoulder wake and more visible curls. [Details](LARGE-MENU.md). Empty Upgrade/Shop tabs and scaled modal positioning remain fixed. Wind now uses translucent ribbon wakes and rising shoulder swirls. [Evidence](MENU-FIX.md). Memory-puzzle deadlocks, cancellation, NPC cleanup errors and three invalid music IDs remain fixed. Each ordinary upgrade benefit now has coin and diamond buttons on one card. Speed adds +1 for a fixed 20 diamonds per level; Auto Collect costs 300 diamonds. Unlocked hero mastery also works with the player’s own avatar. The basic aura uses translucent wind ribbons and curls, and district junctions have themed corner plazas. See [UPDATE.md](UPDATE.md).
 
 Delivery hotfix: the Main delivery-reward callback was accidentally removed during debug cleanup and has now been restored. Replace the old installer while Studio is stopped; do not reset your profile. A new integration test runs actual Main startup and the delivery/reward/tutorial chain.
 

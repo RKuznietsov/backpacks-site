@@ -1,0 +1,55 @@
+CONTROLLED REGRESSION: final XML with ONLY AvatarPreview restored from published 5fcbc80ae5082d53a29c8328cd5cd71f4b7af3d9.
+Expected failure: head rests above shoulders instead of inside the neck.
+Current tests and explicit API doubles; not an Engine test or the complete previous build.
+
+Final XML SHA-256: 49eaf39eaff3547bdaa24e5963e4fd517bbbd61b47782d03e4ebbc7a98ec9081
+XML instances: 130 script sources: 119
+PASS: installer paths, infinite bounds, audio ingress and reset configuration
+PASS: 1331 unique translations, format tokens, American English and no numeric require/loadstring
+Compiled 19 KLOC into 1162 KB bytecode (read 0.00s, parse 0.02s, compile 0.03s)
+/tmp/steal60-v66-xamwh80f/run.luau:157: head rests above shoulders instead of inside the neck: animation
+stacktrace:
+[C] function assert
+/tmp/steal60-v66-xamwh80f/run.luau:157 function check
+/tmp/steal60-v66-xamwh80f/run.luau:23078
+/tmp/steal60-v66-xamwh80f/run.luau:23100
+PASS: purchase compatibility, delivery effects, skill policy, personal reset
+PASS: 10,000 district indices and five-theme selection
+PASS: RU/EN immediate + deferred events, dynamic text, streamed prompts/signs
+PASS: 150 catalog car models, tuning, roof pet mounting
+PASS: 14 constructed districts; reserved parcels + independent large-object AABBs
+PASS: separate police and roadworks native model constructors
+PASS: profile recovery, payment replay idempotency, outage and lease-loss rejection (mock store)
+PASS: actual server bumper sweep at four headings, both sides, stopped/out-of-range rejection
+PASS: real security wrapper accepts bounded audio and rejects malformed/flooded requests
+PASS: audio preference restore/change/reload through real language service + profile store (mocks)
+PASS: actual server upgrade preview functions, combined effects, nonlinear hourly income and x2
+PASS: actual district manager needed/load/unload lifecycle for 1,000 crossings (zero-delay test config)
+PASS: actual PinCar and GetMenuData rate limits
+PASS: late-income marginal value, exact new prices and early progression
+PASS: real upgrade handlers save immediately, separate cooldowns and paired failure behavior
+PASS: Russian inflection, English singulars, American English and unified glossary
+PASS: adaptive-scale geometry, analog control mapping and notification keys (no hardware rendering)
+PASS: actual pet-license sanitization; 10 pets, 61 hero entries, 5 auras; separate paid mastery
+AUDIT FINAL ASSERTIONS: 324544
+PASS: compact measured shelf labels, overlap rules, unobscured leaderboard geometry, columns and literal Unicode names
+PASS: balanced early police/repair scheduling, grounded district signs, per-viewer facing and dressed rounded/R15 actor paths
+PASS: quiet driver-only engine lifecycle, police/death sound suppression and actual handbook-header construction; rendering/assets still require Studio
+PASS: actual patrol/backhoe/NPC bounds on both road sides; actors separate from vehicles and opposite lane open
+PASS: actual ParkingService spawns 7 cars at 25..30 + one challenge, preserves normals across skill changes, enforces real skill predicate and unloads
+PASS: coin cosmetics, quadratic mastery pacing, modest aura and all walking pet bounds behind the driver on 150 cars with/without tuning
+PASS: real CosmeticService purchases/save snapshots, coin-only rejection, worker skill, paint/aura equip, license, mastery costs and duplicate/insufficient-funds guards
+PASS: +1 speed, five-diamond prices, own-avatar mastery, distinct benefits with both currencies, one-card UI and mixed/shared upgrade saves
+[mock warn]	[Steal60 hack] Helper return failed; active puzzle remains available
+[mock warn]	[Steal60 hack] Vehicle handoff failed: /tmp/steal60-v66-xamwh80f/run.luau:22754: injected rig construction failure
+PASS: real client/server pins, memory, wires and dial; lost commands and terminal outcomes, deduplication, rig/helper failures, timeout/lease/GUI cleanup; NPC cleanup contracts and bounded siren
+[Steal60/Drive v66] Native joystick, verified first seating and server validation
+PASS: 150-car exhibit grounding, actual showroom wiring, first-seat native joystick/server handoff, no duplicate direction UI, longitudinal drive commands, wheel rolling and server rollback (no native physics integration)
+PASS: full upgrade/shop and read-only tabs render under native color contracts; five modal types stay inside the actual GUI canvas under DPI/insets/resizing, without scale feedback
+PASS: actual atelier categories, first coin worker, responsive one-to-four-column grid, card/button bounds and mastery shortcut; 3D previews/async loops explicitly doubled
+Traceback (most recent call last):
+  File "/workspace/backpacks-site/roblox/Steal60/v66/tests/validate.py", line 165, in <module>
+    subprocess.run([str(a.luau),str(bundle)],check=True)
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['/tmp/steal60-luau/luau', '/tmp/steal60-v66-xamwh80f/run.luau']' returned non-zero exit status 1.
