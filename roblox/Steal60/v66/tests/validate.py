@@ -39,12 +39,13 @@ assert 'local TARGET_PROTECTION = 2 * 60' in sources['SalonService']
 assert 'local THEFT_COOLDOWN = 5 * 60' in sources['SalonService']
 assert 'Net.notifyKey(player' in sources['DriveService']
 # All new sources are installed at their expected paths.
-for name in ['DeliveryBonus','EndlessParking','PetMount','ShelfTypography','Grammar','Messages','ProgressionConfig','InterfaceAccess']+([]if a.integration_only else ['LeaderboardView','RoadEventSchedule','RoadsideFacing','EngineAudio','UpgradePolicy','BreezeAura','UpgradeView','PoliceAudio','VehicleLabels']):
+for name in ['DeliveryBonus','EndlessParking','PetMount','ShelfTypography','Grammar','Messages','ProgressionConfig','InterfaceAccess']+([]if a.integration_only else ['LeaderboardView','RoadEventSchedule','RoadsideFacing','EngineAudio','UpgradePolicy','BreezeAura','UpgradeView','PoliceAudio','VehicleLabels','ScrollKeeper','ConeFeedback']):
  assert parents[name]=='Shared'
 assert parents['RoadsideArt']=='Services'
 if not a.integration_only:
  assert parents['RoadsideCharacters']=='Services'
  assert parents['JunctionArt']=='Services'
+ assert parents['VendorCharacters']=='Services'
  assert 'createRoadEvent(s,Schedule.kind(index,cycle))' in sources['RoadChallengeService']
  assert 'Policy.normalRequirement(rng,' in sources['ParkingService']
  assert 'data.masteryEffects' in sources['CosmeticHUD']
@@ -96,6 +97,10 @@ with tempfile.TemporaryDirectory(prefix='steal60-v66-')as temp:
  parts.append("local function makeCosmeticUI(root)\nlocal script={Parent=root}\n"+prefix+"\nlocal function placeholder(parent)local f=Instance.new('Frame');f.Parent=parent;return f end\nadd3DPreview=placeholder;petPreview=placeholder;previewCar=placeholder\nreturn panel,scroller,function(category,width)panel.Visible=false;panel.AbsoluteSize=Vector2.new(width,650);scroller.AbsoluteSize=Vector2.new(width-32,500);state=category;panel.Visible=true;render()end\nend\n")
  driving=sources['ClientMain'];start=driving.index('local DriveInput = remotes:WaitForChild("DriveInput")');end=driving.index('local Rarity = require',start)
  parts.append("local function startDrivingUI(gui)\nlocal player=Players.LocalPlayer;local RunService=services.RunService;local UserInputService=services.UserInputService;local Shared=shared;local remotes=remotes;local DriveState=require('DriveState')\nlocal function corner(parent,r)local c=Instance.new('UICorner');c.Parent=parent end\nlocal function refreshToastLayout()end\n"+driving[start:end]+"\nreturn driveUI\nend\n")
+ main=sources['ClientMain'];start=main.index('local menuRefreshPending=');end=main.index('for tabIndex, t in ipairs',start)
+ main_currency=main[main.index('local currencyUpdate='):main.index('remotes:WaitForChild("ShowTop100")')]
+ parts.append("local function makeMainShop(content,panel)\nlocal Shared=shared;local player=Players.LocalPlayer;local MenuWidgets=require('MenuWidgets');local MenuViews=require('MenuViews');local remotes=remotes;local BuyUpgrade=remotes.BuyUpgrade;local GetMenuData=remotes.GetMenuData;local GetSeasonTop=remotes.GetSeasonTop;local Marketplace=services.MarketplaceService;local currentTab='upgrade';local renderTab;local tabButtons={}\nlocal function setMenuOpen(value)panel.Visible=value end\nlocal function clearContent()for _,c in ipairs(content:GetChildren())do if not c:IsA('UIListLayout')then c:Destroy()end end end\nlocal function addRow(value,color)local t=Instance.new('TextLabel');t.Text=value;t.Parent=content end\nlocal function renderCatalog()end\n"+main[start:end]+main_currency+"\nreturn renderTab,refreshMenu\nend\n")
+ parts.append("local function makeEconomyShop(root)\nlocal script={Parent=root}\n"+sources['EconomyHUD']+"\nreturn panel,scroll,draw,function(kind,category)vendor=kind;tab=category or 'coins';setOpen(true)end\nend\n")
  salon_source=sources['SalonService'];start=salon_source.index('local function refreshShowcase(');end=salon_source.index('local function returnRide(',start)
  parts.append("local function makeShowcaseRefresh(DataService,CarFactory,carIds)\nlocal Grounding=require('CarGrounding');local Cars=require('Cars');local rng=Random.new();local CarClasses=require('CarClasses');local function displayList()return carIds end;local function bestVariant()return 'default'end\n"+salon_source[start:end]+"\nreturn refreshShowcase\nend\n")
  portrait=sources['CosmeticHUD'];start=portrait.index('local function frameStaticModel(');end=portrait.index('-- Real 3D sculpted pet preview',start)
@@ -149,6 +154,8 @@ with tempfile.TemporaryDirectory(prefix='steal60-v66-')as temp:
  ''')
  data=sources['DataService'];start=data.index('function DataService.addToCatalog(');end=data.index('function DataService.saveNow(',start)
  parts.append('local function attachActualCatalog(DataService)\n'+data[start:end]+'\nend\n')
+ start=data.index('function DataService.addMoney(');end=data.index('-- Diamonds are NEVER',start)
+ parts.append('local function makeConeWallet(wallet)\nlocal Durable={MAX=1e15};local DataService={get=function()return wallet end,requestSave=function()wallet.saves=(wallet.saves or 0)+1 end,recordEarnings=function(_,amount)wallet.earned=(wallet.earned or 0)+amount end}\n'+data[start:end]+'\nreturn DataService end\n')
  if not a.integration_only:
   parts.append(';\n(function()\n'+(HERE/'scenarios.luau').read_text()+'\nend)()')
   parts.append(';\n(function()\n'+(HERE/'visual_regressions.luau').read_text()+'\nend)()')
@@ -157,6 +164,7 @@ with tempfile.TemporaryDirectory(prefix='steal60-v66-')as temp:
   parts.append(';\n(function()\n'+(HERE/'runtime_regressions.luau').read_text()+'\nend)()')
   parts.append(';\n(function()\n'+(HERE/'mobile_driving.luau').read_text()+'\nend)()')
   parts.append(';\n(function()\n'+(HERE/'vehicle_labels.luau').read_text()+'\nend)()')
+  parts.append(';\n(function()\n'+(HERE/'shop_cones.luau').read_text()+'\nend)()')
   parts.append(';\n(function()\n'+(HERE/'menu_regressions.luau').read_text()+'\nend)()')
   parts.append(';\n(function()\n'+(HERE/'atelier_regressions.luau').read_text()+'\nend)()')
   parts.append(';\n(function()\n'+(HERE/'avatar_preview.luau').read_text()+'\nend)()')

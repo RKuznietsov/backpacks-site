@@ -109,7 +109,7 @@
   },
   {
     "script": "ClientMain",
-    "sha256": "f007f369b0c3551bdcf4f23c44257c9e07c21268f863462032f82c62d4bf0d2a",
+    "sha256": "906ee92de1765317d915eea763c55641114f478e102e867898887f66b790e061",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -138,6 +138,12 @@
     "initial_v66_status": "unchanged"
   },
   {
+    "script": "ConeFeedback",
+    "sha256": "127ad7e5b53d91b767c9976c3ba69f3721a6ad68b905e2eeb1d4d8899070907a",
+    "v65_status": "added",
+    "initial_v66_status": "added"
+  },
+  {
     "script": "CosmeticConfig",
     "sha256": "bec698c36a607b354c41926a35de1492e1e8295d716bcc097159f46b388e58ed",
     "v65_status": "modified",
@@ -145,7 +151,7 @@
   },
   {
     "script": "CosmeticHUD",
-    "sha256": "3697c42f3c1f37b1e38f3b33cc2026b70ba4efd5da5c24d0b41a755baa338b19",
+    "sha256": "bb40dd485052ec4fd3dc30bfa3f25365bcda253645a6758ff0afc7e7a5587e15",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -211,7 +217,7 @@
   },
   {
     "script": "DriveService",
-    "sha256": "b4b24c59734f7539537c6893c0a978a6d5a6cfe5a61936e040ac7e339e56446e",
+    "sha256": "ba0961e6dba7fa215424b0c8b893ac5a1d3c9f4f1efaac702a8919bed09ed8a0",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -235,7 +241,7 @@
   },
   {
     "script": "EconomyHUD",
-    "sha256": "8755ffd98c7bab4a7c82876af311d9a031d84f4babbad9907b755e34c753bbd8",
+    "sha256": "b4e369ad852cc56fb327dfbf6fa22a53191413780e9f1ab3a7ec9ac0aa7e6dfd",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -265,7 +271,7 @@
   },
   {
     "script": "HUDLayout",
-    "sha256": "71ba1e76bf0941f568ce2375c018834249ee351f9c9c3366ddee2c5278ca5002",
+    "sha256": "28f97e10a31488e25b37fa08928c3aaa6b907908087568fca93c662d0dc357bb",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -421,7 +427,7 @@
   },
   {
     "script": "Net",
-    "sha256": "5c69baccd481614836e514ea8a3d058ab328ec4a83caf067063f8734e2ee0416",
+    "sha256": "9d7ff5c6ecfba8e0a92d8cea3bf2ea1fc2736a71a79167d701950d243c4d50df",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -553,9 +559,15 @@
   },
   {
     "script": "SalonService",
-    "sha256": "63248f05791d6e40a8bd9fccf6d7685e7510859f914afcd664c2de479e62fd68",
+    "sha256": "ad3b3949d2e3909e7a7b61c4795dfc041888a8800269c5684486748634782950",
     "v65_status": "modified",
     "initial_v66_status": "modified"
+  },
+  {
+    "script": "ScrollKeeper",
+    "sha256": "efed91a8cce5daac1721601794c78fef1156eee5f72854c830bd5563bf8f0640",
+    "v65_status": "added",
+    "initial_v66_status": "added"
   },
   {
     "script": "SeasonLeaderboardService",
@@ -704,6 +716,12 @@
   {
     "script": "VehicleLabels",
     "sha256": "548ddc2517d5126953277bf298706b64c4b82ad3c92f62352d9d25008e024f8b",
+    "v65_status": "added",
+    "initial_v66_status": "added"
+  },
+  {
+    "script": "VendorCharacters",
+    "sha256": "09d12cdddd5f44924f4de0478d318160ed5a805b59634200e5a2ee44f521e51f",
     "v65_status": "added",
     "initial_v66_status": "added"
   },

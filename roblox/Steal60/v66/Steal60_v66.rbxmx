@@ -4908,13 +4908,22 @@ function M.start(gui)
   end
  end
  gui.DescendantAdded:Connect(watch);for _,frame in ipairs(gui:GetDescendants())do watch(frame)end
- local banner=Instance.new('TextLabel');banner.Name='DevelopmentBanner';banner.AnchorPoint=Vector2.new(.5,0);banner.Position=UDim2.new(.5,0,0,72);banner.Size=UDim2.new(.76,0,0,30);local bannerLimit=Instance.new('UISizeConstraint');bannerLimit.MaxSize=Vector2.new(300,30);bannerLimit.Parent=banner;banner.Text='В разработке';banner.Font=Enum.Font.GothamBlack;banner.TextSize=23;banner.TextColor3=Color3.fromRGB(255,214,72);banner.TextStrokeColor3=Color3.fromRGB(44,31,7);banner.TextStrokeTransparency=.15;banner.BackgroundTransparency=1;banner.Active=false;banner.Visible=false;banner.Parent=gui
+ local banner=Instance.new('TextLabel');banner.Name='DevelopmentBanner';banner.AnchorPoint=Vector2.new(.5,.5)
+ banner.Position=UDim2.fromScale(.5,.43);banner.Size=UDim2.new(.92,0,0,150)
+ local bannerLimit=Instance.new('UISizeConstraint');bannerLimit.MaxSize=Vector2.new(1100,180);bannerLimit.Parent=banner
+ local bannerText=Instance.new('UITextSizeConstraint');bannerText.MinTextSize=24;bannerText.MaxTextSize=84;bannerText.Parent=banner
+ banner.Text='В разработке';banner.Font=Enum.Font.GothamBlack;banner.TextScaled=true;banner.TextWrapped=true
+ banner.TextColor3=Color3.fromRGB(255,214,72);banner.TextStrokeColor3=Color3.fromRGB(44,31,7);banner.TextStrokeTransparency=.12
+ banner.BackgroundColor3=Color3.fromRGB(20,27,40);banner.BackgroundTransparency=.18;banner.BorderSizePixel=0;banner.ZIndex=110
+ local bannerCorner=Instance.new('UICorner');bannerCorner.CornerRadius=UDim.new(0,18);bannerCorner.Parent=banner
+ banner.Active=false;banner.Visible=false;banner.Parent=gui
  local Layout=require(script.Parent.TrackLayout);local previousDistrict;local nextNotice=0;local noticeUntil=0
  local elapsed=0
  Run.Heartbeat:Connect(function(dt)
   elapsed+=dt;if elapsed<.1 then return end;elapsed=0
   local camera=workspace.CurrentCamera;local width=camera and camera.ViewportSize.X or 1024;local height=camera and camera.ViewportSize.Y or 768
-  banner.Position=UDim2.new(.5,0,0,width<980 and 96 or 72)
+  local canvas=gui.AbsoluteSize;local canvasHeight=canvas.Y>0 and canvas.Y or height
+  banner.Size=UDim2.new(.92,0,0,math.clamp(canvasHeight*.22,80,180))
   local top=196
   dock.Position=UDim2.new(1,-12,0,top);dock.Size=UDim2.fromOffset(math.min(300,width-24),math.max(45,math.min(380,height-top-180)))
   local any=false
@@ -4924,12 +4933,12 @@ function M.start(gui)
   local trial=gui:FindFirstChild('CosmeticTryOnCountdown');if trial then trial.Position=UDim2.new(.5,0,0,104);trial.Visible=player:GetAttribute('CosmeticPreviewToken')~=nil and not player:GetAttribute('Steal60MenuOpen')end
   local root=player.Character and player.Character:FindFirstChild('HumanoidRootPart')
   local district=root and Layout.indexAt(root.Position.X)or 0;local now=os.clock()
-  if district~=previousDistrict then nextNotice=0 end
-  if district>5 and now>=nextNotice and not M.suppressHud(player)then noticeUntil=now+1;nextNotice=now+25 end
+  if district>5 and(not previousDistrict or previousDistrict<=5)then nextNotice=0 end
+  if district>5 and now>=nextNotice and not M.suppressHud(player)then noticeUntil=now+1.5;nextNotice=now+10 end
   previousDistrict=district
   banner.Visible=district>5 and now<noticeUntil and not M.suppressHud(player)
   player:SetAttribute('Steal60DevelopmentNotice',banner.Visible)
-  local route=gui:FindFirstChild('RoutePanel');if route then route.Size=UDim2.fromOffset(math.min(300,width-24),88);route.Position=UDim2.new(1,-18,0,banner.Visible and width<980 and 140 or 100)end
+  local route=gui:FindFirstChild('RoutePanel');if route then route.Size=UDim2.fromOffset(math.min(300,width-24),88);route.Position=UDim2.new(1,-18,0,100)end
   sync()
  end)
 end
@@ -7443,6 +7452,90 @@ function M.start(gui)
  refresh()
 end
 return M
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_v66_ScrollKeeper"><Properties><string name="Name">ScrollKeeper</string><ProtectedString name="Source"><![CDATA[-- Freeze the canvas while cards are rebuilt; native AutomaticCanvasSize would
+-- otherwise clamp CanvasPosition to zero when the last old card is removed.
+local M={};local states=setmetatable({},{__mode='k'})
+function M.begin(scroll,key)
+ local state=states[scroll]
+ if not state then
+  state={key=key,automatic=scroll.AutomaticCanvasSize};states[scroll]=state
+  scroll.Destroying:Connect(function()if state.link then state.link:Disconnect()end;states[scroll]=nil end)
+ end
+ if state.link then state.link:Disconnect();state.link=nil end
+ local target=scroll.CanvasPosition or Vector2.new(0,0)
+ if state.key~=key then target=Vector2.new(0,0)end;state.key=key
+ if not state.pending then state.automatic=scroll.AutomaticCanvasSize end
+ state.pending=true;state.generation=(state.generation or 0)+1;local generation=state.generation
+ local extent=scroll.AbsoluteCanvasSize or Vector2.new(0,0)
+ local window=scroll.AbsoluteWindowSize or scroll.AbsoluteSize
+ local size=scroll.CanvasSize
+ local height=math.max(extent.Y,window.Y,size.Y.Offset+size.Y.Scale*window.Y,target.Y+window.Y)
+ scroll.AutomaticCanvasSize=Enum.AutomaticSize.None;scroll.CanvasSize=UDim2.fromOffset(0,height)
+ scroll.CanvasPosition=target
+ return function()
+  if not scroll.Parent or state.generation~=generation then return end
+  local frames=0
+  state.link=game:GetService('RunService').RenderStepped:Connect(function()
+   if not scroll.Parent or state.generation~=generation then if state.link then state.link:Disconnect();state.link=nil end;return end
+   frames+=1
+   local layout=scroll:FindFirstChildOfClass('UIListLayout')or scroll:FindFirstChildOfClass('UIGridLayout')
+   local content=layout and layout.AbsoluteContentSize
+   local viewport=scroll.AbsoluteWindowSize or scroll.AbsoluteSize
+   -- First frame allows the rebuilt native layout to settle. Keep the old extent.
+   if frames>=2 then
+    if content then scroll.CanvasSize=UDim2.fromOffset(0,content.Y)end
+    local canvas=scroll.AbsoluteCanvasSize or Vector2.new(0,content and content.Y or height)
+    local maximum=math.max(0,(content and content.Y or canvas.Y)-viewport.Y)
+    scroll.CanvasPosition=Vector2.new(0,math.clamp(target.Y,0,maximum))
+   end
+   if frames>=3 then
+    scroll.AutomaticCanvasSize=state.automatic;state.pending=false
+    state.link:Disconnect();state.link=nil
+   end
+  end)
+ end
+end
+return M
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_v66_ConeFeedback"><Properties><string name="Name">ConeFeedback</string><ProtectedString name="Source"><![CDATA[-- Only server-confirmed cone hits reach this visual/audio controller.
+local M={ASSET='rbxassetid://138097048',VOLUME=.10,LIFETIME=1.05}
+function M.start(gui,remote)
+ local Sound=game:GetService('SoundService');local Tween=game:GetService('TweenService')
+ local player=game:GetService('Players').LocalPlayer;local popups={};local links={};local live=true;local ready=false;local denied=false;local lastSound=-math.huge
+ local sound=Instance.new('Sound');sound.Name='Steal60ConeCoin';sound.SoundId=M.ASSET;sound.Volume=M.VOLUME;sound.Looped=false;sound.Parent=Sound
+ links[#links+1]=sound.Loaded:Connect(function()if live and not denied then ready=true end end)
+ task.spawn(function()
+  local ok=pcall(function()game:GetService('ContentProvider'):PreloadAsync({sound},function(_,status)
+   if status==Enum.AssetFetchStatus.Failure or status==Enum.AssetFetchStatus.TimedOut then denied=true;ready=false end
+  end)end)
+  if live then ready=ok and not denied and sound.IsLoaded end
+ end)
+ local function remove(entry)
+  if entry.billboard then entry.billboard:Destroy();entry.billboard=nil end
+  if entry.anchor then entry.anchor:Destroy();entry.anchor=nil end
+  local i=table.find(popups,entry);if i then table.remove(popups,i)end
+ end
+ links[#links+1]=remote.OnClientEvent:Connect(function(position)
+  if not live or typeof(position)~='Vector3'or position.X~=position.X or position.Y~=position.Y or position.Z~=position.Z or position.Magnitude>10000000 then return end
+  if #popups>=16 then remove(popups[1])end
+  local anchor=Instance.new('Part');anchor.Name='Steal60ConeRewardAnchor';anchor.Size=Vector3.new(.1,.1,.1)
+  anchor.Anchored=true;anchor.Transparency=1;anchor.CanCollide=false;anchor.CanTouch=false;anchor.CanQuery=false;anchor.CFrame=CFrame.new(position);anchor.Parent=workspace
+  local bb=Instance.new('BillboardGui');bb.Name='Steal60ConeReward';bb.Adornee=anchor;bb.AlwaysOnTop=true
+  bb.Size=UDim2.fromOffset(96,44);bb.StudsOffsetWorldSpace=Vector3.new(0,2,0);bb.MaxDistance=160;bb.Parent=player:WaitForChild('PlayerGui')
+  local text=Instance.new('TextLabel');text.Name='RewardAmount';text.Size=UDim2.fromScale(1,1);text.BackgroundTransparency=1
+  text.Text='+1 $';text.Font=Enum.Font.GothamBlack;text.TextSize=30;text.TextColor3=Color3.fromRGB(253,224,116)
+  text.TextStrokeColor3=Color3.fromRGB(32,52,36);text.TextStrokeTransparency=.15;text.Parent=bb
+  local entry={anchor=anchor,billboard=bb};popups[#popups+1]=entry
+  Tween:Create(bb,TweenInfo.new(M.LIFETIME,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{StudsOffsetWorldSpace=Vector3.new(0,6,0)}):Play()
+  Tween:Create(text,TweenInfo.new(.55,Enum.EasingStyle.Quad,Enum.EasingDirection.In,0,false,.5),{TextTransparency=1,TextStrokeTransparency=1}):Play()
+  if ready and os.clock()-lastSound>=.08 then lastSound=os.clock();sound.TimePosition=0;sound:Play()end
+  task.delay(M.LIFETIME,function()remove(entry)end)
+ end)
+ gui.Destroying:Connect(function()
+  live=false;for _,link in ipairs(links)do link:Disconnect()end
+  while #popups>0 do remove(popups[1])end;sound:Stop();sound:Destroy()
+ end)
+end
+return M
 ]]></ProtectedString></Properties></Item></Item>
     </Item>
     <Item class="Folder" referent="RBX33">
@@ -7489,6 +7582,7 @@ startOptional('LeaderboardView',gui)
 startOptional('MusicDirector',gui)
 startOptional('LanguageController',gui)
 startOptional('VehicleLabels',gui)
+startOptional('ConeFeedback',gui,ReplicatedStorage:WaitForChild('Remotes'):WaitForChild('ConeReward'))
 startOptional('ClientPerformance')
 startOptional('MarqueeController')
 local DriveState=require(Shared:WaitForChild('DriveState'))
@@ -8604,13 +8698,32 @@ task.delay(2, function()
 end)
 
 local tabButtons = {}
+local menuRefreshPending=false;local menuRenderGeneration=0
+local function refreshMenu()
+ if menuRefreshPending then return end;menuRefreshPending=true
+ task.delay(.5,function()menuRefreshPending=false;if panel.Visible then renderTab(currentTab)end end)
+end
 function renderTab(tab)
-	currentTab = tab
+ menuRenderGeneration+=1;local generation=menuRenderGeneration
+ local sameTab=currentTab==tab
+ currentTab = tab
 	for name, btn in pairs(tabButtons) do
 		btn.BackgroundColor3 = name == tab and MenuWidgets.accent or Color3.fromRGB(41,65,81)
         btn.TextColor3 = name == tab and Color3.fromRGB(16,34,39) or Color3.fromRGB(224,239,244)
 	end
-	clearContent()
+ local data
+ if tab~='top'and tab~='odds'then
+  local ok,result=pcall(function()return GetMenuData:InvokeServer()end)
+  if generation~=menuRenderGeneration or currentTab~=tab then return end
+  if not ok or type(result)~='table'then
+   if sameTab and #content:GetChildren()>1 then return end
+   local restore=require(Shared.ScrollKeeper).begin(content,tab);clearContent()
+   addRow('Данные ещё загружаются, попробуй через секунду.',Color3.fromRGB(255,120,120));restore();return
+  end
+  data=result
+ end
+ local restoreScroll=require(Shared.ScrollKeeper).begin(content,tab)
+ clearContent()
     if tab == "top" then
         addRow("ТОП-100 · монеты, заработанные за текущий сезон (30 дней)",Color3.fromRGB(246,214,121))
         addRow("ОБНОВИТЬ СПИСОК",Color3.fromRGB(126,229,214),function()
@@ -8618,9 +8731,10 @@ function renderTab(tab)
             renderTab("top")
         end)
         local ok,result=pcall(function() return GetSeasonTop:InvokeServer() end)
+        if generation~=menuRenderGeneration or currentTab~=tab then restoreScroll();return end
         if not ok or not result or result.rateLimited then
             addRow("Рейтинг загружается. Закрой и открой эту вкладку через несколько секунд.",Color3.fromRGB(241,167,109))
-            return
+            restoreScroll();return
         end
         addRow("До "..os.date("!%d.%m.%Y",result.endsAt or os.time()).." (UTC) · обновление ~95 сек.",Color3.fromRGB(167,204,220))
         if result.status and result.status~="" then addRow(result.status,Color3.fromRGB(240,173,106)) end
@@ -8632,18 +8746,11 @@ function renderTab(tab)
                 addRow(("%d. %s   ·   $ %s"):format(rec.rank,rec.name,fmt(rec.score)),c)
             end
         end
-        return
+        restoreScroll();return
     end
-	if tab=="odds"then MenuViews.render("odds",content,{},{});return end
-	local ok, data = pcall(function()
-		return GetMenuData:InvokeServer()
-	end)
-	if not ok or not data then
-		addRow("Данные ещё загружаются, попробуй через секунду.", Color3.fromRGB(255, 120, 120))
-		return
-	end
-    if tab=='catalog'then renderCatalog(data);return end
-    local function refresh()task.delay(.4,function()if panel.Visible then renderTab(currentTab)end end)end
+	if tab=="odds"then MenuViews.render("odds",content,{},{});restoreScroll();return end
+    if tab=='catalog'then renderCatalog(data);restoreScroll();return end
+    local function refresh()refreshMenu()end
     local function atelier(category)
      setMenuOpen(false);player:SetAttribute('Steal60AtelierTab',nil);player:SetAttribute('Steal60AtelierTab',category)
     end
@@ -8662,6 +8769,7 @@ function renderTab(tab)
      atelier=atelier,
      handbook=function()setMenuOpen(false);player:SetAttribute('Steal60OpenHandbook',not player:GetAttribute('Steal60OpenHandbook'))end
     })
+    restoreScroll()
 end
 
 for tabIndex, t in ipairs({ { "catalog", "Каталог" }, { "salon", "Салон" }, { "parts", "Детали" }, { "upgrade", "Прокачка" }, { "shop", "Магазин" }, { "odds", "Шансы" }, { "top", "Топ-100" } }) do
@@ -8682,9 +8790,7 @@ end
 local currencyUpdate=remotes:WaitForChild("CurrencyUpdate")
 currencyUpdate.OnClientEvent:Connect(function()
     if panel.Visible and (currentTab=="upgrade" or currentTab=="shop") then
-        task.defer(function()
-            if panel.Visible then renderTab(currentTab) end
-        end)
+        refreshMenu()
     end
 end)
 
@@ -9555,7 +9661,11 @@ notice.Visible=false
 local vendor="coins";local tab="coins";local drawing=false
 local draw;local rebuildTabs
 local function clearContent()for _,obj in ipairs(scroll:GetChildren())do if obj~=contentLayout then obj:Destroy()end end end
-local function refreshAfter()task.delay(.45,function()if panel.Visible then draw()end end)end
+local refreshPending=false
+local function refreshAfter()
+ if refreshPending then return end;refreshPending=true
+ task.delay(.5,function()refreshPending=false;if panel.Visible then draw()end end)
+end
 local function makeCard(icon,titleText,detailText,color,actions,h)
     h=h or 83
     local card=Instance.new("Frame")
@@ -9665,13 +9775,15 @@ local function drawDiamonds(data)
 end
 draw=function()
  if not panel.Visible or drawing then return end;drawing=true
- local ok,data=pcall(function()return getData:InvokeServer()end);clearContent()
+ local ok,data=pcall(function()return getData:InvokeServer()end)
+ if(not ok or type(data)~='table')and #scroll:GetChildren()>1 then drawing=false;return end
+ local restoreScroll=require(RS.Shared.ScrollKeeper).begin(scroll,vendor..':'..tab);clearContent()
  if not ok or type(data)~="table"then makeCard("…","Данные загружаются","Открой магазин через секунду.",C(207,224,234),nil,80)
  elseif vendor=="diamonds"then drawDiamonds(data)
  elseif tab=="items"then drawItems(data)
  elseif tab=="accessories"then drawParts(data)
  else drawCoins(data)end
- drawing=false
+ restoreScroll();drawing=false
 end
 local function setOpen(open)
  panel.Visible=open;player:SetAttribute("Steal60MenuOpen",open or player:GetAttribute("Steal60ActiveModal")~=nil)
@@ -9684,7 +9796,7 @@ openRemote.OnClientEvent:Connect(function(kind)
  setOpen(true)
 end)
 Input.InputBegan:Connect(function(input,processed)if (not processed and input.KeyCode==Enum.KeyCode.Escape or input.KeyCode==Enum.KeyCode.ButtonB) and panel.Visible then setOpen(false)end end)
-remotes:WaitForChild("CurrencyUpdate").OnClientEvent:Connect(function()if panel.Visible then task.defer(draw)end end)
+remotes:WaitForChild("CurrencyUpdate").OnClientEvent:Connect(function()if panel.Visible then refreshAfter()end end)
 ]]></ProtectedString></Properties></Item><Item class="LocalScript" referent="RBXGEN_V37_CosmeticHUD">
           <Properties>
             <string name="Name">CosmeticHUD</string>
@@ -9834,12 +9946,14 @@ layout.SortOrder=Enum.SortOrder.LayoutOrder
 layout.Padding=UDim.new(0,8)
 layout.Parent=scroller
 local modes={{"hero","ГЕРОЙ"},{"pet","ПИТОМЕЦ"},{"paint","КРАСКА"},{"tuning","ТЮНИНГ"},{"aura","АУРА"}}
-local render
+local render;local rendering=false;local refreshPending=false
+local function requestRender()
+ if refreshPending then return end;refreshPending=true
+ task.delay(.5,function()refreshPending=false;if panel.Visible then render()end end)
+end
 local function send(verb,category,id,targetCarId)
  action:FireServer(verb,category,id,targetCarId)
- task.delay(.55,function()
-  if panel.Visible then render() end
- end)
+ requestRender()
 end
 local function notice(s)
  local b=box(scroller,36,C(25,51,58))
@@ -10239,8 +10353,10 @@ local function itemCard(def,data,parent,width)
 end
 render=function()
  if not panel.Visible then return end
+ if rendering then requestRender();return end;rendering=true
  local ok,data=pcall(function()return dataRequest:InvokeServer() end)
- if not ok or type(data)~="table" then return end
+ if not ok or type(data)~="table" then rendering=false;return end
+ local restoreScroll=require(RS.Shared.ScrollKeeper).begin(scroller,state..':'..heroPage..':'..petPage)
  currentCarSettings=data.carCosmetics or{}
  subtitle.Text=("$ %s  ·  💎 %s   |   БОНУСЫ — НА ВСЕ МОНЕТЫ И КАССУ"):format(fmt(data.money),fmt(data.diamonds))
  for _,child in ipairs(tabs:GetChildren()) do if child~=tabLayout then child:Destroy() end end
@@ -10335,6 +10451,7 @@ render=function()
   end
  end
  if state=="hero"or state=="pet"then mastery(state,data)end
+ restoreScroll();rendering=false
 end
 panel:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
  if not panel.Visible then return end
@@ -10343,7 +10460,7 @@ panel:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
  if key~=panel:GetAttribute("CosmeticLayoutKey")then task.defer(render)end
 end)
 catalogPreviews:GetAttributeChangedSignal("Revision"):Connect(function()
- task.delay(.25,function()if panel.Visible and state=="hero"then render()end end)
+ if panel.Visible and state=="hero"then requestRender()end
 end)
 player:GetAttributeChangedSignal("Steal60ShowCarPaint"):Connect(function()
  local id=player:GetAttribute("Steal60ShowCarPaint")
@@ -10368,8 +10485,8 @@ openNpc.OnClientEvent:Connect(function(kind)
  setOpen(true)
  render()
 end)
-update.OnClientEvent:Connect(function() if panel.Visible then task.defer(render) end end)
-currency.OnClientEvent:Connect(function() if panel.Visible then task.defer(render) end end)
+update.OnClientEvent:Connect(function() if panel.Visible then requestRender() end end)
+currency.OnClientEvent:Connect(function() if panel.Visible then requestRender() end end)
 Input.InputBegan:Connect(function(input,processed)
  if (not processed and input.KeyCode==Enum.KeyCode.Escape or input.KeyCode==Enum.KeyCode.ButtonB) and panel.Visible then setOpen(false) end
 end)
@@ -12540,7 +12657,7 @@ function Net.init()
  Security.init()
 	local folder = Instance.new("Folder")
 	folder.Name = "Remotes"
-	for _, name in ipairs({ "HackStart", "HackTap", "HackCancel", "HackStep", "DriveInput", "DriveSnapshot", "RecoverCar", "Notify", "PinCar", "LootReveal", "BuyUpgrade", "BuyUpgradeChoice", "CurrencyUpdate", "ShowTop100", "BuyCoinUpgrade", "ManageWorkshop", "OpenEconomyNPC", "BuyVIP", "CosmeticAction", "CosmeticUpdate", "TutorialAction", "TutorialUpdate", "SetLanguage", "SetAudio" }) do
+	for _, name in ipairs({ "HackStart", "HackTap", "HackCancel", "HackStep", "DriveInput", "DriveSnapshot", "RecoverCar", "ConeReward", "Notify", "PinCar", "LootReveal", "BuyUpgrade", "BuyUpgradeChoice", "CurrencyUpdate", "ShowTop100", "BuyCoinUpgrade", "ManageWorkshop", "OpenEconomyNPC", "BuyVIP", "CosmeticAction", "CosmeticUpdate", "TutorialAction", "TutorialUpdate", "SetLanguage", "SetAudio" }) do
 		local e = Instance.new("RemoteEvent")
 		e.Name = name
 		e.Parent = folder
@@ -12658,7 +12775,7 @@ local function sweptBlock(fromPos,toPos,obstacle)
 end
 
 -- Light temporary cones are toppled by a nearby moving car instead of forming a wall.
-local function knockCones(fromPos,toPos,forward,speed,halfLength,halfWidth)
+local function knockCones(fromPos,toPos,forward,speed,halfLength,halfWidth,player)
     if math.abs(speed)<7 then return end
     local segment=Vector3.new(toPos.X-fromPos.X,0,toPos.Z-fromPos.Z)
     for _,cone in ipairs(coneCache) do
@@ -12675,6 +12792,11 @@ local function knockCones(fromPos,toPos,forward,speed,halfLength,halfWidth)
             -- One launch per cone, rate-limited by changing Anchored immediately.
             local original=cone.CFrame;local token=(cone:GetAttribute("KnockdownSerial")or 0)+1;cone:SetAttribute("KnockdownSerial",token)
             cone.Anchored=false
+            -- Only the validated, occupied server ride reaches this branch. Each
+            -- newly toppled cone pays exactly one dollar, without income multipliers.
+            if player and player.Parent and player:GetAttribute('DataLoaded')==true and player:GetAttribute('GameplayReady')==true then
+                if require(script.Parent.DataService).addMoney(player,1,true)then Net.ConeReward:FireClient(player,original.Position)end
+            end
             pcall(function()cone:SetNetworkOwner(nil)end)
             cone.CanCollide=true
             cone.CanTouch=true
@@ -13048,7 +13170,7 @@ function DriveService.init()
                 s.clientReady=false;car:SetAttribute('ClientDriveOwner',nil);pcall(function()s.body:SetNetworkOwner(nil)end)
                 s.body.AssemblyLinearVelocity=Vector3.zero;s.dynamics=Dynamics.new(s.body,s.maxSpeed);s.throttle=0;s.steer=0
             end
-            local _,position=validateState(car,s,owner)
+            local valid,position=validateState(car,s,owner)
             if not s.clientReady then
                 local throttle,steer=0,0
                 if now-s.lastInput<.45 then throttle,steer=s.throttle,s.steer else throttle,steer=s.seat.ThrottleFloat,s.seat.SteerFloat end
@@ -13064,8 +13186,8 @@ function DriveService.init()
             if s.coneClock>=1/30 then
                 s.coneClock=0
                 local velocity=s.body.AssemblyLinearVelocity;local forward=s.body.CFrame.RightVector
-                if velocity:Dot(forward)>5 then
-                    knockCones(s.lastConePos,position,forward,velocity.Magnitude,(car:GetAttribute('DesignLength')or s.body.Size.X/.84)*.5,(car:GetAttribute('DesignWidth')or s.body.Size.Z/.73)*.5)
+                if valid and velocity:Dot(forward)>5 then
+                    knockCones(s.lastConePos,position,forward,velocity.Magnitude,(car:GetAttribute('DesignLength')or s.body.Size.X/.84)*.5,(car:GetAttribute('DesignWidth')or s.body.Size.Z/.73)*.5,owner)
                 end
                 s.lastConePos=position
             end
@@ -14597,22 +14719,8 @@ local function buildSalon(rec)
                 Tutorial.vendor(plr,kind);Net.OpenEconomyNPC:FireClient(plr,kind)
             elseif plr~=rec.player then Net.notify(plr,"Это НПС чужого салона — используй свой магазин.",'info')end
         end)
-        task.spawn(function()
-            local rig=OwnerService.newRig(nil,kind);if not rig then return end
-            if not rec.player.Parent or not model.Parent then rig:Destroy();return end
-            local root=rig:FindFirstChild('HumanoidRootPart');local hum=rig:FindFirstChildOfClass('Humanoid')
-            if not root or not hum then rig:Destroy();return end
-            local spot=W(u,v,.73+hum.HipHeight+root.Size.Y/2)
-            rig.Name='MarketplaceVendor_'..kind;rig:PivotTo(CFrame.lookAt(spot,spot+Vector3.new(0,0,-rec.side)))
-            hum.WalkSpeed=0;hum.AutoRotate=false;hum.DisplayDistanceType=Enum.HumanoidDisplayDistanceType.None
-            root.Anchored=true
-            for _,part in ipairs(rig:GetDescendants())do if part:IsA('BasePart')then part.CanCollide=false;part.CanTouch=false;part.CanQuery=false end end
-            rig.Parent=model
-            local bb=Instance.new('BillboardGui');bb.AutoLocalize=false;bb.Name='NPC_ShopLabel';bb.Adornee=rig:FindFirstChild('Head')
-            bb.StudsOffsetWorldSpace=Vector3.new(0,2.2,0);bb.Size=UDim2.fromOffset(140,24);bb.MaxDistance=18;bb.Parent=rig
-            local title=Instance.new('TextLabel');title.Size=UDim2.fromScale(1,1);title.BackgroundTransparency=1
-            title.Font=Enum.Font.GothamBold;title.TextSize=12;title.TextColor3=accent;title.Text=label.Text;title.Parent=bb
-        end)
+        local foot=W(u,v,.73)
+        require(Services.VendorCharacters).create(model,CFrame.lookAt(foot,foot+Vector3.new(0,0,-rec.side)),kind,accent,label.Text)
     end
     local walk=Layout.VendorWalk
     local sidewalk=P.part(model,"VendorSidewalk",Vector3.new(walk.width,.04,walk.length),W(walk.u,walk.v,.42),Color3.fromRGB(117,129,137),Enum.Material.Concrete)
@@ -19296,6 +19404,82 @@ function M.decorate(parent,index,x0,x1)
    p('UmbrellaCanopy',Vector3.new(6.2,.25,5.5),0,4.9,.7,accent,Enum.Material.Fabric)
   end
  end end
+end
+return M
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_v66_VendorCharacters"><Properties><string name="Name">VendorCharacters</string><ProtectedString name="Source"><![CDATA[-- Server-created, atomic vendors. A complete native outfit is always visible
+-- while the shared catalog template loads, or if Roblox cannot supply it.
+local RS=game:GetService('ReplicatedStorage');local Shared=RS:WaitForChild('Shared')
+local Preview=require(Shared.AvatarPreview);local Style=require(Shared.AvatarStyleLibrary)
+local M={};local nativeTemplates={};local templates={};local loading={};local slots={};local attempted={}
+local C=Color3.fromRGB
+local colors={coins=C(43,126,101),diamonds=C(42,65,105),cosmetics=C(127,70,145)}
+local function native(role)
+ local model=Instance.new('Model');model.Name='VendorTemplate_'..role
+ local skin=C(229,185,150);local coat=colors[role]or colors.coins;local trousers=C(32,41,55)
+ local function part(name,size,position,color,shape)
+  local p=Instance.new('Part');p.Name=name;p.Size=size;p.CFrame=CFrame.new(position);p.Color=color
+  p.Material=Enum.Material.SmoothPlastic;p.Anchored=true;p.CanCollide=false;p.CanTouch=false;p.CanQuery=false
+  if shape then p.Shape=shape end;p.Parent=model;return p
+ end
+ local root=part('HumanoidRootPart',Vector3.new(.2,.2,.2),Vector3.new(0,3,0),coat);root.Transparency=1;model.PrimaryPart=root
+ part('UpperTorso',Vector3.new(1.8,1.5,.85),Vector3.new(0,3.45,0),coat)
+ part('LowerTorso',Vector3.new(1.5,.6,.8),Vector3.new(0,2.4,0),trousers)
+ for _,side in ipairs({-1,1})do
+  local prefix=side<0 and'Left'or'Right'
+  part(prefix..'Shoulder',Vector3.new(.6,.6,.65),Vector3.new(side*1.12,3.85,0),coat,Enum.PartType.Ball)
+  part(prefix..'UpperArm',Vector3.new(.56,.8,.63),Vector3.new(side*1.12,3.4,0),coat)
+  part(prefix..'LowerArm',Vector3.new(.51,.75,.57),Vector3.new(side*1.12,2.65,-.02),coat)
+  part(prefix..'Hand',Vector3.new(.49,.47,.48),Vector3.new(side*1.12,2.06,-.02),skin,Enum.PartType.Ball)
+  part(prefix..'UpperLeg',Vector3.new(.65,.95,.7),Vector3.new(side*.43,1.68,0),trousers)
+  part(prefix..'LowerLeg',Vector3.new(.6,.8,.65),Vector3.new(side*.43,.81,-.02),trousers)
+  part(prefix..'Foot',Vector3.new(.7,.43,.98),Vector3.new(side*.43,.215,-.13),C(24,28,35))
+ end
+ part('Neck',Vector3.new(.45,.35,.45),Vector3.new(0,4.3,0),skin)
+ local head=part('Head',Vector3.new(1.1,1.12,1.03),Vector3.new(0,4.98,-.015),skin)
+ local mesh=Instance.new('SpecialMesh');mesh.MeshType=Enum.MeshType.Head;mesh.Parent=head
+ local face=Instance.new('Decal');face.Name='FriendlyFace';face.Face=Enum.NormalId.Front;face.Texture='rbxasset://textures/face.png';face.Parent=head
+ for i=-2,2 do part('HairLock',Vector3.new(.36,.36,.96),Vector3.new(i*.20,5.52,.02),C(48,32,25),Enum.PartType.Ball)end
+ Style.applyVendorSignature(model,role)
+ model:SetAttribute('VendorAppearance','NativeDressed');model:SetAttribute('AppearanceRole',role);model.Archivable=true
+ return model
+end
+local function place(slot,template)
+ if slot.dead or not slot.parent.Parent then return end
+ local rig=template:Clone();if not rig then return end
+ rig.Name='MarketplaceVendor_'..slot.role;rig.ModelStreamingMode=Enum.ModelStreamingMode.Atomic
+ rig:PivotTo(slot.at)
+ local bounds,size=Preview.bounds(rig)
+ rig:PivotTo(rig:GetPivot()+Vector3.new(0,slot.at.Position.Y-(bounds.Position.Y-size.Y*.5),0))
+ local bb=Instance.new('BillboardGui');bb.Name='NPC_ShopLabel';bb.AutoLocalize=false;bb.Adornee=rig:FindFirstChild('Head')
+ bb.StudsOffsetWorldSpace=Vector3.new(0,2.2,0);bb.Size=UDim2.fromOffset(140,24);bb.MaxDistance=18;bb.Parent=rig
+ local title=Instance.new('TextLabel');title.Size=UDim2.fromScale(1,1);title.BackgroundTransparency=1
+ title.Font=Enum.Font.GothamBold;title.TextSize=12;title.TextColor3=slot.accent;title.Text=slot.caption;title.Parent=bb
+ local old=slot.model;slot.model=rig;rig.Parent=slot.parent;if old then old:Destroy()end
+end
+local function request(role)
+ if templates[role]or loading[role]or attempted[role]then return end
+ loading[role]=true;attempted[role]=true
+ task.spawn(function()
+  local ok,rig=pcall(function()return require(script.Parent.OwnerService).newRig(nil,role)end)
+  loading[role]=nil
+  if not ok or not rig then return end
+  local prepared=pcall(function()
+   Preview.prepare(rig);Style.applyVendorSignature(rig,role)
+   rig.Archivable=true;for _,obj in ipairs(rig:GetDescendants())do obj.Archivable=true end
+   rig.ModelStreamingMode=Enum.ModelStreamingMode.Atomic;rig:SetAttribute('VendorAppearance','CatalogDressed')
+   local hum=rig:FindFirstChildOfClass('Humanoid');if hum then hum.WalkSpeed=0;hum.AutoRotate=false;hum.DisplayDistanceType=Enum.HumanoidDisplayDistanceType.None end
+  end)
+  if not prepared then rig:Destroy();return end
+  templates[role]=rig
+  for slot in pairs(slots[role]or{})do place(slot,rig)end
+ end)
+end
+function M.create(parent,at,role,accent,caption)
+ nativeTemplates[role]=nativeTemplates[role]or native(role);slots[role]=slots[role]or{}
+ local slot={parent=parent,at=at,role=role,accent=accent,caption=caption};slots[role][slot]=true
+ parent.Destroying:Connect(function()slot.dead=true;slots[role][slot]=nil end)
+ place(slot,templates[role]or nativeTemplates[role]);request(role)
+ return slot.model
 end
 return M
 ]]></ProtectedString></Properties></Item></Item>

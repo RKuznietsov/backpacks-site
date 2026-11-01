@@ -1,6 +1,6 @@
 # Steal60 v66 · RU / EN
 
-Последнее обновление: восстановление подписей автомобилей у каждого игрока, поддержка обоих вариантов PlayerModule и серверное движение до полной загрузки машины. Кнопка «Выровнять» перенесена слева под счётчик денег. Предыдущие исправления выставки, взлома и головы героя сохранены. [Подробности](MOBILE-FIX.md).
+Последнее обновление: одинаковые видимые торговцы во всех салонах, сохранение прокрутки после покупок во всех трёх магазинах, 1 $ за каждый сбитый конус с тихим звуком и всплывающим долларом. В районах 6+ крупный баннер «В разработке» появляется на 1,5 секунды каждые 10 секунд. [Подробности](SHOP-UPDATE.md).
 
 Предыдущие исправления памяти, ошибок Output и двухвалютного магазина сохранены. [Подробности](UPDATE.md).
 
@@ -40,14 +40,14 @@
 - Полицейский пост использует подробный кузов из конструктора каталога и одетого полицейского с жезлом. Ремонт использует подробный экскаватор-погрузчик, рабочего с лопатой, ограждения и вскрытый асфальт. NPC смотрят на своего игрока; события появляются через 3 с и чередуются. Свободная полоса и серверная проверка объезда сохранены.
 - Конечные стены/ограничения пяти районов убраны. После 5 идут 6, 7 и далее со стабильным случайным выбором одной из пяти тем. Загрузчик держит соседние районы игроков, удалённые выгружает через прежнюю задержку 8 секунд. Защита от телепортации и проверка навыка сохранены.
 - В общих парковках районов 6+ семь обычных машин класса super требуют 25–30, независимо от навыка посетителя; места №1/7 гарантируют 25/30. Место №8 — сложная машина `max(31, навык+1)`, с учётом игроков рядом и персональным повышением при взаимодействии. Низкий навык не обходит исходную проверку; полицейский возврат сохранён.
-- Золотое «В разработке» / «In development» появляется на секунду при въезде в 6+ и каждые 25 секунд. При активном модальном окне/взломе показ откладывается; управление надпись не перехватывает. На узких экранах маршрутная панель сдвигается ниже надписи.
+- Крупное золотое «В разработке» / «In development» появляется в центре на 1,5 секунды при въезде в 6+ и далее каждые 10 секунд. Переход 6→7 не сбрасывает интервал. При активном модальном окне/взломе показ откладывается; управление надпись не перехватывает.
 - `HarDvRaiN` получает однократный сброс прогресса **только в Studio** с новым флагом `studioFreshStartV66`. Очищаются монеты/касса, покупки, улучшения, коллекции, косметика, питомцы, полки и обучение. Алмазы, взлом/опыт, журнал платежей и настройки остаются. Код старого тестового подарка алмазов удалён. Live-хранилище остаётся `Steal60_PlayerData_v1`, Studio-хранилище — прежнее `Steal60_PlayerData_Studio_v62`.
 
 - Лидерборд перенесён перед колоннами, получил отступы и отдельные колонки имени/суммы. Имена игроков не переводятся. Добавлены рабочий за 4 млн, простой цвет за 750 тыс. и аура за 1,5 млн монет; лицензия питомца — 5 млн, мастерство растёт по квадратичной кривой. [Подробные цены](ECONOMY.md).
 
 ## Проверки и границы результата
 
-См. [сверку замечаний и новые цены](AUDIT-v64.md), [RESULTS.md](RESULTS.md) и [исходный журнал](tests/validation-output.txt). Компилировались **все 120 скриптов из конечного XML**, а сценарии выполнялись заново для этой сборки.
+См. [сверку замечаний и новые цены](AUDIT-v64.md), [RESULTS.md](RESULTS.md) и [исходный журнал](tests/validation-output.txt). Компилировались **все 123 скрипта из конечного XML**, а сценарии выполнялись заново для этой сборки.
 
 **Roblox Engine/Studio в облачной среде отсутствует.** Автоматические сценарии используют Luau и явно обозначенные тестовые двойники Roblox API. Они не подтверждают качество изображения, живую физику/репликацию, доступность аудио и внешних NPC-ассетов, настоящий DataStore или Marketplace. Перед публикацией игры выполните Studio-проверки из RESULTS.md. Ветка GitHub публикует установщик, но не публикует Roblox Experience.
 
@@ -63,4 +63,4 @@ RU/EN is an in-game toggle. The music-note button opens separately saved music v
 
 The latest screenshot update and coin progression prices are described in [VISUAL-UPDATE.md](VISUAL-UPDATE.md) and [ECONOMY.md](ECONOMY.md). A worker outfit costs 4M coins, plain paint 750K, a modest aura 1.5M and the pet license 5M. Walking pets sit at the rear of the car, behind the driver.
 
-The updated build adds immediate upgrade saves, separate currency cooldowns, a soft cap on base income before bonuses, lower ladder costs, American English, number inflection, adaptive modal scaling and native gamepad input. All 120 final XML scripts compile; current-run Luau tests cover the new logic with explicit Roblox API test doubles. **No actual Roblox Engine was available.** Studio visuals, physics, live DataStore and Marketplace integration remain unverified. [RESULTS.md](RESULTS.md) provides the evidence and Studio acceptance checklist.
+The updated build adds immediate upgrade saves, separate currency cooldowns, a soft cap on base income before bonuses, lower ladder costs, American English, number inflection, adaptive modal scaling and native gamepad input. All 123 final XML scripts compile; current-run Luau tests cover the new logic with explicit Roblox API test doubles. **No actual Roblox Engine was available.** Studio visuals, physics, live DataStore and Marketplace integration remain unverified. [RESULTS.md](RESULTS.md) provides the evidence and Studio acceptance checklist.

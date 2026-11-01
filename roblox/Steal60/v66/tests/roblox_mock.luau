@@ -60,7 +60,7 @@ function Color3.new(r,g,b)return setmetatable({R=r,G=g,B=b,_kind='Color3'},{__in
 function Color3:Lerp(b,t)return Color3.new(self.R+(b.R-self.R)*t,self.G+(b.G-self.G)*t,self.B+(b.B-self.B)*t)end
 function Color3.fromRGB(r,g,b)return Color3.new(r/255,g/255,b/255)end
 local Vector2={new=function(x,y)return {X=x,Y=y}end}
-local UDim={new=function(s,o)return {Scale=s,Offset=o}end}
+local UDim={new=function(s,o)return {Scale=s or 0,Offset=o or 0}end}
 local UDim2={}
 function UDim2.new(xs,xo,ys,yo)return {X=UDim.new(xs,xo),Y=UDim.new(ys,yo)}end
 function UDim2.fromOffset(x,y)return UDim2.new(0,x,0,y)end
@@ -72,6 +72,7 @@ function Instance.new(class)
  return setmetatable({_kind='Instance',props={ClassName=class,Name=class,Size=V.new(1,1,1),AbsoluteSize=Vector2.new(0,0),CFrame=CF.new(),Text='',ActionText='',ObjectText='',Anchored=true,Transparency=0},children={},attrs={},changed={},attrSignals={},events={PreSimulation=signal(),InputChanged=signal(),InputEnded=signal(),WindowFocusReleased=signal(),GamepadDisconnected=signal(),CharacterRemoving=signal(),CharacterAdded=signal(),RenderStepped=signal(),AncestryChanged=signal(),PromptButtonHoldBegan=signal(),PromptButtonHoldEnded=signal(),Triggered=signal(),Loaded=signal(),Ended=signal(),InputBegan=signal(),DescendantAdded=signal(),Destroying=signal(),Activated=signal(),PlayerAdded=signal(),PlayerRemoving=signal(),Heartbeat=signal()}},instmt)
 end
 instmt.__index=function(o,k)
+ if type(o.props[k])=='function'then return o.props[k]end
  if methods[k]then return methods[k]end
  if k=='Position'then return o.props.CFrame.Position end
  if o.events[k]then return o.events[k]end
@@ -92,6 +93,19 @@ instmt.__newindex=function(o,k,v)
 end
 function methods:IsA(c)return self.ClassName==c or(c=='BasePart'and(self.ClassName=='Part'or self.ClassName=='WedgePart'))or(c=='GuiButton'and(self.ClassName=='TextButton'or self.ClassName=='ImageButton'))end
 function methods:GetChildren()return table.clone(self.children)end
+function methods:Clone()
+ local copies={}
+ local function copy(object)
+  local result=Instance.new(object.ClassName);copies[object]=result
+  for k,v in pairs(object.props)do if k~='Parent'then result.props[k]=v end end
+  for k,v in pairs(object.attrs)do result.attrs[k]=v end
+  for _,child in ipairs(object:GetChildren())do copy(child).Parent=result end
+  return result
+ end
+ local result=copy(self)
+ for old,new in pairs(copies)do for k,v in pairs(old.props)do if copies[v]then new.props[k]=copies[v]end end end
+ return result
+end
 function methods:GetDescendants()local out={};local function walk(o)for _,c in ipairs(o.children)do out[#out+1]=c;walk(c)end end;walk(self);return out end
 function methods:FindFirstChild(n,recurse)for _,c in ipairs(recurse and self:GetDescendants()or self.children)do if c.Name==n then return c end end end
 function methods:WaitForChild(n)return assert(self:FindFirstChild(n),'missing child '..n..' in '..self.Name)end
