@@ -13,7 +13,7 @@
   },
   {
     "script": "AuraVisualLibrary",
-    "sha256": "a62a9401d20a0b7bf07114cb0b7de07ba8a0b2f32e3124fb7ef3792d6e4c08e9",
+    "sha256": "0b5ee9d39826a5bd877f3221fa9c75984bf1dea23dbab33fd6d70314e7e00028",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -133,7 +133,7 @@
   },
   {
     "script": "CosmeticConfig",
-    "sha256": "a877cd99b68bd1b44870548e804ca4f4eb49a8dc3d78421e18c8f590d55ed600",
+    "sha256": "6f228e9b23b4b45cff79aaf1f26af0a8cc3861131cb2f60db14a8c1bb919fa0e",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -313,7 +313,7 @@
   },
   {
     "script": "LanguageCatalog",
-    "sha256": "6683bcddf528aa778f0a964bc492bb1479e9c2a97bc857c0ed57a33f5a953a39",
+    "sha256": "71e86d76e082045c6a770d9bbeeb36320ae3f75f69e4fecc6086830e72106dc2",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },

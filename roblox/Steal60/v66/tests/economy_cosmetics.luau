@@ -25,15 +25,34 @@ check(Balance.masteryCost('pet',0)==75000 and Balance.masteryCost('pet',59)==880
 local profile={cosmeticsOwned={[worker.id]=true},cosmeticsEquipped={hero=worker.id},heroSkinBonusLevel=9}
 local total,hero,pet=Config.coinBonusPct(profile)
 check(total==9 and hero==9 and pet==0,'worker unlocks full shared hero mastery without diamonds')
--- The inexpensive aura is intentionally modest: one short trail, no particles or special geometry.
-do
- local character=Instance.new('Model');local root=Instance.new('Part');root.Name='HumanoidRootPart';root.Parent=character
- local aura=require('AuraVisualLibrary').create(root,Config.ById.aura_breeze_coin_v66)
- check(aura:GetAttribute('TrailCount')==1 and aura:GetAttribute('EmitterCount')==0 and not aura:FindFirstChild('AuraSpecialGeometry'),'coin aura avoids premium particles and geometry')
- check(aura.SimpleBreeze.LightEmission==0 and aura.SimpleBreeze.Lifetime<.5,'coin aura stays subdued and short')
- local attachments=0;for _,o in ipairs(root:GetDescendants())do if o:IsA('Attachment')then attachments+=1 end end
- check(attachments==2,'one trail uses only two attachments')
- aura:Destroy();check(#root:GetChildren()==0,'simple aura removes both external attachments on unequip');character:Destroy()
+-- Shoulder placement must also work on R6 and the root-only loading fallback.
+for _,shape in ipairs({{name='UpperTorso',size=V.new(2,1.6,1)},{name='Torso',size=V.new(2,2,1)},{name='HumanoidRootPart',size=V.new(2,2,1)}})do
+ local character=Instance.new('Model');local root=Instance.new('Part');root.Name='HumanoidRootPart';root.Size=V.new(2,2,1);root.Parent=character
+ local host=root
+ if shape.name~='HumanoidRootPart'then host=Instance.new('Part');host.Name=shape.name;host.Size=shape.size;host.Parent=character end
+ local Visuals=require('AuraVisualLibrary');local aura=Visuals.create(root,Config.ById.aura_breeze_coin_v66)
+ check(aura:GetAttribute('EmitterCount')==0 and not aura:FindFirstChild('AuraSpecialGeometry'),'coin wind uses no particle cloud or special geometry')
+ local trails={};local attachments=0
+ for _,o in ipairs(character:GetDescendants())do
+  if o:IsA('Attachment')then
+   attachments+=1
+   check(o.Parent==host and o.Position.Y>host.Size.Y*.25 and math.abs(o.Position.X)>host.Size.X*.5 and math.abs(o.Position.Z)<host.Size.Z*.5,'breeze originates beside upper shoulders, clear of waist and rear center')
+  elseif o:IsA('Trail')then
+   trails[#trails+1]=o
+   check(o.LightEmission==0 and o.Lifetime<.3 and o.MaxLength<=3,'wind fades quickly as a narrow short stroke')
+   o.Clear=function(self)self:SetAttribute('TestClears',(self:GetAttribute('TestClears')or 0)+1)end
+  elseif o:IsA('ParticleEmitter')then error('coin wind unexpectedly creates a particle plume')end
+ end
+ check(#trails==2 and attachments==4,'left and right shoulder trails have complete attachment pairs')
+ Visuals.step(root,0);root.Position=V.new(.4,0,0);Visuals.step(root,.1)
+ for _,trail in ipairs(trails)do check(trail.Enabled,'wind appears while the character moves')end
+ Visuals.step(root,.2)
+ for _,trail in ipairs(trails)do check(not trail.Enabled,'wind stops when the character is still')end
+ root.Position=V.new(100,0,0);Visuals.step(root,.3)
+ for _,trail in ipairs(trails)do check(not trail.Enabled and trail:GetAttribute('TestClears')==1,'teleport clears long streaks')end
+ local replacement=Visuals.create(root,Config.ById.aura_breeze_coin_v66)
+ check(aura.Parent==nil and #host:GetChildren()==(host==root and 5 or 4),'re-equipping removes old shoulder attachments')
+ replacement:Destroy();check(#host:GetChildren()==0 and #root:GetChildren()==0,'unequip removes the effect and all shoulder anchors');character:Destroy()
 end
 -- Native pet constructors establish geometry; no rendered head or actual seating is emulated.
 do

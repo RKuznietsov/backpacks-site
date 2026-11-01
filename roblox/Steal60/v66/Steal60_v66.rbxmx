@@ -912,9 +912,9 @@ function M.petUpgradeDiamonds(level)
 end
 M.COIN_HERO_ID='hero_worker_coin_v66'
 M.List={
- {id='hero_worker_coin_v66',category='hero',name='ОБЫЧНЫЙ РАБОЧИЙ',description='Простая серая рабочая рубашка, тёмные брюки и открытое лицо. Мастерство героя доступно за монеты.',priceCoins=4000000,currency='coins',color=C(116,127,132),catalogLook='worker',featuredCoins=true},
+ {id='hero_worker_coin_v66',category='hero',name='ОБЫЧНЫЙ РАБОЧИЙ',description='Простая серая рабочая рубашка, тёмные брюки, каштановая причёска и открытое лицо. Мастерство героя доступно за монеты.',priceCoins=4000000,currency='coins',color=C(116,127,132),catalogLook='worker',featuredCoins=true},
  {id='paint_workgray_coin_v66',category='paint',name='Рабочий серый',description='Спокойный серый кузов без узоров и свечения.',priceCoins=750000,currency='coins',color=C(122,134,142),material='SmoothPlastic',style='solid'},
- {id='aura_breeze_coin_v66',category='aura',name='Лёгкий ветер',description='Один тонкий серо-голубой след при движении. Без искр, частиц и яркого свечения.',priceCoins=1500000,currency='coins',color=C(165,188,200),simple=true},
+ {id='aura_breeze_coin_v66',category='aura',name='Лёгкий ветер',description='Два коротких тонких воздушных следа у плеч при движении. Без дыма, частиц и свечения.',priceCoins=1500000,currency='coins',color=C(165,188,200),simple=true},
  {id="skin_sakura",category="skin",name="Сакура-дрифт",description="Объёмные лепестки сакуры и сливочные цветы на кузове",price=320,color=C(255,146,189),style="sakura"},
  {id="paint_bubblegum",category="paint",name="Клубничный пломбир",description="Клубничный кузов и сливочная крыша",price=125,color=C(255,139,182),accent=C(255,244,218),material="SmoothPlastic",style="twoTone"},
  {id="paint_soda",category="paint",name="Мятная газировка",description="Мятный кузов и ванильная отделка",price=125,color=C(108,230,191),accent=C(255,241,208),material="SmoothPlastic",style="twoTone"},
@@ -1016,7 +1016,7 @@ M.List[#M.List+1]={id='tune_mirrors',category='tuning',name='Карбоновы�
 -- Old pet purchases migrate to that license in CosmeticService.
 -- Ten distinct catalog silhouettes. Legacy purchases migrate to their matching look.
 M.CatalogLooks={
- worker={id='worker_coin_v66',canonical='hero_worker_coin_v66',name='ОБЫЧНЫЙ РАБОЧИЙ',color=C(116,127,132),pantsColor=C(43,50,57),description='Простая серая рабочая рубашка, тёмные брюки и открытое лицо. Мастерство героя доступно за монеты.'},
+ worker={id='worker_coin_v66',canonical='hero_worker_coin_v66',name='ОБЫЧНЫЙ РАБОЧИЙ',hair=63690008,color=C(116,127,132),pantsColor=C(43,50,57),description='Простая серая рабочая рубашка, тёмные брюки, каштановая причёска и открытое лицо. Мастерство героя доступно за монеты.'},
  mechanic={id='mechanic',canonical='hero_premium_mech',name="АКВАПИЛОТ",hat=1365767,face=138940480674278,jacket=71576448094265,color=C(51,163,201),pantsColor=C(25,47,72),description="Крылатый шлем «Валькирия», голубая куртка и тёмный низ."},
  dealer={id='dealer',canonical='hero_premium_archon',name='ЗОЛОТОЙ МАГНАТ',hat=1285307,face=11748356,jacket=71576448094265,color=C(242,183,66),pantsColor=C(40,32,56),description="Федора «Спаркл Тайм», очки «Клокворк» и контрастный городской костюм."},
  workshop={id='workshop',canonical='hero_premium_phoenix',name="ДИДЖЕЙ МАНГО",hair=89315454377282,hat=1235488,jacket=17638739844,color=C(255,152,74),pantsColor=C(42,33,66),description="Наушники «Клокворк», объёмная причёска и яркая красная куртка."},
@@ -3441,14 +3441,18 @@ function M.create(root,def)
  local tracked={};local half=math.clamp(host.Size.X*.56,.65,1.1);local back=host.Size.Z*.5+.18
  local high=host.Size.Y*.35;local low=-host.Size.Y*.42
  if def.simple then
-  local a=Instance.new('Attachment');a.Name='Steal60SimpleTrailA';a.Position=Vector3.new(-.26,low,back);a.Parent=host
-  local b=Instance.new('Attachment');b.Name='Steal60SimpleTrailB';b.Position=Vector3.new(.26,low,back);b.Parent=host
-  local trail=Instance.new('Trail');trail.Name='SimpleBreeze';trail.Attachment0=a;trail.Attachment1=b;trail.Enabled=false
-  trail.FaceCamera=true;trail.Lifetime=.45;trail.MinLength=.08;trail.MaxLength=5;trail.LightEmission=0;trail.LightInfluence=1
-  trail.Color=ColorSequence.new(def.color);trail.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,.58),NumberSequenceKeypoint.new(1,1)})
-  trail.WidthScale=NumberSequence.new({NumberSequenceKeypoint.new(0,.45),NumberSequenceKeypoint.new(1,0)});trail.Parent=folder
-  folder:SetAttribute('TrailCount',1);folder:SetAttribute('EmitterCount',0);folder:SetAttribute('AuraId',def.id);folder:SetAttribute('AuraOrigin','Back')
-  folder.Destroying:Connect(function()states[root]=nil;if a.Parent then a:Destroy()end;if b.Parent then b:Destroy()end end)
+  -- Two narrow air strokes beside the shoulders. Nothing originates at the waist.
+  for _,side in ipairs({-1,1})do
+   local x=side*(host.Size.X*.5+.20);local y=host.Size.Y*.35
+   local a=Instance.new('Attachment');a.Name='Steal60BreezeShoulderTop'..side;a.Position=Vector3.new(x,y+.16,0);a.Parent=host;tracked[#tracked+1]=a
+   local b=Instance.new('Attachment');b.Name='Steal60BreezeShoulderBottom'..side;b.Position=Vector3.new(x,y,0);b.Parent=host;tracked[#tracked+1]=b
+   local trail=Instance.new('Trail');trail.Name=side<0 and'BreezeLeft'or'BreezeRight';trail.Attachment0=a;trail.Attachment1=b;trail.Enabled=false
+   trail.FaceCamera=true;trail.Lifetime=.22;trail.MinLength=.05;trail.MaxLength=2.5;trail.LightEmission=0;trail.LightInfluence=.25
+   trail.Color=ColorSequence.new(def.color);trail.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,.38),NumberSequenceKeypoint.new(.45,.62),NumberSequenceKeypoint.new(1,1)})
+   trail.WidthScale=NumberSequence.new({NumberSequenceKeypoint.new(0,.8),NumberSequenceKeypoint.new(.5,.45),NumberSequenceKeypoint.new(1,0)});trail.Parent=folder
+  end
+  folder:SetAttribute('TrailCount',2);folder:SetAttribute('EmitterCount',0);folder:SetAttribute('AuraId',def.id);folder:SetAttribute('AuraOrigin','Shoulders')
+  folder.Destroying:Connect(function()states[root]=nil;for _,a in ipairs(tracked)do if a.Parent then a:Destroy()end end end)
   return folder
  end
  local accent=def.id=='aura_plasma'and C(185,95,255)or def.id=='aura_crimson'and C(255,201,64)or def.id=='aura_gold'and C(255,246,173)or C(113,255,217)
@@ -5067,10 +5071,6 @@ end
 return M
 ]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_STEAL60_V64_LanguageCatalog"><Properties><string name="Name">LanguageCatalog</string><ProtectedString name="Source"><![CDATA[-- Canonical RU sources and American English translations.
 return {
- ["STEAL60 · МАРШРУТ"]="STEAL60 · ROUTE",
- ["Бонус: +%d п.п. / +%d п.п."]="Bonus: +%d pp / +%d pp",
- ["Сейчас: %s\nДалее: %s"]="Current: %s\nNext: %s",
- ["Бонус монет +%d п.п. · Доход в час: %s $"]="Coin bonus +%d pp · Income per hour: %s $",
  [" $/ч"]=" $/h",
  [" $/ч за штуку"]=" $/h each",
  [" %s · %s · +%s $/ч"]=" %s · %s · +%s $/h",
@@ -5170,6 +5170,7 @@ return {
  ["Roblox не завершил смену внешности. Попробуй ещё раз."]="Roblox did not finish changing your appearance. Try again.",
  ["Roblox не загрузил этот образ"]="Roblox could not load this look",
  ["Roblox не применил образ. Возвращён твой аватар."]="Roblox could not apply the look. Your avatar was restored.",
+ ["STEAL60 · МАРШРУТ"]="STEAL60 · ROUTE",
  ["W/A/S/D — ходьба · E — действие"]="W/A/S/D — move · E — interact",
  ["W/S — газ  ·  A/D — руль  ·  R — выровнять"]="W/S — drive  ·  A/D — steer  ·  R — reset",
  ["W/S — газ · A/D — руль · R — выровнять"]="W/S — throttle · A/D — steer · R — recover",
@@ -5240,8 +5241,10 @@ return {
  ["Боковые пороги"]="Side Skirts",
  ["Большой набор с выгодой за объём"]="A larger pack with better value",
  ["Бонус базового дохода +%d п.п."]="Base income bonus +%d pp",
+ ["Бонус монет +%d п.п. · Доход в час: %s $"]="Coin bonus +%d pp · Income per hour: %s $",
  ["Бонус монет +%d%%"]="Coin bonus +%d%%",
  ["Бонус сохраняется при смене облика. Каждый +1% стоит 20 алмазов; монетная цена растёт."]="Your bonus stays when you change looks. Each +1% costs 20 diamonds; coin prices increase.",
+ ["Бонус: +%d п.п. / +%d п.п."]="Bonus: +%d pp / +%d pp",
  ["Бонус: +%d п.п. / +%d п.п. · следующий +1 п.п."]="Bonus: +%d pp / +%d pp · next +1 pp",
  ["Боро 80"]="Boro 80",
  ["Бурнер Сикс"]="Burner Six",
@@ -5400,6 +5403,7 @@ return {
  ["Далее: %s"]="Next: %s",
  ["Данные ещё загружаются, попробуй через секунду."]="Data is still loading. Try again in a moment.",
  ["Данные загружаются"]="Loading data",
+ ["Два коротких тонких воздушных следа у плеч при движении. Без дыма, частиц и свечения."]="Two short, thin air trails beside the shoulders while moving. No smoke, particles, or glow.",
  ["Двойной доход"]="Double Income",
  ["Двухопорное антикрыло с торцевыми пластинами. Подгоняется под выбранный кузов."]="Twin-support wing with endplates. Fitted to your chosen bodywork.",
  ["Денежный ящик"]="Cash Drawer",
@@ -5852,7 +5856,6 @@ return {
  ["Огненный спорт"]="Fire Sport",
  ["Один дубликат окрашивает один из 5 углов следующей звезды. Проценты разных деталей СКЛАДЫВАЮТСЯ."]="Each duplicate fills one of the next star's 5 points. Bonuses from different parts ADD TOGETHER.",
  ["Один общий бонус для всех твоих питомцев."]="One shared bonus for every pet look.",
- ["Один тонкий серо-голубой след при движении. Без искр, частиц и яркого свечения."]="One thin gray-blue trail while moving. No sparks, particles, or bright glow.",
  ["Один цельный пушистый хвост с белым кончиком"]="One fluffy tail with a white tip",
  ["Одной покупки достаточно. Все нынешние и будущие облики — бесплатно!"]="One purchase unlocks every current and future pet look for free!",
  ["Окраина"]="Outskirts",
@@ -6016,8 +6019,8 @@ return {
  ["Продолжай доставлять машины. Для первой звезды первый предмет гарантирован при первой доставке; следующие копии выпадают в соответствующем районе. Каждая копия получается только за настоящую доставку."]="Keep delivering cars. Your first delivery guarantees the tutorial item; further copies drop in the matching district. Every copy requires a real delivery.",
  ["Проезжай посты по свободной полосе"]="Pass checkpoints using the open lane",
  ["Прокачка"]="Upgrades",
- ["Простая серая рабочая рубашка, тёмные брюки и открытое лицо. Мастерство героя доступно за монеты."]="A plain gray work shirt, dark pants, and an open face. Hero mastery is available for coins.",
- ["Простая серая рабочая рубашка, тёмные брюки и открытое лицо. Мастерство героя доступно за монеты. Полный комплект: одежда для торса и ног."]="A plain gray work shirt, dark pants, and an open face. Hero mastery is available for coins. Complete outfit: top and pants.",
+ ["Простая серая рабочая рубашка, тёмные брюки, каштановая причёска и открытое лицо. Мастерство героя доступно за монеты."]="A plain gray work shirt, dark pants, brown hair, and an open face. Hero mastery is available for coins.",
+ ["Простая серая рабочая рубашка, тёмные брюки, каштановая причёска и открытое лицо. Мастерство героя доступно за монеты. Полный комплект: одежда для торса и ног."]="A plain gray work shirt, dark pants, brown hair, and an open face. Hero mastery is available for coins. Complete outfit: top and pants.",
  ["Простой чехол"]="Basic Seat Cover",
  ["Птичий шлем с клювом, золотые перья и янтарные крылья"]="Bird helmet with a beak, gold feathers and amber wings",
  ["Пульс Хэтч"]="Pulse Hatch",
@@ -6095,6 +6098,7 @@ return {
  ["Сейчас стоит на витрине · место "]="Currently on display · slot ",
  ["Сейчас: "]="Current: ",
  ["Сейчас: %s"]="Current: %s",
+ ["Сейчас: %s\nДалее: %s"]="Current: %s\nNext: %s",
  ["Сервер рассчитан на 8 игроков. Попробуй другой сервер."]="This server supports 8 players. Please try another server.",
  ["Серия из %d угонов прервана. Следующая доставка начнёт новую серию."]="Your streak of %d thefts ended. Your next delivery starts a new streak.",
  ["Серия: 0 · Следующая цель"]="Streak: 0 · Next target",
