@@ -13,7 +13,7 @@
   },
   {
     "script": "AuraVisualLibrary",
-    "sha256": "76b0881fe786bb0c3a465f32c7a9f371641e00e7c29a526deb6716ada1db17df",
+    "sha256": "094481387ea1680c0d02a43af4099329bba206174a17cfc7e77b9643e8f47861",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -43,7 +43,7 @@
   },
   {
     "script": "BreezeAura",
-    "sha256": "c6cbe7e9d3c60f50bc489021e9d0a3d48ad4a9f4cdb7fda685391cb61fdbafb8",
+    "sha256": "d00e9738f031c60f76b3574d1df8e5a7e79b8cc2242d7df063eb7b3ef56d228f",
     "v65_status": "added",
     "initial_v66_status": "added"
   },
@@ -139,13 +139,13 @@
   },
   {
     "script": "CosmeticConfig",
-    "sha256": "e8365ac9e622079e56dbaefc9dc6dda0a67e9b7c9f0261a92b9fc59f74179dcd",
+    "sha256": "7ac47c78d60e60e0633f9cd9e25d7749c93867d62a457887bf858b2f3ad824c7",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
   {
     "script": "CosmeticHUD",
-    "sha256": "aaa9c967bff5798f45f0e986dda3f1376b54c18e34716bf54187e7019581dc97",
+    "sha256": "a5acaf90882bcc04ed523c128a390ab6324f01f9d4de01b5a6381aebb65f2f28",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -313,7 +313,7 @@
   },
   {
     "script": "InterfaceAccess",
-    "sha256": "227283828abf429ff0bd4c3216d4aede92bfdd5eeacff6fff6bf37d3188de981",
+    "sha256": "76dbeed19af81782ad4a44dac802b74c411c91628fdfb8be1170833867b57ab7",
     "v65_status": "added",
     "initial_v66_status": "added"
   },
@@ -325,7 +325,7 @@
   },
   {
     "script": "LanguageCatalog",
-    "sha256": "5cb6d4039e21d49516253df69a75f543dc1b0ea8214b07cb55e5d41cd492727f",
+    "sha256": "6fb9a1ec82518f8824367e35b9b9585a4f1bdf4feabe082fc64d79054a07c845",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },
@@ -373,7 +373,7 @@
   },
   {
     "script": "MenuWidgets",
-    "sha256": "942d0d8e808d845e0acccb095ba5f046693cf72eb944e18e099d985dade9a68c",
+    "sha256": "ad69d62e3af9e4bdf49e436ad3c7e89c7734508588e58d27a0aae9e1672f1507",
     "v65_status": "modified",
     "initial_v66_status": "modified"
   },

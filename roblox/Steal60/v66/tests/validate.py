@@ -147,6 +147,7 @@ with tempfile.TemporaryDirectory(prefix='steal60-v66-')as temp:
   parts.append(';\n(function()\n'+(HERE/'economy_cosmetics.luau').read_text()+'\nend)()')
   parts.append(';\n(function()\n'+(HERE/'upgrade_choices.luau').read_text()+'\nend)()')
   parts.append(';\n(function()\n'+(HERE/'runtime_regressions.luau').read_text()+'\nend)()')
+  parts.append(';\n(function()\n'+(HERE/'menu_regressions.luau').read_text()+'\nend)()')
  parts.append((HERE/'delivery_integration.luau').read_text())
  parts.append("print('FINAL COMBINED ASSERTIONS: '..checks)")
  bundle=temp/'run.luau';bundle.write_text('\n'.join(parts))

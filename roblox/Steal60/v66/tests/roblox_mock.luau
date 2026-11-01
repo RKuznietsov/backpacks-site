@@ -67,7 +67,7 @@ local Enum=setmetatable({},{__index=function(t,k)local e=setmetatable({},{__inde
 local task={spawn=function(fn,...)fn(...)end,wait=function()return .01 end,defer=function(fn)queue[#queue+1]=fn end,delay=function()end}
 local methods={};local instmt={};local Instance={}
 function Instance.new(class)
- return setmetatable({_kind='Instance',props={ClassName=class,Name=class,Size=V.new(1,1,1),CFrame=CF.new(),Text='',ActionText='',ObjectText='',Anchored=true,Transparency=0},children={},attrs={},changed={},attrSignals={},events={CharacterRemoving=signal(),CharacterAdded=signal(),RenderStepped=signal(),AncestryChanged=signal(),PromptButtonHoldBegan=signal(),PromptButtonHoldEnded=signal(),Triggered=signal(),Loaded=signal(),Ended=signal(),InputBegan=signal(),DescendantAdded=signal(),Destroying=signal(),Activated=signal(),PlayerAdded=signal(),PlayerRemoving=signal(),Heartbeat=signal()}},instmt)
+ return setmetatable({_kind='Instance',props={ClassName=class,Name=class,Size=V.new(1,1,1),AbsoluteSize=Vector2.new(0,0),CFrame=CF.new(),Text='',ActionText='',ObjectText='',Anchored=true,Transparency=0},children={},attrs={},changed={},attrSignals={},events={CharacterRemoving=signal(),CharacterAdded=signal(),RenderStepped=signal(),AncestryChanged=signal(),PromptButtonHoldBegan=signal(),PromptButtonHoldEnded=signal(),Triggered=signal(),Loaded=signal(),Ended=signal(),InputBegan=signal(),DescendantAdded=signal(),Destroying=signal(),Activated=signal(),PlayerAdded=signal(),PlayerRemoving=signal(),Heartbeat=signal()}},instmt)
 end
 instmt.__index=function(o,k)
  if methods[k]then return methods[k]end
@@ -77,6 +77,7 @@ instmt.__index=function(o,k)
  for _,c in ipairs(o.children)do if c.Name==k then return c end end
 end
 instmt.__newindex=function(o,k,v)
+ if k=='TextColor3'and(type(v)~='table'or v._kind~='Color3')then error('Unable to assign property TextColor3. Color3 expected, got '..type(v))end
  local old=o.props[k]
  if k=='Parent'then
   if old then local i=table.find(old.children,o);if i then table.remove(old.children,i)end end
@@ -87,7 +88,7 @@ instmt.__newindex=function(o,k,v)
   if old~=v and o.changed[k]then o.changed[k]:Fire()end
  end
 end
-function methods:IsA(c)return self.ClassName==c or(c=='BasePart'and(self.ClassName=='Part'or self.ClassName=='WedgePart'))end
+function methods:IsA(c)return self.ClassName==c or(c=='BasePart'and(self.ClassName=='Part'or self.ClassName=='WedgePart'))or(c=='GuiButton'and(self.ClassName=='TextButton'or self.ClassName=='ImageButton'))end
 function methods:GetChildren()return table.clone(self.children)end
 function methods:GetDescendants()local out={};local function walk(o)for _,c in ipairs(o.children)do out[#out+1]=c;walk(c)end end;walk(self);return out end
 function methods:FindFirstChild(n,recurse)for _,c in ipairs(recurse and self:GetDescendants()or self.children)do if c.Name==n then return c end end end
@@ -152,7 +153,7 @@ local function require(ref)
 end
 local checks=0
 local function check(condition,message)checks+=1;assert(condition,message)end
-local ColorSequence={new=function(...)return {...}end};local NumberSequence={new=function(...)return {...}end};local NumberRange={new=function(a,b)return {Min=a,Max=b or a}end}
+local ColorSequence={new=function(...)return {...}end};local NumberSequence={new=function(a,b)return {Keypoints=type(a)=='table'and a or{{Time=0,Value=a},{Time=1,Value=b or a}}}end};local NumberRange={new=function(a,b)return {Min=a,Max=b or a}end}
 
 local NumberSequenceKeypoint={new=function(t,v)return {Time=t,Value=v}end}
 
@@ -160,3 +161,5 @@ local TweenInfo={new=function(...)return {...}end}
 services.TweenService={Create=function(_,object,info,properties)return{Play=function()for k,v in pairs(properties)do object[k]=v end end,Cancel=function()end}end}
 function services.UserInputService:GetLastInputType()return Enum.UserInputType.Keyboard end
 function services.RunService:IsStudio()return true end
+
+function methods:Clear()self.ClearCount=(self.ClearCount or 0)+1 end

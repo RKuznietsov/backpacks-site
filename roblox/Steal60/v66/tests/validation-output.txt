@@ -1,10 +1,10 @@
-Final XML SHA-256: b85c4190b0ff67419536f26ae10b354c3eab408138c2d99bfc258cfc05a0d413
+Final XML SHA-256: 20b059fa6c47d14437c07e685791f11f64d34b97741f670ee14d1778f70f41fa
 XML instances: 130 script sources: 119
 Baseline SHA-256: c9f96485fd61b68ae4d576ed57f9fb9287015692969f7c8a9878c8c81c65102f
 PASS: v65 durable storage, payment processing, skill predicate and catalog sources byte-identical
 PASS: installer paths, infinite bounds, audio ingress and reset configuration
-PASS: 1320 unique translations, format tokens, American English and no numeric require/loadstring
-Compiled 18 KLOC into 1147 KB bytecode (read 0.00s, parse 0.02s, compile 0.03s)
+PASS: 1322 unique translations, format tokens, American English and no numeric require/loadstring
+Compiled 18 KLOC into 1151 KB bytecode (read 0.00s, parse 0.02s, compile 0.02s)
 PASS: purchase compatibility, delivery effects, skill policy, personal reset
 PASS: 10,000 district indices and five-theme selection
 PASS: RU/EN immediate + deferred events, dynamic text, streamed prompts/signs
@@ -33,8 +33,9 @@ PASS: coin cosmetics, quadratic mastery pacing, modest aura and all walking pet 
 PASS: real CosmeticService purchases/save snapshots, coin-only rejection, worker skill, paint/aura equip, license, mastery costs and duplicate/insufficient-funds guards
 PASS: +1 speed, five-diamond prices, own-avatar mastery, distinct benefits with both currencies, one-card UI and mixed/shared upgrade saves
 PASS: real memory server/client/ingress/music recovery, fast-key acknowledgement, lost-response sync, cancel/unlock, stale tokens, target removal, NPC cleanup contracts and bounded siren
+PASS: full upgrade/shop and read-only tabs render under native color contracts; five modal types stay inside the actual GUI canvas under DPI/insets/resizing, without scale feedback
 [Steal60] Main запущен
 [Steal60/Delivery] Сдача автомобиля без водителя: рамка парковки, остановка 0.65 сек
 PASS: actual Main + DeliveryService + HeistService + TutorialService + loot/catalog logic: four deliveries (seated and exited), rewards, XP/level, shelves, helper, lesson, replay and invalid-delivery rejection
-FINAL COMBINED ASSERTIONS: 329574
+FINAL COMBINED ASSERTIONS: 332116
 NOT RUN: Roblox Engine/Studio rendering, physics, live DataStore and Marketplace integration.

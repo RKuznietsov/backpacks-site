@@ -915,7 +915,7 @@ M.COIN_HERO_ID='hero_worker_coin_v66'
 M.List={
  {id='hero_worker_coin_v66',category='hero',name='ОБЫЧНЫЙ РАБОЧИЙ',description='Простая серая рабочая рубашка, тёмные брюки, каштановая причёска и открытое лицо. Мастерство героя доступно за монеты.',priceCoins=4000000,currency='coins',color=C(116,127,132),catalogLook='worker',featuredCoins=true},
  {id='paint_workgray_coin_v66',category='paint',name='Рабочий серый',description='Спокойный серый кузов без узоров и свечения.',priceCoins=750000,currency='coins',color=C(122,134,142),material='SmoothPlastic',style='solid'},
- {id='aura_breeze_coin_v66',category='aura',name='Лёгкий ветер',description='Три плавные воздушные дуги вокруг героя. Спокойное движение и мягкий голубой свет.',priceCoins=1500000,currency='coins',color=C(165,188,200),simple=true},
+ {id='aura_breeze_coin_v66',category='aura',name='Лёгкий ветер',description='Прозрачные воздушные шлейфы и мягкие завихрения у плеч.',priceCoins=1500000,currency='coins',color=C(165,188,200),simple=true},
  {id="skin_sakura",category="skin",name="Сакура-дрифт",description="Объёмные лепестки сакуры и сливочные цветы на кузове",price=320,color=C(255,146,189),style="sakura"},
  {id="paint_bubblegum",category="paint",name="Клубничный пломбир",description="Клубничный кузов и сливочная крыша",price=125,color=C(255,139,182),accent=C(255,244,218),material="SmoothPlastic",style="twoTone"},
  {id="paint_soda",category="paint",name="Мятная газировка",description="Мятный кузов и ванильная отделка",price=125,color=C(108,230,191),accent=C(255,241,208),material="SmoothPlastic",style="twoTone"},
@@ -3498,7 +3498,7 @@ local function collect(root,folder,t,previous)
 end
 function M.step(root,t)
  local folder=root:FindFirstChild('Steal60CosmeticAura');if not folder then states[root]=nil;return end
- if folder:GetAttribute('AuraOrigin')=='WindOrbit'then require(script.Parent.BreezeAura).step(folder,t);return end
+ if folder:GetAttribute('AuraOrigin')=='WindSwirls'then require(script.Parent.BreezeAura).step(folder,t);return end
  local state=states[root]
  if not state or state.folder~=folder then state=collect(root,folder,t,nil)
  elseif t>=state.refresh then state=collect(root,folder,t,state)end
@@ -4812,7 +4812,11 @@ local Shared=script.Parent;local Cars=require(Shared.Config.Cars);local Vehicles
 local Collectibles=require(Shared.CollectibleArt);local Pets=require(Shared.PetVisualLibrary);local Cosmetics=require(Shared.Config.CosmeticConfig)
 local Avatar=require(Shared.AvatarPreview);local W={};local C=Color3.fromRGB
 W.accent=C(123,232,194);W.ink=C(14,24,36);W.light=C(237,245,247)
-function W.fmt(n)local s=tostring(math.floor(tonumber(n)or 0));return s:reverse():gsub('(%d%d%d)','%1 '):reverse():gsub('^ ','')end
+function W.fmt(n)
+ local s=tostring(math.floor(tonumber(n)or 0))
+ local formatted=s:reverse():gsub('(%d%d%d)','%1 '):reverse():gsub('^ ','')
+ return formatted -- gsub also returns a replacement count; never leak it into metric colors.
+end
 function W.round(p,r)local c=Instance.new('UICorner');c.CornerRadius=UDim.new(0,r or 10);c.Parent=p end
 function W.text(p,value,pos,size,pt,color)
  local t=Instance.new('TextLabel');t.BackgroundTransparency=1;t.Text=tostring(value or'');t.Position=pos;t.Size=size;t.Font=Enum.Font.GothamBold;t.TextSize=pt or 13;t.TextColor3=color or W.light;t.TextWrapped=true;t.TextXAlignment=Enum.TextXAlignment.Left;t.TextYAlignment=Enum.TextYAlignment.Top;t.Parent=p;return t
@@ -6395,6 +6399,8 @@ return {
  ["★ ОСОБАЯ ЦЕЛЬ · +75%"]="★ SPECIAL TARGET · +75%",
  ["★ УЛУЧШИТЬ\n"]="★ UPGRADE\n",
  ["✓ УСПЕХ! СЛЕДУЮЩИЙ ЭТАП %d/%d"]="✓ SUCCESS! NEXT STAGE %d/%d",
+    ["Прозрачные воздушные шлейфы и мягкие завихрения у плеч."] = "Translucent wind ribbons and soft shoulder swirls.",
+    ["ПРОЗРАЧНЫЕ ШЛЕЙФЫ И ЗАВИХРЕНИЯ"] = "TRANSLUCENT WIND RIBBONS AND SWIRLS",
 }
 ]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_STEAL60_V64_LanguageController"><Properties><string name="Name">LanguageController</string><ProtectedString name="Source"><![CDATA[-- Local text binding keeps each player's world signs in their own language.
 local M={}
@@ -6784,6 +6790,28 @@ function M.axes(stickX,rightTrigger,leftTrigger)
  local steer=math.abs(stickX or 0)>.15 and math.clamp(stickX,-1,1)or 0
  return math.clamp((rightTrigger or 0)-(leftTrigger or 0),-1,1),steer
 end
+function M.logicalSize(frame,available)
+ local width=frame.Size.X.Scale*available.X+frame.Size.X.Offset
+ local height=frame.Size.Y.Scale*available.Y+frame.Size.Y.Offset
+ local limit=frame:FindFirstChildOfClass('UISizeConstraint')
+ if limit then
+  width=math.clamp(width,limit.MinSize.X,limit.MaxSize.X)
+  height=math.clamp(height,limit.MinSize.Y,limit.MaxSize.Y)
+ end
+ return Vector2.new(math.max(1,width),math.max(1,height))
+end
+function M.resizeModal(frame,scale,available)
+ local size=M.logicalSize(frame,available)
+ local header=available.X<1160 and 100 or 10
+ local bottom=frame.Name=='Steal60Handbook'and 124 or 24
+ local nextScale=M.scaleFor(available.X,available.Y,size.X,size.Y,header+bottom)
+ if frame.Name=='Steal60Handbook'then nextScale=math.min(1,nextScale)end
+ frame.AnchorPoint=Vector2.new(.5,.5)
+ -- Scale coordinates follow the real GUI canvas, including insets and Studio/DPI scaling.
+ -- Pixel offsets inside a UIScale otherwise scale the intended screen position a second time.
+ frame.Position=UDim2.fromScale(.5,(header+math.max(1,available.Y-header-bottom)*.5)/available.Y)
+ if math.abs(scale.Scale-nextScale)>.005 then scale.Scale=nextScale end
+end
 function M.focus(frame,preferred)
  local input=game:GetService('UserInputService')
  if not input.GamepadEnabled then return end
@@ -6796,6 +6824,13 @@ end
 function M.start(gui)
  local frames=setmetatable({},{__mode='k'});local links={};local live=true
  local function listen(signal,fn)local c=signal:Connect(fn);links[#links+1]=c end
+ local function resize(frame,scale)
+  local parent=frame.Parent;local available=parent and parent.AbsoluteSize
+  if not available or available.X<=0 or available.Y<=0 then
+   local camera=workspace.CurrentCamera;available=camera and camera.ViewportSize
+  end
+  if available and available.X>0 and available.Y>0 then M.resizeModal(frame,scale,available)end
+ end
  local function watch(object)
   if object:IsA('GuiButton')then
    object.Selectable=object.Active
@@ -6803,26 +6838,16 @@ function M.start(gui)
   end
   if not object:IsA('Frame')or not targets[object.Name]or frames[object]then return end
   local scale=Instance.new('UIScale');scale.Name='Steal60AdaptiveScale';scale.Scale=1;scale.Parent=object;frames[object]=scale
-  local visible=object:GetPropertyChangedSignal('Visible'):Connect(function()if object.Visible then task.defer(function()if live and object.Parent then M.focus(object)end end)end end)
+  local visible=object:GetPropertyChangedSignal('Visible'):Connect(function()if object.Visible then resize(object,scale);task.defer(function()if live and object.Parent then M.focus(object)end end)end end)
   object.Destroying:Connect(function()visible:Disconnect();frames[object]=nil end)
-  if object.Visible then task.defer(function()if live and object.Parent then M.focus(object)end end)end
+  if object.Visible then resize(object,scale);task.defer(function()if live and object.Parent then M.focus(object)end end)end
  end
  listen(gui.DescendantAdded,watch);for _,object in ipairs(gui:GetDescendants())do watch(object)end
  local elapsed=0
  listen(game:GetService('RunService').Heartbeat,function(dt)
   elapsed+=dt;if elapsed<.25 then return end;elapsed=0
-  local camera=workspace.CurrentCamera;if not camera then return end
-  local viewport=camera.ViewportSize
   for frame,scale in pairs(frames)do if frame.Parent and frame.Visible then
-   local size=frame.AbsoluteSize;local current=math.max(.01,scale.Scale)
-   local header=viewport.X<1160 and 100 or 10
-   local reserve=header+(frame.Name=='Steal60Handbook'and 124 or 24)
-   local nextScale=M.scaleFor(viewport.X,viewport.Y,size.X/current,size.Y/current,reserve)
-   -- The handbook's top anchor reserves the entire controls strip below it.
-   if frame.Name=='Steal60Handbook'then nextScale=math.min(1,nextScale)end
-   local bottom=frame.Name=='Steal60Handbook'and 124 or 24
-   frame.AnchorPoint=Vector2.new(.5,.5);frame.Position=UDim2.fromOffset(viewport.X*.5,header+math.max(1,viewport.Y-header-bottom)*.5)
-   if math.abs(scale.Scale-nextScale)>.005 then scale.Scale=nextScale end
+   resize(frame,scale)
   end end
  end)
  gui.Destroying:Connect(function()live=false;for _,c in ipairs(links)do c:Disconnect()end end)
@@ -7041,49 +7066,76 @@ function M.find(data,id,choice)
  for _,option in ipairs(M.choices(data,id))do if option.id==choice then return option end end
 end
 return M
-]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_v66_BreezeAura"><Properties><string name="Name">BreezeAura</string><ProtectedString name="Source"><![CDATA[-- A small, self-contained wind halo: three tapered curves around the upper body.
--- No particle plume, no trailing waist emitter, no per-frame instance allocation.
-local M={};local cache=setmetatable({},{__mode='k'})
-function M.arc(size,index,t)
- local radius=math.max(size.X,size.Z)*.5+1.18+.05*math.sin(t*1.3+index)
- local angle=t*.48+(index-1)*math.pi*2/3
- local span=math.rad(100);local y=size.Y*(.11+.11*index)+.045*math.sin(t*1.8+index)
- local function frame(theta)
-  local tangent=Vector3.new(-math.sin(theta),0,math.cos(theta))
-  return CFrame.fromMatrix(Vector3.new(radius*math.cos(theta),y,radius*math.sin(theta)),tangent,Vector3.yAxis,tangent:Cross(Vector3.yAxis))
- end
- return frame(angle),frame(angle+span),radius*4/3*math.tan(span/4)
+]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_v66_BreezeAura"><Properties><string name="Name">BreezeAura</string><ProtectedString name="Source"><![CDATA[-- Soft wind wakes and two rising curls, in the same ribbon style as other auras.
+-- Transparent smoke texture, upper-body anchors, bounded geometry and no waist plume.
+local M={SEGMENTS=4};local cache=setmetatable({},{__mode='k'})
+local TEXTURE='rbxasset://textures/particles/smoke_main.dds'
+function M.swirl(size,side,node,t)
+ local u=node/M.SEGMENTS;local span=math.pi*2.4;local angle=u*span+t*.8+side*.7
+ local radius=.58*(1-.48*u);local slope=-.58*.48/span
+ local position=Vector3.new(side*(size.X*.5+.82)+radius*math.cos(angle),size.Y*.08+u*1.65,size.Z*.5+.52+radius*math.sin(angle))
+ local derivative=Vector3.new(slope*math.cos(angle)-radius*math.sin(angle),1.65/span,slope*math.sin(angle)+radius*math.cos(angle))
+ local right=derivative.Unit;local back=right:Cross(Vector3.yAxis).Unit
+ return CFrame.fromMatrix(position,right,back:Cross(right),back),derivative.Magnitude*span/M.SEGMENTS/3
 end
-local function pose(beam,host,index,t)
- local a,b,curve=M.arc(host.Size,index,t)
- beam.Attachment0.CFrame=a;beam.Attachment1.CFrame=b;beam.CurveSize0=curve;beam.CurveSize1=curve
- beam.Width0=.115+.012*math.sin(t*1.4+index);beam.Width1=.025
+local function pose(beam,host,t)
+ local side=beam:GetAttribute('WindSide');local segment=beam:GetAttribute('WindSegment')
+ local a,curve0=M.swirl(host.Size,side,segment-1,t);local b,curve1=M.swirl(host.Size,side,segment,t)
+ beam.Attachment0.CFrame=a;beam.Attachment1.CFrame=b;beam.CurveSize0=curve0;beam.CurveSize1=curve1
 end
 function M.create(root,host,folder,def)
  local anchors={}
- for index=1,3 do
-  local a=Instance.new('Attachment');a.Name='BreezeArcStart'..index;a.Parent=host;anchors[#anchors+1]=a
-  local b=Instance.new('Attachment');b.Name='BreezeArcEnd'..index;b.Parent=host;anchors[#anchors+1]=b
-  local beam=Instance.new('Beam');beam.Name='WindArc'..index;beam.Enabled=true;beam:SetAttribute('WindIndex',index)
-  beam.Attachment0=a;beam.Attachment1=b;beam.FaceCamera=true;beam.Segments=18;beam.LightEmission=.18;beam.LightInfluence=.2
-  beam.Color=ColorSequence.new(def.color,Color3.fromRGB(232,244,248))
-  beam.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,.85),NumberSequenceKeypoint.new(.22,.23),NumberSequenceKeypoint.new(.70,.36),NumberSequenceKeypoint.new(1,1)})
-  pose(beam,host,index,0);beam.Parent=folder
+ local function attach(name,position)
+  local a=Instance.new('Attachment');a.Name=name;a.Position=position or Vector3.zero;a.Parent=host;anchors[#anchors+1]=a;return a
  end
- folder:SetAttribute('AuraOrigin','WindOrbit');folder:SetAttribute('BeamCount',3);folder:SetAttribute('TrailCount',0);folder:SetAttribute('EmitterCount',0);folder:SetAttribute('AuraId',def.id)
+ for _,side in ipairs({-1,1})do
+  local points={}
+  for node=0,M.SEGMENTS do points[node]=attach('BreezeCurl_'..side..'_'..node)end
+  for segment=1,M.SEGMENTS do
+   local beam=Instance.new('Beam');beam.Name='WindCurl_'..side..'_'..segment
+   beam:SetAttribute('WindSide',side);beam:SetAttribute('WindSegment',segment)
+   beam.Attachment0=points[segment-1];beam.Attachment1=points[segment];beam.Enabled=true;beam.FaceCamera=true;beam.Segments=14
+   beam.Width0=.33*(1-(segment-1)*.13);beam.Width1=.33*(1-segment*.13)
+   beam.Texture=TEXTURE;beam.TextureMode=Enum.TextureMode.Wrap;beam.TextureLength=1.8;beam.TextureSpeed=.22
+   beam.LightEmission=.08;beam.LightInfluence=.6;beam.Color=ColorSequence.new(def.color,Color3.fromRGB(228,240,244))
+   local fade=.80+(segment-1)*.035
+   beam.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,segment==1 and 1 or fade),NumberSequenceKeypoint.new(.28,fade),NumberSequenceKeypoint.new(.72,fade+.02),NumberSequenceKeypoint.new(1,segment==M.SEGMENTS and 1 or fade+.035)})
+   pose(beam,host,0);beam.Parent=folder
+  end
+  local x=side*(host.Size.X*.5+.12);local z=host.Size.Z*.5+.28
+  local trail=Instance.new('Trail');trail.Name='WindWake_'..side
+  trail.Attachment0=attach('BreezeWakeTop_'..side,Vector3.new(x,host.Size.Y*.40,z))
+  trail.Attachment1=attach('BreezeWakeBottom_'..side,Vector3.new(x+side*.22,host.Size.Y*.09,z+.14))
+  trail.Enabled=false;trail.FaceCamera=true;trail.Lifetime=.75;trail.MinLength=.06;trail.MaxLength=12
+  trail.Texture=TEXTURE;trail.TextureMode=Enum.TextureMode.Stretch;trail.LightEmission=.08;trail.LightInfluence=.6
+  trail.Color=ColorSequence.new(def.color,Color3.fromRGB(228,240,244))
+  trail.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,.84),NumberSequenceKeypoint.new(.45,.90),NumberSequenceKeypoint.new(1,1)})
+  trail.WidthScale=NumberSequence.new({NumberSequenceKeypoint.new(0,.85),NumberSequenceKeypoint.new(.4,.65),NumberSequenceKeypoint.new(1,0)})
+  trail.Parent=folder
+ end
+ folder:SetAttribute('AuraOrigin','WindSwirls');folder:SetAttribute('BeamCount',2*M.SEGMENTS);folder:SetAttribute('TrailCount',2);folder:SetAttribute('EmitterCount',0);folder:SetAttribute('AuraId',def.id)
  folder.Destroying:Connect(function()cache[folder]=nil;for _,a in ipairs(anchors)do if a.Parent then a:Destroy()end end end)
 end
 function M.step(folder,t)
+ local root=folder.Parent;if not root then return end
  local state=cache[folder]
  if not state or t>=state.refresh then
-  state={beams={},refresh=t+1}
-  for _,beam in ipairs(folder:GetChildren())do if beam:IsA('Beam')and beam.Attachment0 and beam.Attachment1 and beam.Attachment0.Parent then state.beams[#state.beams+1]=beam end end
-  if #state.beams~=3 then state.refresh=t+.1 end
+  local previous=state
+  state={beams={},trails={},refresh=t+1,last=previous and previous.last or root.Position,time=previous and previous.time or t}
+  for _,object in ipairs(folder:GetChildren())do
+   if object:IsA('Beam')and object.Attachment0 and object.Attachment1 and object.Attachment0.Parent then state.beams[#state.beams+1]=object
+   elseif object:IsA('Trail')then state.trails[#state.trails+1]=object end
+  end
+  if #state.beams~=2*M.SEGMENTS or #state.trails~=2 then state.refresh=t+.1 end
   cache[folder]=state
  end
+ local delta=root.Position-state.last;local elapsed=t-state.time;local teleported=delta.Magnitude>18
+ local speed=elapsed>0 and Vector3.new(delta.X,0,delta.Z).Magnitude/elapsed or 0
  for _,beam in ipairs(state.beams)do
-  if beam.Parent and beam.Attachment0 and beam.Attachment1 and beam.Attachment0.Parent then pose(beam,beam.Attachment0.Parent,beam:GetAttribute('WindIndex')or 1,t)else state.refresh=0 end
+  if beam.Parent and beam.Attachment0 and beam.Attachment1 and beam.Attachment0.Parent then pose(beam,beam.Attachment0.Parent,t)else state.refresh=0 end
  end
+ for _,trail in ipairs(state.trails)do if trail.Parent then trail.Enabled=not teleported and speed>.85;if teleported then trail:Clear()end end end
+ state.last=root.Position;state.time=t
 end
 return M
 ]]></ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX_v66_UpgradeView"><Properties><string name="Name">UpgradeView</string><ProtectedString name="Source"><![CDATA[-- One card per upgrade type; each distinct benefit has both payment buttons.
@@ -9771,18 +9823,20 @@ local function aura3D(container,def)
  view.Size=UDim2.fromOffset(176,192);view.Position=UDim2.fromOffset(9,9)
  view.BorderSizePixel=0;view.BackgroundColor3=C(17,29,43);view.Parent=container;corner(view,10)
  if def.simple then
-  -- A readable schematic of the in-world wind halo, with front/back arc ordering.
+  -- Translucent wakes and rising curls, matching the actual wind ribbon material.
+  for _,side in ipairs({-1,1})do
+   local wake=Instance.new('ImageLabel');wake.BackgroundTransparency=1;wake.Image='rbxasset://textures/particles/smoke_main.dds';wake.ImageColor3=def.color;wake.ImageTransparency=.86
+   wake.Position=UDim2.fromScale(side<0 and .08 or .65,.30);wake.Size=UDim2.fromScale(.27,.34);wake.Rotation=side*18;wake.Parent=view
+   for segment=0,35 do
+    local function point(u)local a=u*math.pi*2.4+side*.7;local r=.115*(1-.48*u);return .5+side*.24+r*math.cos(a),.56-u*.34+.045*math.sin(a)end
+    local x,y=point(segment/36);local x1,y1=point((segment+1)/36);local dx,dy=x1-x,y1-y
+    local line=Instance.new('Frame');line.AnchorPoint=Vector2.new(0,.5);line.Position=UDim2.fromScale(x,y);line.Size=UDim2.new(math.sqrt(dx*dx+dy*dy),1,0,2)
+    line.Rotation=math.deg(math.atan2(dy,dx));line.BackgroundColor3=def.color;line.BackgroundTransparency=.73+.24*math.abs(segment-17.5)/17.5;line.BorderSizePixel=0;line.Parent=view;corner(line,3)
+   end
+  end
   local torso=Instance.new('Frame');torso.Size=UDim2.fromScale(.22,.28);torso.Position=UDim2.fromScale(.39,.25);torso.BackgroundColor3=C(122,146,158);torso.BorderSizePixel=0;torso.ZIndex=3;torso.Parent=view;corner(torso,8)
   local head=Instance.new('Frame');head.Size=UDim2.fromScale(.14,.13);head.Position=UDim2.fromScale(.43,.10);head.BackgroundColor3=C(223,223,209);head.BorderSizePixel=0;head.ZIndex=3;head.Parent=view;corner(head,30)
-  for band=1,3 do for segment=0,21 do
-   local a=(band-1)*2*math.pi/3+segment*math.rad(100)/22;local b=a+math.rad(100)/22
-   local x,y=.5+.34*math.cos(a),.31+(band-2)*.085+.07*math.sin(a)
-   local dx,dy=.34*(math.cos(b)-math.cos(a)),.07*(math.sin(b)-math.sin(a))
-   local line=Instance.new('Frame');line.AnchorPoint=Vector2.new(0,.5);line.Position=UDim2.fromScale(x,y);line.Size=UDim2.new(math.sqrt(dx*dx+dy*dy),1,0,2)
-   line.Rotation=math.deg(math.atan2(dy,dx));line.BackgroundColor3=def.color;line.BackgroundTransparency=.16+.68*math.abs(segment-10.5)/10.5
-   line.BorderSizePixel=0;line.ZIndex=math.sin(a)>0 and 4 or 2;line.Parent=view
-  end end
-  text(view,'ВОЗДУШНЫЕ ДУГИ ВОКРУГ ГЕРОЯ',UDim2.new(1,-10,0,36),UDim2.new(0,5,.64,0),10,C(204,222,232),true)
+  text(view,'ПРОЗРАЧНЫЕ ШЛЕЙФЫ И ЗАВИХРЕНИЯ',UDim2.new(1,-10,0,36),UDim2.new(0,5,.69,0),10,C(204,222,232),true)
   return view
  end
  for side=-1,1 do

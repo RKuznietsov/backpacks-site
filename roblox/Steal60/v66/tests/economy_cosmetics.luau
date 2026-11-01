@@ -25,34 +25,43 @@ check(Balance.masteryCost('pet',0)==75000 and Balance.masteryCost('pet',59)==880
 local profile={cosmeticsOwned={[worker.id]=true},cosmeticsEquipped={hero=worker.id},heroSkinBonusLevel=9}
 local total,hero,pet=Config.coinBonusPct(profile)
 check(total==9 and hero==9 and pet==0,'worker unlocks full shared hero mastery without diamonds')
--- The complete wind halo animates at rest, stays outside the upper body and cleans up on R6/R15.
+-- Transparent ribbon wakes and two rising vortices: native geometry/lifecycle, not a rendered image.
 for _,shape in ipairs({{name='UpperTorso',size=V.new(2,1.6,1)},{name='Torso',size=V.new(2,2,1)},{name='HumanoidRootPart',size=V.new(2,2,1)}})do
  local character=Instance.new('Model');local root=Instance.new('Part');root.Name='HumanoidRootPart';root.Size=V.new(2,2,1);root.Parent=character
  local host=root
  if shape.name~='HumanoidRootPart'then host=Instance.new('Part');host.Name=shape.name;host.Size=shape.size;host.Parent=character end
  local Visuals=require('AuraVisualLibrary');local aura=Visuals.create(root,Config.ById.aura_breeze_coin_v66)
- local count=#character:GetDescendants();local first=aura.WindArc1.Attachment0.CFrame.Position
+ local count=#character:GetDescendants();local first=aura:FindFirstChild('WindCurl_-1_1').Attachment0.CFrame.Position
  for _,t in ipairs({0,.5,1,5,10})do
   Visuals.step(root,t)
-  local beams=0
+  local beams,trails=0,0
   for _,o in ipairs(aura:GetChildren())do
-   check(not o:IsA('Trail')and not o:IsA('ParticleEmitter'),'wind halo creates no rear ribbon or smoke cloud')
+   check(not o:IsA('ParticleEmitter'),'wind has no concentrated waist smoke emitter')
    if o:IsA('Beam')then
-    beams+=1;check(o.Enabled and o.Segments>=12 and o.LightEmission<.3,'smooth, modest curved beams remain visible at rest')
+    beams+=1;check(o.Enabled and o.Segments>=12 and o.LightEmission<.1 and o.Texture:find('smoke_main',1,true),'wind curls use soft low-glow texture at rest')
+    for _,key in ipairs(o.Transparency.Keypoints)do check(key.Value>=.79,'wind curls are substantially more transparent than paid aura trails')end
     local p0=o.Attachment0.CFrame.Position;local p1=p0+o.Attachment0.CFrame.RightVector*o.CurveSize0
     local p3=o.Attachment1.CFrame.Position;local p2=p3-o.Attachment1.CFrame.RightVector*o.CurveSize1
     for j=0,10 do local f=j/10;local point=p0*(1-f)^3+p1*3*(1-f)^2*f+p2*3*(1-f)*f^2+p3*f^3
-     check(point.Y>0 and Vector3.new(point.X,0,point.Z).Magnitude>1.7,'entire curved wind arc clears the torso and lower body')
+     check(point.Y>0 and math.abs(point.X)>host.Size.X*.5+.12,'rising wind curls stay outside the torso, above the waist')
     end
+   elseif o:IsA('Trail')then
+    trails+=1;check(not o.Enabled and o.Lifetime<1 and o.MaxLength<=12,'wind wake is short and disabled at rest')
+    check(o.Attachment0.Position.Y>0 and o.Attachment1.Position.Y>0,'wake anchors are at the upper back, not the waist')
+    for _,key in ipairs(o.Transparency.Keypoints)do check(key.Value>=.84,'wind wakes remain translucent')end
    end
   end
-  check(beams==3 and #character:GetDescendants()==count,'animation keeps a bounded three-arc construction')
+  check(beams==8 and trails==2 and #character:GetDescendants()==count,'animation keeps a bounded eight-segment/two-ribbon construction')
  end
- check((aura.WindArc1.Attachment0.CFrame.Position-first).Magnitude>.1,'halo rotates gently even without character movement')
+ check((aura:FindFirstChild('WindCurl_-1_1').Attachment0.CFrame.Position-first).Magnitude>.1,'wind curls animate even without character movement')
+ root.Position=V.new(3,0,0);Visuals.step(root,10.1)
+ for _,o in ipairs(aura:GetChildren())do if o:IsA('Trail')then check(o.Enabled,'walking leaves a soft wind wake')end end
+ root.Position=V.new(300,0,0);Visuals.step(root,10.2)
+ for _,o in ipairs(aura:GetChildren())do if o:IsA('Trail')then check(not o.Enabled and o.ClearCount==1,'teleport clears the old ribbon instead of stretching it across the map')end end
  Visuals.create(root,Config.ById.aura_breeze_coin_v66)
- check(aura.Parent==nil,'changing the same aura destroys the old halo')
+ check(aura.Parent==nil,'changing the same aura destroys the old wind effect')
  local replacement=root:FindFirstChild('Steal60CosmeticAura');replacement:Destroy()
- check(#host:GetChildren()==0 and #root:GetChildren()==0,'unequip removes every external halo attachment');character:Destroy()
+ check(#host:GetChildren()==0 and #root:GetChildren()==0,'unequip removes every external wind attachment');character:Destroy()
 end
 -- Native pet constructors establish geometry; no rendered head or actual seating is emulated.
 do

@@ -1,6 +1,6 @@
 {
   "baseline_initial_v66_commit": "58661d98ebe77fdb471166257641c2e5a8da2a79",
-  "final_xml_sha256": "b85c4190b0ff67419536f26ae10b354c3eab408138c2d99bfc258cfc05a0d413",
+  "final_xml_sha256": "20b059fa6c47d14437c07e685791f11f64d34b97741f670ee14d1778f70f41fa",
   "current_price_scope": "new fields below refer to compatible saved-counter definitions. The current shop combines shared upgrades and offers both currencies per benefit; use unified_upgrade_choices and economy-data.json for actual full ladders.",
   "unified_upgrade_choices": {
     "income": {

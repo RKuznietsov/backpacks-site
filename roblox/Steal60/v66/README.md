@@ -1,6 +1,8 @@
 # Steal60 v66 · RU / EN
 
-Последнее обновление: исправлено зависание мини-игры памяти и освобождение машины при закрытии. Обычные улучшения объединены: одна карточка, у каждой прибавки две кнопки оплаты. Короткие подписи «Доход +4% к базе» / «Доставка +3% к базе», текущий результат и доход в час. Мастерство купленного героя действует и со своим аватаром. [Все новые изменения](UPDATE.md).
+Последнее обновление: исправлены пустые вкладки «Прокачка»/«Магазин» и смещение окон вниз при масштабировании. Вкладки сохранены с полным содержимым. «Лёгкий ветер» теперь использует прозрачные воздушные шлейфы и поднимающиеся завихрения у плеч. [Что исправлено и как проверено](MENU-FIX.md).
+
+Предыдущие исправления памяти, ошибок Output и двухвалютного магазина сохранены. [Подробности](UPDATE.md).
 
 **Обновлено по скриншотам и новым замечаниям:** компактные полки, исправленное оформление лидерборда, руководство сверху, подробные дорожные события, машины 25–30 в районах 6+, тихий двигатель и питомцы сзади машины. Добавлены три покупки за монеты и новая кривая мастерства: [что изменено](VISUAL-UPDATE.md), [цены и расчёты](ECONOMY.md).
 
@@ -49,7 +51,7 @@
 
 ## English
 
-Latest update: memory-puzzle deadlocks, cancellation, NPC cleanup errors and three invalid music IDs are fixed. Each ordinary upgrade benefit now has coin and diamond buttons on one card. Speed adds +1 for a fixed 20 diamonds per level; Auto Collect costs 300 diamonds. Unlocked hero mastery also works with the player’s own avatar. The basic aura uses three calm wind arcs, and district junctions have themed corner plazas. See [UPDATE.md](UPDATE.md).
+Latest update: empty Upgrade/Shop tabs and scaled modal positioning are fixed. Wind now uses translucent ribbon wakes and rising shoulder swirls. [Evidence](MENU-FIX.md). Memory-puzzle deadlocks, cancellation, NPC cleanup errors and three invalid music IDs remain fixed. Each ordinary upgrade benefit now has coin and diamond buttons on one card. Speed adds +1 for a fixed 20 diamonds per level; Auto Collect costs 300 diamonds. Unlocked hero mastery also works with the player’s own avatar. The basic aura uses translucent wind ribbons and curls, and district junctions have themed corner plazas. See [UPDATE.md](UPDATE.md).
 
 Delivery hotfix: the Main delivery-reward callback was accidentally removed during debug cleanup and has now been restored. Replace the old installer while Studio is stopped; do not reset your profile. A new integration test runs actual Main startup and the delivery/reward/tutorial chain.
 

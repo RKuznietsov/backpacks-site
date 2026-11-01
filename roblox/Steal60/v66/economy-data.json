@@ -1,5 +1,5 @@
 {
-  "final_xml_sha256": "b85c4190b0ff67419536f26ae10b354c3eab408138c2d99bfc258cfc05a0d413",
+  "final_xml_sha256": "20b059fa6c47d14437c07e685791f11f64d34b97741f670ee14d1778f70f41fa",
   "method": "Actual final XML EconomyBalance, CoinUpgradeConfig, UpgradeConfig, UpgradePolicy and CosmeticConfig evaluated in official Luau. unified_upgrade_choices is the current shop; *_reference_tracks are the compatible saved-counter definitions, not an additional shop. Time estimates divide by a constant 500000 coins/hour; no travel, active rewards, reinvestment, offline limits or growth simulated.",
   "reference_coins_per_hour": 500000,
   "coin_cosmetics": {
